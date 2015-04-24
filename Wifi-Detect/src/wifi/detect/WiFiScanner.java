@@ -77,19 +77,18 @@ public class WiFiScanner {
         ArrayList<String> list = WiFiScanner.scan();
 
         list.stream().forEach((String list1) -> {
-            //System.out.println(list1);
-            String[] a = list1.split("\n");
-            for (String a1 : a) {
+//              System.out.println(list1);
+//            
+//            String[] a = list1.split("\n");
                 //System.out.println(a1);
-                if (a1.contains("BSSID")) {
-                    a1 = a1.substring(a1.indexOf(":")+2);
-                    System.out.println(a1);
+                if (list1.contains("BSSID")) {
+                    list1 = list1.substring(list1.indexOf(":")+2);
+                    System.out.println(list1);
                 }
-                if (a1.contains("Signal")) {
-                    a1 = a1.substring(a1.indexOf(":")+2);
-                    System.out.println(a1);
+                if (list1.contains("Signal")) {
+                    list1 = list1.substring(list1.indexOf(":")+2);
+                    System.out.println(list1);
                 }
-            }
         });       
     }
 
