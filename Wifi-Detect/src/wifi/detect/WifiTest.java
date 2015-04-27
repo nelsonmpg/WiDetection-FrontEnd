@@ -145,13 +145,13 @@ public class WifiTest extends javax.swing.JFrame {
 
             for (String list1 : list) {
 
-                if (list1.toLowerCase().contains("SSID ".toLowerCase())) {
+                if (list1.toLowerCase().contains("SSID ".toLowerCase()) && !list1.toLowerCase().contains("BSSID ".toLowerCase())) {
                     str2 += list1 + "\n";
                 }
                 if (list1.toLowerCase().contains("BSSID".toLowerCase())) {
                     str2 += list1 + "\n";
                 }
-                if (list1.toLowerCase().contains("Sinal".toLowerCase())) {
+                if (list1.toLowerCase().contains("Sinal".toLowerCase()) || list1.toLowerCase().contains("Signal".toLowerCase()) ) {
                     str2 += list1 + "\n";
                 }
             }
