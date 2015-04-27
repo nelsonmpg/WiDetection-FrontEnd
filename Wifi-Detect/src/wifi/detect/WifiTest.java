@@ -5,6 +5,11 @@
  */
 package wifi.detect;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
@@ -13,6 +18,11 @@ import javax.swing.JOptionPane;
  * @author NelsonGomes
  */
 public class WifiTest extends javax.swing.JFrame {
+
+    private String String;
+    private final String ipserver = "127.0.0.1";
+    private final int PORT = 2244;
+    private InetAddress address;
 
     /**
      * Creates new form WifiTest
@@ -33,6 +43,8 @@ public class WifiTest extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         textarearesult = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        textarearesult2 = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
         btnRunTest = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -44,17 +56,29 @@ public class WifiTest extends javax.swing.JFrame {
         textarearesult.setRows(5);
         jScrollPane1.setViewportView(textarearesult);
 
+        textarearesult2.setColumns(20);
+        textarearesult2.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
+        textarearesult2.setRows(5);
+        jScrollPane2.setViewportView(textarearesult2);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 508, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 574, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         btnRunTest.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -73,7 +97,7 @@ public class WifiTest extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(btnRunTest, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -99,20 +123,56 @@ public class WifiTest extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRunTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRunTestActionPerformed
-        ArrayList<String> list = WiFiScanner.scan();
-        list.remove(0);
-        list.remove(list.size() - 1);
-        String str = "";
-        str = list.stream().map((list1) -> list1 + "\n").reduce(str, String::concat);
-        str += "------------------------------------------------------------------";
-        textarearesult.setText(str);
+        try {
+            ArrayList<String> list = WiFiScanner.scan();
+            list.remove(0);
+            list.remove(list.size() - 1);
+            String str = "";
+            String str2 = "";
+            for (String list1 : list) {
+                str += list1 + "\n";
+            }
+
+            textarearesult.setText(str);
+
+            for (String list1 : list) {
+
+                if (list1.toLowerCase().contains("SSID ".toLowerCase())) {
+                    str2 += list1 + "\n";
+                }
+                if (list1.toLowerCase().contains("BSSID".toLowerCase())) {
+                    str2 += list1 + "\n";
+                }
+                if (list1.toLowerCase().contains("Sinal".toLowerCase())) {
+                    str2 += list1 + "\n";
+                }
+            }
+            textarearesult2.setText(str2);
+
+            byte[] message = str2.getBytes();
+
+            // Get the internet address of the specified host
+            address = InetAddress.getByName(ipserver);
+
+            // Initialize a datagram packet with data and address
+            DatagramPacket packet = new DatagramPacket(message, message.length, address, PORT);
+
+            // Create a datagram socket, send the packet through it, close it.
+            DatagramSocket dsocket = new DatagramSocket();
+            dsocket.send(packet);
+            dsocket.close();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+
     }//GEN-LAST:event_btnRunTestActionPerformed
 
     /**
@@ -156,6 +216,8 @@ public class WifiTest extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea textarearesult;
+    private javax.swing.JTextArea textarearesult2;
     // End of variables declaration//GEN-END:variables
 }
