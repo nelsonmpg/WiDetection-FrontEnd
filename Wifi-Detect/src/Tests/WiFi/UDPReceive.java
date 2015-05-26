@@ -52,7 +52,7 @@ public class UDPReceive {
                     xmlDoc = (HashMap<Integer, String>) sortByValue(xmlDoc);
                     xmlDoc.remove(xmlDoc.size() - 1);
                     for (Map.Entry<Integer, String> val : xmlDoc.entrySet()) {
-                        System.out.print(val.getValue());
+                        System.out.print(val.getKey() + " -> " +val.getValue());
                     }
                     xmlDoc.clear();
                 }
