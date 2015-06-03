@@ -2,3 +2,7 @@
 /Wifi-Detect/build/
 /Wifi-Detect/dist/
 /TestRest/nbproject/private/
+
+/ProjetoFinal/node_modules
+nbproject
+*.class

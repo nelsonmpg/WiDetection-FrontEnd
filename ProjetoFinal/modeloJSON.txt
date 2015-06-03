@@ -1,0 +1,25 @@
+BSSID            , First time seen    , Last time seen     , channel, Speed,    Privacy, Cipher, Authentication, Power, # beacons, # IV,        LAN IP, ID-length, ESSID, Key
+64:66:B3:95:5F:7C, 2015-05-25 15:49:03, 2015-05-25 16:02:53,       1,    54,       WPA2,   CCMP,            PSK,    84,      6110,  785, 0.  0.  0.  0,        13, VITA.IPT-WIFI, 
+
+
+
+Station MAC      , First time seen    , Last time seen     , Power, # packets, BSSID            , Probed ESSIDs
+B8:4F:D5:EA:F2:D5, 2015-05-25 15:50:14, 2015-05-25 16:01:22,  -87,         11, (not associated) , FON_ZON_FREE_INTERNET,FAFA,Casa7montes,picnic3,ADSLPT-AB54069,Optimus4G_E6F4
+
+
+{
+	"dispScan": [{ 
+		"macScan" : "00:00:00:00:00:00",
+		"clients":[{
+			"macClient": "98:3B:16:89:FC:9D",
+				"values":[{
+					"First_time": "2015-05-25 16:01:32",
+					"Last_time": "2015-05-25 16:01:38",
+					"Power": "-79",
+					"BSSID": "(not associated)",
+					"Probed_ESSIDs": "FON_ZON_FREE_INTERNET,FAFA,Casa7montes,picnic3,ADSLPT-AB54069,Optimus4G_E6F4"
+				}]
+		}]
+	}]
+}
+
