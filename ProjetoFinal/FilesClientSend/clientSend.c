@@ -38,7 +38,7 @@ void * SendDiffFile(void *arg) {
     }
     puts("Socket created");
 
-    server.sin_addr.s_addr = inet_addr("192.168.41.1");
+    server.sin_addr.s_addr = inet_addr("192.168.10.148");
     server.sin_family = AF_INET;
     server.sin_port = htons(8888);
 
@@ -47,7 +47,7 @@ void * SendDiffFile(void *arg) {
     }
     puts("Connected\n");
 
-    if (send(sock, "antena-teste", strlen("antena-teste"), 0) < 0) {
+    if (send(sock, "antena-Nelson", strlen("antena-Nelson"), 0) < 0) {
         puts("Send failed");
     }
 
