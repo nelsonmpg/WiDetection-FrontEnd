@@ -6,3 +6,5 @@
 *.class
 ProjetoFinal/node_modules/
 material/nbproject/private/private.xml
+/ProjetoFinal/nbproject/private/
+ProjetoFinal/nbproject/project.properties

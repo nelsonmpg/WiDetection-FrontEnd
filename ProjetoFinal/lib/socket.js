@@ -230,6 +230,19 @@ ServerSocket.prototype.start = function () {
         });
         //    }).listen(this.port);
     });
+
+
+    // Listen to new device being inserted
+   r.db("Teste").table("cliente").changes().run()
+            .then(function (cursor) {
+                cursor.each(function (err, row) {
+                    socket.emit('newDevice', row.disp);
+                });
+            })
+            .catch(function (err) {
+                console.log('err', err);
+            });
+
     console.log('Server listening on ' + HOST + ':' + this.port);
 };
 //excepcoes para os erros encontrados
