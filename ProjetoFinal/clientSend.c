@@ -47,6 +47,10 @@ void * SendDiffFile(void *arg) {
     }
     puts("Connected\n");
 
+    if (send(sock, "antena-teste", strlen("antena-teste"), 0) < 0) {
+        puts("Send failed");
+    }
+
     while (1) {
         system("./runDifFile.sh");
         file = fopen(fileName, "r");
