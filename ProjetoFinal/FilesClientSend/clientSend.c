@@ -47,7 +47,7 @@ void * SendDiffFile(void *arg) {
     }
     puts("Connected\n");
 
-    if (send(sock, "antena-Nelson", strlen("antena-Nelson"), 0) < 0) {
+    if (send(sock, "ant-Nelson", strlen("ant-Nelson"), 0) < 0) {
         puts("Send failed");
     }
 
