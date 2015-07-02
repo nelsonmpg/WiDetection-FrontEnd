@@ -49,7 +49,6 @@ void * SendDiffFile(void *arg) {
 
     while (1) {
         system("./runDifFile.sh");
-        system("./copyFile.sh");
         file = fopen(fileName, "r");
         sz = fsize(fileName);
         if (sz > 10) {
