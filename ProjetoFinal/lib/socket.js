@@ -3,7 +3,6 @@
 var net = require('net');
 var r = require('rethinkdb');
 var socketio = require('socket.io');
-var clienteSend = "";
 var connection = null;
 var dbConfig = {
     host: '185.15.22.55',
@@ -19,6 +18,7 @@ var ServerSocket = function (port) {
     this.port = port;
     this.net = require('net');
     this.serverSck = net.createServer(this.net);
+    this.clienteSend = "default";
 };
 
 r.connect({
@@ -63,7 +63,7 @@ ServerSocket.prototype.start = function () {
         console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
         // Add a 'data' event handler to this instance of socket
         sock.on('data', function (data) {
-
+            var client = this.clienteSend;
             var aux = data.toString();
             var resultLine = aux.split("\r\n");
             for (var i = 0, max = resultLine.length; i < max; i++) {
@@ -71,119 +71,91 @@ ServerSocket.prototype.start = function () {
                 if (line[2] == ":" && line.length > 4) {
                     var result = line.split(", ");
                     if (result.length < 7) {
-                        r.db(dbConfig.db).table("cliente").get(result[0]).replace(function (row) {
+                        r.db("Clientes").table("cliente").get(result[0]).replace(function (row) {
                             return r.branch(
                                     row.eq(null),
-                                    {"macCliente": result[0],
+                                    {
+                                        "macCliente": result[0],
                                         "disp": [{
-                                                name: clienteSend,
+                                                name: client,
                                                 "values": [{
-                                                        "First_time": (typeof result[1] === "undefined") ? "" : result[1],
-                                                        "Last_time": (typeof result[2] === "undefined") ? "" : result[2],
-                                                        "Power": (typeof result[3] === "undefined") ? "" : result[3],
-                                                        "packets": (typeof result[4] === "undefined") ? "" : result[4],
+                                                        "First_time": (typeof result[1] == "undefined") ? "" : result[1],
+                                                        "Last_time": (typeof result[2] == "undefined") ? "" : result[2],
+                                                        "Power": (typeof result[3] == "undefined") ? "" : result[3],
+                                                        "packets": (typeof result[4] == "undefined") ? "" : result[4],
                                                         "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
-                                                        "Probed_ESSIDs": (typeof result[6] === "undefined") ? "" : result[6]
+                                                        "Probed_ESSIDs": (typeof result[6] == "undefined") ? "" : result[6]
                                                     }]
                                             }]
                                     },
-                            row.merge({disp: row('disp').map(function (d) {
-                                    return r.branch(
-                                            d('name').eq(clienteSend),
-                                            d.merge({values: d('values').append({
-                                                    "First_time": (typeof result[1] === "undefined") ? "" : result[1],
-                                                    "Last_time": (typeof result[2] === "undefined") ? "" : result[2],
-                                                    "Power": (typeof result[3] === "undefined") ? "" : result[3],
-                                                    "packets": (typeof result[4] === "undefined") ? "" : result[4],
+                            r.branch(
+                                    row("disp")("name").contains(client),
+                                    row.merge({
+                                        "disp": row('disp').map(function (d) {
+                                            return r.branch(
+                                                    d('name').eq(client).default(false),
+                                                    d.merge({values: d('values').append({
+                                                            "First_time": (typeof result[1] == "undefined") ? "" : result[1],
+                                                            "Last_time": (typeof result[2] == "undefined") ? "" : result[2],
+                                                            "Power": (typeof result[3] == "undefined") ? "" : result[3],
+                                                            "packets": (typeof result[4] == "undefined") ? "" : result[4],
+                                                            "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
+                                                            "Probed_ESSIDs": (typeof result[6] == "undefined") ? "" : result[6]
+                                                        })}),
+                                                    d);
+                                        })}),
+                                    {
+                                        "macCliente": result[0],
+                                        "disp": row("disp").append({
+                                            "name": client,
+                                            "values": [{
+                                                    "First_time": (typeof result[1] == "undefined") ? "" : result[1],
+                                                    "Last_time": (typeof result[2] == "undefined") ? "" : result[2],
+                                                    "Power": (typeof result[3] == "undefined") ? "" : result[3],
+                                                    "packets": (typeof result[4] == "undefined") ? "" : result[4],
                                                     "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
-                                                    "Probed_ESSIDs": (typeof result[6] === "undefined") ? "" : result[6]
-                                                })}),
-                                            d);
-                                })
-                            })
-                                    );
+                                                    "Probed_ESSIDs": (typeof result[6] == "undefined") ? "" : result[6]
+                                                }]
+                                        })
+                                    }))
                         }).run(connection, function (err, res) {
                             if (err) {
                                 console.log(JSON.stringify(err));
                             }
+
+                            console.log(client);
                             console.log(res);
-                            if (typeof res != "undefined") {
-                                if (res.unchanged == 1) {
-                                    console.log("------ Replace antena -------");
-                                    r.db(dbConfig.db).table("cliente").get(result[0]).update(function (row) {
-                                        return row("disp").append({
-                                                    name: clienteSend,
-                                                    "values": [{
-                                                            "First_time": (typeof result[1] === "undefined") ? "" : result[1],
-                                                            "Last_time": (typeof result[2] === "undefined") ? "" : result[2],
-                                                            "Power": (typeof result[3] === "undefined") ? "" : result[3],
-                                                            "packets": (typeof result[4] === "undefined") ? "" : result[4],
-                                                            "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
-                                                            "Probed_ESSIDs": (typeof result[6] === "undefined") ? "" : result[6]
-                                                        }]
-                                                });
-                                    }).run(connection, function (err, res) {
-                                        if (err) {
-                                            console.log(JSON.stringify(err));
-                                        }
-                                        console.log(result);
-                                    });
-                                }
-                            }
                         });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     } else {
-//                        r.db(dbConfig.db).table("ap")
-//                                .insert({
-//                                    "BSSID": result[0],
-//                                    "disp": [{
-//                                            name: clienteSend,
-//                                            "antena": [{
-//                                                    "First_time_seen": (typeof result[1] === "undefined") ? "" : result[1],
-//                                                    "Last_time_seen": (typeof result[2] === "undefined") ? "" : result[2],
-//                                                    "channel": (typeof result[3] === "undefined") ? "" : result[3],
-//                                                    "Speed": (typeof result[4] === "undefined") ? "" : result[4],
-//                                                    "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
-//                                                    "Cipher": (typeof result[6].split(" ")[0] === "undefined") ? "" : result[6].split(" ")[0],
-//                                                    "Authentication": (typeof result[6].split(" ")[1] === "undefined") ? "" : result[6].split(" ")[1],
-//                                                    "Power": (typeof result[7] === "undefined") ? "" : result[7],
-//                                                    "beacons": (typeof result[8] === "undefined") ? "" : result[8],
-//                                                    "IV": (typeof result[9] === "undefined") ? "" : result[9],
-//                                                    "LAN_IP": (typeof result[10] === "undefined") ? "" : result[10],
-//                                                    "ID_length": (typeof result[11] === "undefined") ? "" : result[11],
-//                                                    "ESSID": (typeof result[12] === "undefined") ? "" : result[12],
-//                                                    "key": (typeof result[13] === "undefined") ? "" : result[13]
-//                                                }]
-//                                        }]
-//                                }).run(connection, function (err, res) {
-////                        if (err) {
-////                            console.log(JSON.stringify(err));
-////                        }
-////                        console.log(result);
-//                            if (typeof res != "undefined") {
-//                                if (res.errors == 1) {
-//                                    r.db(dbConfig.db).table("ap").get(result[0]).update(function (row) {
-//                                        return {disp: row('disp').map(function (d) {
-//                                                return r.branch(d('name').eq(clienteSend).default(false), d.merge({antena: d('antena').append({
+//                        r.db(dbConfig.db).table("ap").get(result[0]).replace(function (row) {
+//                            return r.branch(
+//                                    row.eq(null),
+//                                    {
+//                                        "BSSID": result[0],
+//                                        "disp": [{
+//                                                name: client,
+//                                                "antena": [{
+//                                                        "First_time_seen": (typeof result[1] === "undefined") ? "" : result[1],
+//                                                        "Last_time_seen": (typeof result[2] === "undefined") ? "" : result[2],
+//                                                        "channel": (typeof result[3] === "undefined") ? "" : result[3],
+//                                                        "Speed": (typeof result[4] === "undefined") ? "" : result[4],
+//                                                        "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
+//                                                        "Cipher": (typeof result[6].split(" ")[0] === "undefined") ? "" : result[6].split(" ")[0],
+//                                                        "Authentication": (typeof result[6].split(" ")[1] === "undefined") ? "" : result[6].split(" ")[1],
+//                                                        "Power": (typeof result[7] === "undefined") ? "" : result[7],
+//                                                        "beacons": (typeof result[8] === "undefined") ? "" : result[8],
+//                                                        "IV": (typeof result[9] === "undefined") ? "" : result[9],
+//                                                        "LAN_IP": (typeof result[10] === "undefined") ? "" : result[10],
+//                                                        "ID_length": (typeof result[11] === "undefined") ? "" : result[11],
+//                                                        "ESSID": (typeof result[12] === "undefined") ? "" : result[12],
+//                                                        "key": (typeof result[13] === "undefined") ? "" : result[13]
+//                                                    }]
+//                                            }]
+//                                    },
+//                            row.merge({
+//                                "disp": row('disp').map(function (d) {
+//                                                return r.branch(d('name').eq(client).default(false), d.merge({antena: d('antena').append({
 //                                                        "First_time_seen": (typeof result[1] === "undefined") ? "" : result[1],
 //                                                        "Last_time_seen": (typeof result[2] === "undefined") ? "" : result[2],
 //                                                        "channel": (typeof result[3] === "undefined") ? "" : result[3],
@@ -200,26 +172,57 @@ ServerSocket.prototype.start = function () {
 //                                                        "key": (typeof result[13] === "undefined") ? "" : result[13]
 //                                                    })}), d);
 //                                            })
+//                            }));
+//                        }).run(connection, function (err, res) {
+//                            if (err) {
+//                                console.log(JSON.stringify(err));
+//                            }
+//                            console.log(res);
+//                            if (typeof res != "undefined") {
+//                                if (res.unchanged == 1) {
+//                                    console.log("------ Replace antena -------");
+//                                    r.db(dbConfig.db).table("ap").get(result[0]).update(function (row) {
+//                                        return {
+//                                            "disp": row('disp').append({
+//                                                name: client,
+//                                                "antena": [{
+//                                                        "First_time_seen": (typeof result[1] === "undefined") ? "" : result[1],
+//                                                        "Last_time_seen": (typeof result[2] === "undefined") ? "" : result[2],
+//                                                        "channel": (typeof result[3] === "undefined") ? "" : result[3],
+//                                                        "Speed": (typeof result[4] === "undefined") ? "" : result[4],
+//                                                        "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
+//                                                        "Cipher": (typeof result[6].split(" ")[0] === "undefined") ? "" : result[6].split(" ")[0],
+//                                                        "Authentication": (typeof result[6].split(" ")[1] === "undefined") ? "" : result[6].split(" ")[1],
+//                                                        "Power": (typeof result[7] === "undefined") ? "" : result[7],
+//                                                        "beacons": (typeof result[8] === "undefined") ? "" : result[8],
+//                                                        "IV": (typeof result[9] === "undefined") ? "" : result[9],
+//                                                        "LAN_IP": (typeof result[10] === "undefined") ? "" : result[10],
+//                                                        "ID_length": (typeof result[11] === "undefined") ? "" : result[11],
+//                                                        "ESSID": (typeof result[12] === "undefined") ? "" : result[12],
+//                                                        "key": (typeof result[13] === "undefined") ? "" : result[13]
+//                                                    }]
+//                                            })                                            
 //                                        };
-//                                    }).run(connection, function (err, result) {
+//                                    }).run(connection, function (err, res) {
 //                                        if (err) {
 //                                            console.log(JSON.stringify(err));
 //                                        }
-//                                        console.log(result);
+//                                        console.log(res);
 //                                    });
 //                                }
 //                            }
-                        //                        });
+//                        });
                     }
-//                console.log("-- " + clienteSend);
+//                console.log("-- " + client);
 //                for (var i = 0, max = result.length; i < max; i++) {
 //                    console.log(i + "   - " + result[i]);
                     //                }
                 } else {
-                    if (line[0] == "a") {
-                        clienteSend = line;
+                    if (line[0] == "a" && line[1] == "n" && line[2] == "t") {
+                        this.clienteSend = line;
+
+                        console.log(this.clienteSend);
                     }
-                    console.log(line);
                 }
             }
             console.log('--------------------------------------------------------');
