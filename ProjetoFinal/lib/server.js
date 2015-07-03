@@ -6,6 +6,27 @@ var http = require('http');
 var socketio = require('socket.io');
 var fs = require('fs');
 var bodyParser = require('body-parser');
+var r = require('rethinkdb');
+var connection = null;
+var dbConfig = {
+    host: '185.15.22.55',
+    port: 28015,
+    db: 'Clientes',
+    tables: {
+        'cliente': 'macCliente',
+        'ap': 'BSSID'
+    }
+};
+
+r.connect({
+    host: dbConfig.host,
+    port: dbConfig.port}, function (err, conn) {
+    if (err) {
+        throw err;
+    }
+    connection = conn;
+    console.log("Connected to ReThinkdb DataBase.");
+});
 
 /**
  *
@@ -22,6 +43,15 @@ var Server = function (port) {
         extended: true
     }));
     this.app.use(bodyParser.json());
+
+    this.app.get("/getClientes/:database/:table/:host", function (req, res) {
+                r.db(req.params.database).table(req.params.table).get(req.params.host).run(connection, function (err, resul) {
+            if (err) {
+                res.json(err);
+            }
+            res.json(resul);
+        });
+    });
 
 
 };
@@ -46,7 +76,7 @@ Server.prototype.start = function () {
         var address = socket.request.connection._peername;
 
     });
-    console.log('A aguardar por clientes...');
+    console.log('Server Wait port : ' + this.port);
 };
 
 /**

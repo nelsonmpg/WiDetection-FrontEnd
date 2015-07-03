@@ -1,19 +1,29 @@
 
-$( document ).ready(function() {
-  var socket = io.connect(window.location.href);
+$(document).ready(function () {
+    var socket = io.connect(window.location.href);
 
-  socket.on('welcome', function (data) {
-    $('#panel').append('Connected to server<br/>');
-  });
+    $("#getClientes").click(function () {
+        $.getJSON("/getClientes/Clientes/cliente/48:5D:60:3C:32:44", function (data) {
+            console.log("success");
+            $("#result").html(JSON.stringify(data));
+        }).done(function () {
+            console.log("second success");
+        }).fail(function () {
+            console.log("error");
+        }).always(function () {
+            console.log("complete");
+        });
 
-  socket.on('message', function (data) {
-    $('#panel').append(data.data + '<br/>');
-  });
-
-
-  $('#btnSend').click(function() {
-    var aux = $('#msg').val();
-    $('#msg').val('');
-    socket.emit('message', {'data': aux});
-  });
+//        $.ajax({
+//            type: "GET",
+//            url: "/getClientes/Clientes/cliente/48:5D:60:3C:32:44",
+//            dataType: 'json',
+//            success: function (data) {
+//                $("#result").html(JSON.stringify(data));
+//            },
+//            error: function (error) {
+//                console.log(JSON.stringify(error));
+//            }
+//        });
+    });
 });
