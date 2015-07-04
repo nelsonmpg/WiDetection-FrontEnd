@@ -2,6 +2,15 @@
 $(document).ready(function () {
     var socket = io.connect(window.location.href);
 
+$("#updatePrefix").click(function (){
+    $.getJSON("/updatePrefix", function (data) {
+            console.log("success");
+            $("#result").append(JSON.stringify(data) + "<br>");
+        }).fail(function () {
+            console.log("error");
+        });
+});
+
     $("#getClientes").click(function () {
         $.getJSON("/getClientes/Clientes/cliente/48:5D:60:3C:32:44", function (data) {
             console.log("success");

@@ -9,7 +9,8 @@ var dbConfig = {
     db: 'Clientes',
     tables: {
         'cliente': 'macCliente',
-        'ap': 'BSSID'
+        'ap': 'BSSID',
+        "tblPrefix": "prefix"
     }
 };
 

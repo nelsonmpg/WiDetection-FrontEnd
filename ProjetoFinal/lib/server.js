@@ -11,10 +11,14 @@ var dbConfig = "";
 var r;
 
 /**
- *
+ * 
  * @param {type} port
+ * @param {type} dbr
+ * @param {type} con
+ * @param {type} configdb
  * @returns {Server}
  */
+
 var Server = function (port, dbr, con, configdb) {
     this.port = port;
     this.app = express();
@@ -41,18 +45,29 @@ var Server = function (port, dbr, con, configdb) {
     this.app.get("/updatePrefix", function (req, res) {
         download(url, function (data) {
             if (data) {
-                console.log(data);
+                var lines = data.split("\n");
+                for (var i in lines) {
+                    var line = lines[i].trim();
+                    if (line[0] != "#" && line.length > 5) {
+                        var prefix = line.substring(0, 6);
+                        var vendor = line.substring(7, line.length);
+                        r.db(dbConfig.db).table("tblPrefix").insert({
+                            prefix: prefix,
+                            "vendor": vendor
+                        }).run(connection, function (err, resul) {
+                            if (err) {
+                                res.json(err);
+                            }
+                            console.log(resul);
+                        });
+                    }
+                }
             } else {
+                res.json("error");
                 console.log("error");
             }
         });
-
-//        r.db(req.params.database).table(req.params.table).get(req.params.host).run(connection, function (err, resul) {
-//            if (err) {
-//                res.json(err);
-//            }
-//            res.json(resul);
-//        });
+        res.json("A atualizar prefixos.");
     });
 
 };
