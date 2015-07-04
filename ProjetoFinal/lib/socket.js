@@ -36,7 +36,7 @@ ServerSocket.prototype.start = function () {
                 if (line[2] == ":" && line.length > 4) {
                     var result = line.split(", ");
                     if (result.length < 7) {
-                        r.db("Clientes").table("cliente").get(result[0]).replace(function (row) {
+                        r.db(dbConfig.db).table("cliente").get(result[0]).replace(function (row) {
                             return r.branch(
                                     row.eq(null),
                                     {
@@ -92,7 +92,7 @@ ServerSocket.prototype.start = function () {
                             console.log(res);
                         });
                     } else {
-                        r.db("Clientes").table("ap").get(result[0]).replace(function (row) {
+                        r.db(dbConfig.db).table("ap").get(result[0]).replace(function (row) {
                             return r.branch(
                                     row.eq(null),
                                     {
