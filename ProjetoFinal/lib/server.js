@@ -1,43 +1,28 @@
 /* global module, require */
 
-
+var url = "http://web.stanford.edu/dept/its/projects/desktop/snsr/nmap-mac-prefixes.txt";
 var express = require('express');
 var http = require('http');
 var socketio = require('socket.io');
 var fs = require('fs');
 var bodyParser = require('body-parser');
-var r = require('rethinkdb');
 var connection = null;
-var dbConfig = {
-    host: '185.15.22.55',
-    port: 28015,
-    db: 'Clientes',
-    tables: {
-        'cliente': 'macCliente',
-        'ap': 'BSSID'
-    }
-};
-
-r.connect({
-    host: dbConfig.host,
-    port: dbConfig.port}, function (err, conn) {
-    if (err) {
-        throw err;
-    }
-    connection = conn;
-    console.log("Connected to ReThinkdb DataBase.");
-});
+var dbConfig = "";
+var r;
 
 /**
  *
  * @param {type} port
  * @returns {Server}
  */
-var Server = function (port) {
+var Server = function (port, dbr, con, configdb) {
     this.port = port;
     this.app = express();
     this.server = http.Server(this.app);
     this.io = socketio(this.server);
+    r = dbr;
+    connection = con;
+    dbConfig = configdb;
 
     this.app.use(bodyParser.urlencoded({
         extended: true
@@ -45,7 +30,7 @@ var Server = function (port) {
     this.app.use(bodyParser.json());
 
     this.app.get("/getClientes/:database/:table/:host", function (req, res) {
-                r.db(req.params.database).table(req.params.table).get(req.params.host).run(connection, function (err, resul) {
+        r.db(req.params.database).table(req.params.table).get(req.params.host).run(connection, function (err, resul) {
             if (err) {
                 res.json(err);
             }
@@ -53,6 +38,22 @@ var Server = function (port) {
         });
     });
 
+    this.app.get("/updatePrefix", function (req, res) {
+        download(url, function (data) {
+            if (data) {
+                console.log(data);
+            } else {
+                console.log("error");
+            }
+        });
+
+//        r.db(req.params.database).table(req.params.table).get(req.params.host).run(connection, function (err, resul) {
+//            if (err) {
+//                res.json(err);
+//            }
+//            res.json(resul);
+//        });
+    });
 
 };
 /**
@@ -76,7 +77,7 @@ Server.prototype.start = function () {
         var address = socket.request.connection._peername;
 
     });
-    console.log('Server Wait port : ' + this.port);
+    console.log('Server HTTP Wait ' + this.port);
 };
 
 /**
@@ -85,3 +86,18 @@ Server.prototype.start = function () {
  * @returns {Server}
  */
 module.exports = Server;
+
+
+function download(url, callback) {
+    http.get(url, function (res) {
+        var data = "";
+        res.on('data', function (chunk) {
+            data += chunk;
+        });
+        res.on("end", function () {
+            callback(data);
+        });
+    }).on("error", function () {
+        callback(null);
+    });
+}

@@ -1,35 +1,20 @@
 /* global process, module, assert, result */
 
 var net = require('net');
-var r = require('rethinkdb');
 var socketio = require('socket.io');
 var connection = null;
-var dbConfig = {
-    host: '185.15.22.55',
-    port: 28015,
-    db: 'Clientes',
-    tables: {
-        'cliente': 'macCliente',
-        'ap': 'BSSID'
-    }
-};
+var dbConfig ="";
+var r;
 
-var ServerSocket = function (port) {
+var ServerSocket = function (port, dbr, con, configdb) {
     this.port = port;
     this.net = require('net');
     this.serverSck = net.createServer(this.net);
     this.clienteSend = "default";
+    r = dbr;
+    connection = con;
+    dbConfig = configdb;
 };
-
-r.connect({
-    host: dbConfig.host,
-    port: dbConfig.port}, function (err, conn) {
-    if (err) {
-        throw err;
-    }
-    connection = conn;
-    console.log("Connected to ReThinkdb DataBase.");
-});
 
 ServerSocket.prototype.start = function () {
     this.serverSck.listen(this.port);
@@ -37,22 +22,7 @@ ServerSocket.prototype.start = function () {
 // The function passed to net.createServer() becomes the event handler for the 'connection' event
 // The sock object the callback function receives UNIQUE for each connection
 //    this.serverSck(function (sock) {
-    r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection) {
-        r.dbCreate(dbConfig.db).run(connection, function (err, result) {
-            if (err) {
-                console.log(JSON.stringify(err));
-            }
-            for (var tbl in dbConfig.tables) {
-                (function (tableName) {
-                    r.db(dbConfig.db).tableCreate(tableName, {primaryKey: dbConfig.tables[tbl]}).run(connection, function (err, result) {
-                        if (err) {
-                            console.log(JSON.stringify(err));
-                        }
-                    });
-                })(tbl);
-            }
-        });
-    });
+   
     this.serverSck.on('connection', function (sock) {
         // We have a connection - a socket object is assigned to the connection automatically
         console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
@@ -217,17 +187,17 @@ ServerSocket.prototype.start = function () {
 
 
     // Listen to new device being inserted
-    r.db("Teste").table("cliente").changes().run()
-            .then(function (cursor) {
-                cursor.each(function (err, row) {
-                    socket.emit('newDevice', row.disp);
-                });
-            })
-            .catch(function (err) {
-                console.log('err', err);
-            });
+//    r.db("Teste").table("cliente").changes().run()
+//            .then(function (cursor) {
+//                cursor.each(function (err, row) {
+//                    socket.emit('newDevice', row.disp);
+//                });
+//            })
+//            .catch(function (err) {
+//                console.log('err', err);
+//            });
 
-    console.log('Server listening on : ' + this.port);
+    console.log('Server Socket Wait : ' + this.port);
 };
 //excepcoes para os erros encontrados
 //process.on('uncaughtException', function (err) {
