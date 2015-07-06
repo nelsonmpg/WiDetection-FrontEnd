@@ -6,7 +6,7 @@ var connection = null;
 var dbConfig = {
     host: '185.15.22.55',
     port: 28015,
-    db: 'Clientes',
+    db: 'Teste2',
     tables: {
         'cliente': 'macCliente',
         'ap': 'BSSID',

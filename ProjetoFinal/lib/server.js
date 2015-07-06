@@ -9,7 +9,6 @@ var bodyParser = require('body-parser');
 var connection = null;
 var dbConfig = "";
 var r;
-
 /**
  * 
  * @param {type} port
@@ -27,12 +26,10 @@ var Server = function (port, dbr, con, configdb) {
     r = dbr;
     connection = con;
     dbConfig = configdb;
-
     this.app.use(bodyParser.urlencoded({
         extended: true
     }));
     this.app.use(bodyParser.json());
-
     this.app.get("/getClientes/:database/:table/:host", function (req, res) {
         r.db(req.params.database).table(req.params.table).get(req.params.host).run(connection, function (err, resul) {
             if (err) {
@@ -41,7 +38,6 @@ var Server = function (port, dbr, con, configdb) {
             res.json(resul);
         });
     });
-
     this.app.get("/updatePrefix", function (req, res) {
         download(url, function (data) {
             if (data) {
@@ -52,8 +48,8 @@ var Server = function (port, dbr, con, configdb) {
                         var prefix = line.substring(0, 6);
                         var vendor = line.substring(7, line.length);
                         r.db(dbConfig.db).table("tblPrefix").insert({
-                            prefix: prefix,
-                            "vendor": vendor
+                            prefix: prefix.substr(0, 2) + ":" + prefix.substr(2,2) + ":" + prefix.substr(4),
+                            "vendor": vendor 
                         }).run(connection, function (err, resul) {
                             if (err) {
                                 res.json(err);
@@ -62,14 +58,14 @@ var Server = function (port, dbr, con, configdb) {
                         });
                     }
                 }
+                res.json("Append");
             } else {
                 res.json("error");
                 console.log("error");
             }
         });
-        res.json("A atualizar prefixos.");
+//        res.json("A atualizar prefixos.");
     });
-
 };
 /**
  *
@@ -88,21 +84,39 @@ Server.prototype.start = function () {
     this.app.use(express.static(__dirname + './../www'));
     var self = this;
     this.io.on('connection', function (socket) {
+        var c = socket.request.connection._peername;
+        console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        console.log("Connected - " + c.address + " : " + c.port);
+        console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
-        var address = socket.request.connection._peername;
+
+        // Listen to new device being inserted
+        r.db(dbConfig.db).table("cliente").changes().run(connection).then(function (cursor) {
+            cursor.each(function (err, row) {
+                socket.emit('newDevice', row);
+            });
+        }).catch(function (err) {
+            console.log('err ', err);
+        });
+
+        // Listen to new device being inserted
+        r.db(dbConfig.db).table("ap").changes().run(connection).then(function (cursor) {
+            cursor.each(function (err, row) {
+                socket.emit('newDevice', row);
+            });
+        }).catch(function (err) {
+            console.log('err', err);
+        });
 
     });
     console.log('Server HTTP Wait ' + this.port);
 };
-
 /**
  *
  * @param {type} port
  * @returns {Server}
  */
 module.exports = Server;
-
-
 function download(url, callback) {
     http.get(url, function (res) {
         var data = "";

@@ -41,11 +41,12 @@ ServerSocket.prototype.start = function () {
                                     row.eq(null),
                                     {
                                         "macCliente": result[0],
+                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(result[0].substring(0,8)).getField("vendor").default(""),
                                         "disp": [{
                                                 name: client,
                                                 "values": [{
-                                                        "First_time": (typeof result[1] == "undefined") ? "" : result[1],
-                                                        "Last_time": (typeof result[2] == "undefined") ? "" : result[2],
+                                                        "First_time": new Date().toLocaleString(),//(typeof result[1] == "undefined") ? "" : result[1],
+                                                        "Last_time": new Date().toLocaleString(),//(typeof result[2] == "undefined") ? "" : result[2],
                                                         "Power": (typeof result[3] == "undefined") ? "" : result[3],
                                                         "packets": (typeof result[4] == "undefined") ? "" : result[4],
                                                         "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
@@ -61,7 +62,7 @@ ServerSocket.prototype.start = function () {
                                                     d('name').eq(client).default(false),
                                                     d.merge({values: d('values').append({
                                                             "First_time": (typeof result[1] == "undefined") ? "" : result[1],
-                                                            "Last_time": (typeof result[2] == "undefined") ? "" : result[2],
+                                                            "Last_time": new Date().toLocaleString(),//(typeof result[2] == "undefined") ? "" : result[2],
                                                             "Power": (typeof result[3] == "undefined") ? "" : result[3],
                                                             "packets": (typeof result[4] == "undefined") ? "" : result[4],
                                                             "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
@@ -71,11 +72,12 @@ ServerSocket.prototype.start = function () {
                                         })}),
                                     {
                                         "macCliente": result[0],
+                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(result[0].substring(0,8)).getField("vendor").default(""),
                                         "disp": row("disp").append({
                                             "name": client,
                                             "values": [{
-                                                    "First_time": (typeof result[1] == "undefined") ? "" : result[1],
-                                                    "Last_time": (typeof result[2] == "undefined") ? "" : result[2],
+                                                    "First_time": new Date().toLocaleString(),//(typeof result[1] == "undefined") ? "" : result[1],
+                                                    "Last_time": new Date().toLocaleString(),//(typeof result[2] == "undefined") ? "" : result[2],
                                                     "Power": (typeof result[3] == "undefined") ? "" : result[3],
                                                     "packets": (typeof result[4] == "undefined") ? "" : result[4],
                                                     "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
@@ -83,7 +85,7 @@ ServerSocket.prototype.start = function () {
                                                 }]
                                         })
                                     }))
-                        }).run(connection, function (err, res) {
+                        },{nonAtomic: true}).run(connection, function (err, res) {
                             if (err) {
                                 console.log(JSON.stringify(err));
                             }
@@ -97,11 +99,12 @@ ServerSocket.prototype.start = function () {
                                     row.eq(null),
                                     {
                                         "BSSID": result[0],
+                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(result[0].substring(0,8)).getField("vendor").default(""),
                                         "disp": [{
                                                 name: client,
                                                 "antena": [{
-                                                        "First_time_seen": (typeof result[1] === "undefined") ? "" : result[1],
-                                                        "Last_time_seen": (typeof result[2] === "undefined") ? "" : result[2],
+                                                        "First_time_seen": new Date().toLocaleString(),//(typeof result[1] === "undefined") ? "" : result[1],
+                                                        "Last_time_seen": new Date().toLocaleString(),//(typeof result[2] === "undefined") ? "" : result[2],
                                                         "channel": (typeof result[3] === "undefined") ? "" : result[3],
                                                         "Speed": (typeof result[4] === "undefined") ? "" : result[4],
                                                         "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
@@ -123,7 +126,7 @@ ServerSocket.prototype.start = function () {
                                         "disp": row('disp').map(function (d) {
                                             return r.branch(d('name').eq(client).default(false), d.merge({antena: d('antena').append({
                                                     "First_time_seen": (typeof result[1] === "undefined") ? "" : result[1],
-                                                    "Last_time_seen": (typeof result[2] === "undefined") ? "" : result[2],
+                                                    "Last_time_seen": new Date().toLocaleString(),//(typeof result[2] === "undefined") ? "" : result[2],
                                                     "channel": (typeof result[3] === "undefined") ? "" : result[3],
                                                     "Speed": (typeof result[4] === "undefined") ? "" : result[4],
                                                     "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
@@ -140,11 +143,12 @@ ServerSocket.prototype.start = function () {
                                         })}),
                                     {
                                         "BSSID": result[0],
+                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(result[0].substring(0,8)).getField("vendor").default(""),
                                         "disp": row('disp').append({
                                             name: client,
                                             "antena": [{
-                                                    "First_time_seen": (typeof result[1] === "undefined") ? "" : result[1],
-                                                    "Last_time_seen": (typeof result[2] === "undefined") ? "" : result[2],
+                                                    "First_time_seen": new Date().toLocaleString(),//(typeof result[1] === "undefined") ? "" : result[1],
+                                                    "Last_time_seen": new Date().toLocaleString(),//(typeof result[2] === "undefined") ? "" : result[2],
                                                     "channel": (typeof result[3] === "undefined") ? "" : result[3],
                                                     "Speed": (typeof result[4] === "undefined") ? "" : result[4],
                                                     "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
@@ -160,7 +164,7 @@ ServerSocket.prototype.start = function () {
                                                 }]
                                         })
                                     }))
-                        }).run(connection, function (err, res) {
+                        },{nonAtomic: true}).run(connection, function (err, res) {
                             if (err) {
                                 console.log(JSON.stringify(err));
                             }
@@ -185,17 +189,6 @@ ServerSocket.prototype.start = function () {
         });
     });
 
-
-    // Listen to new device being inserted
-//    r.db("Teste").table("cliente").changes().run()
-//            .then(function (cursor) {
-//                cursor.each(function (err, row) {
-//                    socket.emit('newDevice', row.disp);
-//                });
-//            })
-//            .catch(function (err) {
-//                console.log('err', err);
-//            });
 
     console.log('Server Socket Wait : ' + this.port);
 };
