@@ -1,6 +1,5 @@
 /* global module, require */
 
-var url = "http://web.stanford.edu/dept/its/projects/desktop/snsr/nmap-mac-prefixes.txt";
 var express = require('express');
 var http = require('http');
 var socketio = require('socket.io');
@@ -30,6 +29,7 @@ var Server = function (port, dbr, con, configdb) {
         extended: true
     }));
     this.app.use(bodyParser.json());
+
     this.app.get("/getClientes/:database/:table/:host", function (req, res) {
         r.db(req.params.database).table(req.params.table).get(req.params.host).run(connection, function (err, resul) {
             if (err) {
@@ -38,34 +38,56 @@ var Server = function (port, dbr, con, configdb) {
             res.json(resul);
         });
     });
-    this.app.get("/updatePrefix", function (req, res) {
-        download(url, function (data) {
-            if (data) {
-                var lines = data.split("\n");
-                for (var i in lines) {
-                    var line = lines[i].trim();
-                    if (line[0] != "#" && line.length > 5) {
-                        var prefix = line.substring(0, 6);
-                        var vendor = line.substring(7, line.length);
-                        r.db(dbConfig.db).table("tblPrefix").insert({
-                            prefix: prefix.substr(0, 2) + ":" + prefix.substr(2,2) + ":" + prefix.substr(4),
-                            "vendor": vendor 
-                        }).run(connection, function (err, resul) {
-                            if (err) {
-                                res.json(err);
-                            }
-                            console.log(resul);
-                        });
+
+    this.app.get("/getAllClientes", function (req, res) {
+        r.db(dbConfig.db).table("ap").pluck(
+                "macAddress",
+                "nameVendor",
+                {"disp": {
+                        "name": true,
+                        "values": {
+                            "Power": true,
+                            "First_time": true,
+                            "Last_time": true
+                        }
                     }
                 }
-                res.json("Append");
-            } else {
-                res.json("error");
-                console.log("error");
+        ).coerceTo('array').run(connection, function (err, resul) {
+            if (err) {
+                res.json(err);
             }
+            res.json(resul);
         });
-//        res.json("A atualizar prefixos.");
     });
+
+
+//    this.app.get("/updatePrefix", function (req, res) {
+//        download(url, function (data) {
+//            if (data) {
+//                var lines = data.split("\n");
+//                for (var i in lines) {
+//                    var line = lines[i].trim();
+//                    if (line[0] != "#" && line.length > 5) {
+//                        var prefix = line.substring(0, 6);
+//                        var vendor = line.substring(7, line.length);
+//                        r.db(dbConfig.db).table("tblPrefix").insert({
+//                            prefix: prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4),
+//                            "vendor": vendor
+//                        }).run(connection, function (err, resul) {
+//                            if (err) {
+//                                res.json(err);
+//                            }
+//                            console.log(resul);
+//                        });
+//                    }
+//                }
+//                res.json("A atualizar prefixos.");
+//            } else {
+//                res.json("error");
+//                console.log("error");
+//            }
+//        });
+//    });
 };
 /**
  *
@@ -117,16 +139,3 @@ Server.prototype.start = function () {
  * @returns {Server}
  */
 module.exports = Server;
-function download(url, callback) {
-    http.get(url, function (res) {
-        var data = "";
-        res.on('data', function (chunk) {
-            data += chunk;
-        });
-        res.on("end", function () {
-            callback(data);
-        });
-    }).on("error", function () {
-        callback(null);
-    });
-}

@@ -106,6 +106,7 @@ void * SendDiffFile(void *arg) {
 }
 
 int main(int argc, char *argv[]) {
+	system("./clearFiles.sh");
     struct config configstruct;
     configstruct = get_config(FILECFG);
 

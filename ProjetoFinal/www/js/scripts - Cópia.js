@@ -195,7 +195,7 @@ $(document).ready(function () {
         chart.options.data[2].legendText = " Teste3  " + dps3[dps3.length - 1].y;
         chart.render();
     };
-    var chart = new CanvasJS.Chart("chartContainer2", {
+    var chart = new CanvasJS.Chart("chartContainer", {
         zoomEnabled: true,
 //        theme: "theme3",
         title: {

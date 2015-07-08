@@ -1,9 +1,8 @@
 /* global process, module, assert, result */
 
 var net = require('net');
-var socketio = require('socket.io');
 var connection = null;
-var dbConfig ="";
+var dbConfig = "";
 var r;
 
 var ServerSocket = function (port, dbr, con, configdb) {
@@ -18,39 +17,38 @@ var ServerSocket = function (port, dbr, con, configdb) {
 
 ServerSocket.prototype.start = function () {
     this.serverSck.listen(this.port);
-// Create a server instance, and chain the listen function to it
-// The function passed to net.createServer() becomes the event handler for the 'connection' event
-// The sock object the callback function receives UNIQUE for each connection
-//    this.serverSck(function (sock) {
-   
+
     this.serverSck.on('connection', function (sock) {
+
         // We have a connection - a socket object is assigned to the connection automatically
-        console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
+        console.log('CONNECTED: IP - ' + sock.remoteAddress + ' Port - ' + sock.remotePort);
+
         // Add a 'data' event handler to this instance of socket
         sock.on('data', function (data) {
             var client = this.clienteSend;
             var aux = data.toString();
             var resultLine = aux.split("\r\n");
-            for (var i = 0, max = resultLine.length; i < max; i++) {
+            for (var i in resultLine) {
                 var line = resultLine[i];
                 if (line[2] == ":" && line.length > 4) {
                     var result = line.split(", ");
-                    if (result.length < 7) {
-                        r.db(dbConfig.db).table("cliente").get(result[0]).replace(function (row) {
+                    if (result.length < 8) {
+                        var valsHost = result;
+                        r.db(dbConfig.db).table("cliente").get(valsHost[0]).replace(function (row) {
                             return r.branch(
                                     row.eq(null),
                                     {
-                                        "macCliente": result[0],
-                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(result[0].substring(0,8)).getField("vendor").default(""),
+                                        "macAddress": valsHost[0],
+                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsHost[0].substring(0, 8)).getField("vendor").default(""),
                                         "disp": [{
                                                 name: client,
                                                 "values": [{
-                                                        "First_time": new Date().toLocaleString(),//(typeof result[1] == "undefined") ? "" : result[1],
-                                                        "Last_time": new Date().toLocaleString(),//(typeof result[2] == "undefined") ? "" : result[2],
-                                                        "Power": (typeof result[3] == "undefined") ? "" : result[3],
-                                                        "packets": (typeof result[4] == "undefined") ? "" : result[4],
-                                                        "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
-                                                        "Probed_ESSIDs": (typeof result[6] == "undefined") ? "" : result[6]
+                                                        "First_time": r.now(), //(typeof valsHost[1] == "undefined") ? "" : valsHost[1],
+                                                        "Last_time": r.now(), //(typeof valsHost[2] == "undefined") ? "" : valsHost[2],
+                                                        "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
+                                                        "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
+                                                        "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
+                                                        "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : valsHost[6]
                                                     }]
                                             }]
                                     },
@@ -61,62 +59,65 @@ ServerSocket.prototype.start = function () {
                                             return r.branch(
                                                     d('name').eq(client).default(false),
                                                     d.merge({values: d('values').append({
-                                                            "First_time": (typeof result[1] == "undefined") ? "" : result[1],
-                                                            "Last_time": new Date().toLocaleString(),//(typeof result[2] == "undefined") ? "" : result[2],
-                                                            "Power": (typeof result[3] == "undefined") ? "" : result[3],
-                                                            "packets": (typeof result[4] == "undefined") ? "" : result[4],
-                                                            "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
-                                                            "Probed_ESSIDs": (typeof result[6] == "undefined") ? "" : result[6]
+                                                            "First_time": r.db(dbConfig.db).table("cliente").get(valsHost[0]).do(function (row) {
+                                                                return  row("disp")("values").nth(0).getField("First_time")
+                                                            }).limit(1).nth(0),
+                                                            "Last_time": r.now(),
+                                                            "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
+                                                            "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
+                                                            "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
+                                                            "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : valsHost[6]
                                                         })}),
                                                     d);
                                         })}),
                                     {
-                                        "macCliente": result[0],
-                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(result[0].substring(0,8)).getField("vendor").default(""),
+                                        "macAddress": valsHost[0],
+                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsHost[0].substring(0, 8)).getField("vendor").default(""),
                                         "disp": row("disp").append({
                                             "name": client,
                                             "values": [{
-                                                    "First_time": new Date().toLocaleString(),//(typeof result[1] == "undefined") ? "" : result[1],
-                                                    "Last_time": new Date().toLocaleString(),//(typeof result[2] == "undefined") ? "" : result[2],
-                                                    "Power": (typeof result[3] == "undefined") ? "" : result[3],
-                                                    "packets": (typeof result[4] == "undefined") ? "" : result[4],
-                                                    "BSSID": (typeof result[5] === "undefined") ? "" : result[5],
-                                                    "Probed_ESSIDs": (typeof result[6] == "undefined") ? "" : result[6]
+                                                    "First_time": r.now(), //(typeof valsHost[1] == "undefined") ? "" : valsHost[1],
+                                                    "Last_time": r.now(), //(typeof valsHost[2] == "undefined") ? "" : valsHost[2],
+                                                    "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
+                                                    "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
+                                                    "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
+                                                    "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : valsHost[6]
                                                 }]
                                         })
                                     }))
-                        },{nonAtomic: true}).run(connection, function (err, res) {
+                        }, {nonAtomic: true}).run(connection, function (err, res) {
                             if (err) {
                                 console.log(JSON.stringify(err));
                             }
 
-                            console.log(client);
+//                            console.log(client);
                             console.log(res);
                         });
                     } else {
-                        r.db(dbConfig.db).table("ap").get(result[0]).replace(function (row) {
+                        var valsAp = result;
+                        r.db(dbConfig.db).table("ap").get(valsAp[0]).replace(function (row) {
                             return r.branch(
                                     row.eq(null),
                                     {
-                                        "BSSID": result[0],
-                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(result[0].substring(0,8)).getField("vendor").default(""),
+                                        "macAddress": valsAp[0],
+                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsAp[0].substring(0, 8)).getField("vendor").default(""),
                                         "disp": [{
                                                 name: client,
-                                                "antena": [{
-                                                        "First_time_seen": new Date().toLocaleString(),//(typeof result[1] === "undefined") ? "" : result[1],
-                                                        "Last_time_seen": new Date().toLocaleString(),//(typeof result[2] === "undefined") ? "" : result[2],
-                                                        "channel": (typeof result[3] === "undefined") ? "" : result[3],
-                                                        "Speed": (typeof result[4] === "undefined") ? "" : result[4],
-                                                        "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
-                                                        "Cipher": (typeof result[6] === "undefined") ? "" : (typeof result[6].split(" ")[0] === "undefined") ? "" : result[6].split(" ")[0],
-                                                        "Authentication": (typeof result[6] === "undefined") ? "" : (typeof result[6].split(" ")[1] === "undefined") ? "" : result[6].split(" ")[1],
-                                                        "Power": (typeof result[7] === "undefined") ? "" : result[7],
-                                                        "beacons": (typeof result[8] === "undefined") ? "" : result[8],
-                                                        "IV": (typeof result[9] === "undefined") ? "" : result[9],
-                                                        "LAN_IP": (typeof result[10] === "undefined") ? "" : result[10],
-                                                        "ID_length": (typeof result[11] === "undefined") ? "" : result[11],
-                                                        "ESSID": (typeof result[12] === "undefined") ? "" : result[12],
-                                                        "key": (typeof result[13] === "undefined") ? "" : result[13]
+                                                "values": [{
+                                                        "First_time": r.now(),
+                                                        "Last_time": r.now(),
+                                                        "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
+                                                        "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
+                                                        "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
+                                                        "Cipher": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[0] == "undefined") ? "" : valsAp[6].split(",")[0]) : valsAp[6],
+                                                        "Authentication": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[1] == "undefined") ? "" : valsAp[6].split(",")[1]) : valsAp[7],
+                                                        "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]),
+                                                        "beacons": (valsAp.length == 14) ? ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]) : ((typeof valsAp[9] == "undefined") ? "" : valsAp[9]),
+                                                        "IV": (valsAp.length == 14) ? ((typeof valsAp[9] == "undefined") ? "" : valsAp[9]) : ((typeof valsAp[10] == "undefined") ? "" : valsAp[10]),
+                                                        "LAN_IP": (valsAp.length == 14) ? ((typeof valsAp[10] == "undefined") ? "" : valsAp[10]) : ((typeof valsAp[11] == "undefined") ? "" : valsAp[11]),
+                                                        "ID_length": (valsAp.length == 14) ? ((typeof valsAp[11] == "undefined") ? "" : valsAp[11]) : ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]),
+                                                        "ESSID": (valsAp.length == 14) ? ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]) : ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]),
+                                                        "key": (valsAp.length == 14) ? ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]) : ((typeof valsAp[14] == "undefined") ? "" : valsAp[14])
                                                     }]
                                             }]
                                     },
@@ -124,58 +125,59 @@ ServerSocket.prototype.start = function () {
                                     row("disp")("name").contains(client),
                                     row.merge({
                                         "disp": row('disp').map(function (d) {
-                                            return r.branch(d('name').eq(client).default(false), d.merge({antena: d('antena').append({
-                                                    "First_time_seen": (typeof result[1] === "undefined") ? "" : result[1],
-                                                    "Last_time_seen": new Date().toLocaleString(),//(typeof result[2] === "undefined") ? "" : result[2],
-                                                    "channel": (typeof result[3] === "undefined") ? "" : result[3],
-                                                    "Speed": (typeof result[4] === "undefined") ? "" : result[4],
-                                                    "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
-                                                    "Cipher": (typeof result[6] === "undefined") ? "" : (typeof result[6].split(" ")[0] === "undefined") ? "" : result[6].split(" ")[0],
-                                                    "Authentication": (typeof result[6] === "undefined") ? "" : (typeof result[6].split(" ")[1] === "undefined") ? "" : result[6].split(" ")[1],
-                                                    "Power": (typeof result[7] === "undefined") ? "" : result[7],
-                                                    "beacons": (typeof result[8] === "undefined") ? "" : result[8],
-                                                    "IV": (typeof result[9] === "undefined") ? "" : result[9],
-                                                    "LAN_IP": (typeof result[10] === "undefined") ? "" : result[10],
-                                                    "ID_length": (typeof result[11] === "undefined") ? "" : result[11],
-                                                    "ESSID": (typeof result[12] === "undefined") ? "" : result[12],
-                                                    "key": (typeof result[13] === "undefined") ? "" : result[13]
+                                            return r.branch(d('name').eq(client).default(false), d.merge({values: d("values").append({
+                                                    "First_time": r.db(dbConfig.db).table("ap").get(valsAp[0]).do(function (row) {
+                                                        return  row("disp")("values").nth(0).getField("First_time")
+                                                    }).limit(1).nth(0),
+                                                    "Last_time": r.now(),
+                                                    "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
+                                                    "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
+                                                    "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
+                                                    "Cipher": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[0] == "undefined") ? "" : valsAp[6].split(",")[0]) : valsAp[6],
+                                                    "Authentication": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[1] == "undefined") ? "" : valsAp[6].split(",")[1]) : valsAp[7],
+                                                    "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]),
+                                                    "beacons": (valsAp.length == 14) ? ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]) : ((typeof valsAp[9] == "undefined") ? "" : valsAp[9]),
+                                                    "IV": (valsAp.length == 14) ? ((typeof valsAp[9] == "undefined") ? "" : valsAp[9]) : ((typeof valsAp[10] == "undefined") ? "" : valsAp[10]),
+                                                    "LAN_IP": (valsAp.length == 14) ? ((typeof valsAp[10] == "undefined") ? "" : valsAp[10]) : ((typeof valsAp[11] == "undefined") ? "" : valsAp[11]),
+                                                    "ID_length": (valsAp.length == 14) ? ((typeof valsAp[11] == "undefined") ? "" : valsAp[11]) : ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]),
+                                                    "ESSID": (valsAp.length == 14) ? ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]) : ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]),
+                                                    "key": (valsAp.length == 14) ? ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]) : ((typeof valsAp[14] == "undefined") ? "" : valsAp[14])
                                                 })}), d);
                                         })}),
                                     {
-                                        "BSSID": result[0],
-                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(result[0].substring(0,8)).getField("vendor").default(""),
+                                        "macAddress": valsAp[0],
+                                        "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsAp[0].substring(0, 8)).getField("vendor").default(""),
                                         "disp": row('disp').append({
                                             name: client,
-                                            "antena": [{
-                                                    "First_time_seen": new Date().toLocaleString(),//(typeof result[1] === "undefined") ? "" : result[1],
-                                                    "Last_time_seen": new Date().toLocaleString(),//(typeof result[2] === "undefined") ? "" : result[2],
-                                                    "channel": (typeof result[3] === "undefined") ? "" : result[3],
-                                                    "Speed": (typeof result[4] === "undefined") ? "" : result[4],
-                                                    "Privacy": (typeof result[5] === "undefined") ? "" : result[5],
-                                                    "Cipher": (typeof result[6] === "undefined") ? "" : (typeof result[6].split(" ")[0] === "undefined") ? "" : result[6].split(" ")[0],
-                                                    "Authentication": (typeof result[6] === "undefined") ? "" : (typeof result[6].split(" ")[1] === "undefined") ? "" : result[6].split(" ")[1],
-                                                    "Power": (typeof result[7] === "undefined") ? "" : result[7],
-                                                    "beacons": (typeof result[8] === "undefined") ? "" : result[8],
-                                                    "IV": (typeof result[9] === "undefined") ? "" : result[9],
-                                                    "LAN_IP": (typeof result[10] === "undefined") ? "" : result[10],
-                                                    "ID_length": (typeof result[11] === "undefined") ? "" : result[11],
-                                                    "ESSID": (typeof result[12] === "undefined") ? "" : result[12],
-                                                    "key": (typeof result[13] === "undefined") ? "" : result[13]
+                                            "values": [{
+                                                    "First_time": r.now(), //(typeof valsAp[1] == "undefined") ? "" : valsAp[1],
+                                                    "Last_time": r.now(), //(typeof valsAp[2] == "undefined") ? "" : valsAp[2],
+                                                    "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
+                                                    "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
+                                                    "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
+                                                    "Cipher": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[0] == "undefined") ? "" : valsAp[6].split(",")[0]) : valsAp[6],
+                                                    "Authentication": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[1] == "undefined") ? "" : valsAp[6].split(",")[1]) : valsAp[7],
+                                                    "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]),
+                                                    "beacons": (valsAp.length == 14) ? ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]) : ((typeof valsAp[9] == "undefined") ? "" : valsAp[9]),
+                                                    "IV": (valsAp.length == 14) ? ((typeof valsAp[9] == "undefined") ? "" : valsAp[9]) : ((typeof valsAp[10] == "undefined") ? "" : valsAp[10]),
+                                                    "LAN_IP": (valsAp.length == 14) ? ((typeof valsAp[10] == "undefined") ? "" : valsAp[10]) : ((typeof valsAp[11] == "undefined") ? "" : valsAp[11]),
+                                                    "ID_length": (valsAp.length == 14) ? ((typeof valsAp[11] == "undefined") ? "" : valsAp[11]) : ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]),
+                                                    "ESSID": (valsAp.length == 14) ? ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]) : ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]),
+                                                    "key": (valsAp.length == 14) ? ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]) : ((typeof valsAp[14] == "undefined") ? "" : valsAp[14])
                                                 }]
                                         })
                                     }))
-                        },{nonAtomic: true}).run(connection, function (err, res) {
+                        }, {nonAtomic: true}).run(connection, function (err, res) {
                             if (err) {
                                 console.log(JSON.stringify(err));
                             }
-
-                            console.log(client);
+//                            console.log(client);
                             console.log(res);
                         });
                     }
                 } else {
                     if (line[0] == "a" && line[1] == "n" && line[2] == "t") {
-                        this.clienteSend = line;
+                        this.clienteSend = line.replace(/(\r\n|\n|\r)/gm, "");
 
                         console.log(this.clienteSend);
                     }
