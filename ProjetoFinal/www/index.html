@@ -2,54 +2,85 @@
 <html>
     <head>
         <title></title>
-        
-        <link rel="stylesheet" href="./css/styles.css" type="text/css" media="screen" />
-        
+
+        <link rel="stylesheet" href="./css/styles.css" shim-shadowdom type="text/css" media="screen" />
+
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
         <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
-        <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
 
+        
         <script type="text/javascript" src="libs/jquery-1.11.2.js"></script>
         <script type="text/javascript" src="libs/jquery.canvasjs.min.js"></script>
-        <script type="text/javascript" src="js/TransformArray.js"></script>      
-        <script type="text/javascript" src="js/scripts.js"></script>            
-        
-        <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
-        <link rel="import" href="bower_components/core-header-panel/core-header-panel.html">
-        <link rel="import" href="bower_components/core-icons/core-icons.html">
-        <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+        <script type="text/javascript" src="js/TransformArray.js"></script> 
+        <script type="text/javascript" src="js/scripts.js"></script>          
+
+
+        <link rel="import" href="./vulcanized.html">
 
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-        
-    </head>
-    <body>
-        <div>
-            <input id="getClientes" type="button" value="Get Clientes" >
-            <input id="updatePrefix" type="button" value="Update Prefix" >
-            <input id="showgraph" type="button" value="showgraph" >
-        </div>
-        
-        <div id="chartContainer" style="height: 700px; width: 100%;"></div>
-        
-        <div id="result"></div>
-        <!--
-        <body fullbleed vertical layout unresolved>
-        <core-header-panel flex>
-        <!--
-        <core-toolbar id="mainheader">
-            <paper-icon-button id="navicon"
-                               icon="arrow-back"></paper-icon-button>
-            <span flex>Title</span>
-            <paper-icon-button id="searchbutton"
-                               icon="search"></paper-icon-button>
-        </core-toolbar>
 
-        <core-toolbar>
-            <paper-icon-button icon="menu"></paper-icon-button>
-            <div>WIFi Devices</div>
-        </core-toolbar>
-        <p>Sample content.</p>
-        <p>Sample content.</p>
-    </core-header-panel>-->
-    </body
+    </head>
+    <body unresolved fullbleed>
+
+    <template is="auto-binding" id="t">       
+        <!-- Route controller. -->
+        <flatiron-director route="{{route}}" autoHash></flatiron-director>
+        <!-- Keyboard nav controller. -->
+        <core-a11y-keys id="keys" target="{{parentElement}}"
+                        keys="up down left right space space+shift"
+                        on-keys-pressed="{{keyHandler}}"></core-a11y-keys>
+
+        <!-- Dynamic content controller -->
+        <core-ajax id="ajax" url="{{selectedPage.page.url}}" handleAs="document"
+                   on-core-response="{{onResponse}}"></core-ajax>
+
+        <core-scaffold id="scaffold">
+            <nav>
+                <core-toolbar>
+                    <span>Projeto Final</span>
+                </core-toolbar>
+                <core-menu id="menu" valueattr="hash"
+                           selected="{{route}}"
+                           selectedModel="{{selectedPage}}"
+                           on-core-select="{{menuItemSelected}}" on-click="{{ajaxLoad}}">
+                    <template repeat="{{page, i in pages}}">
+                        <paper-item hash="{{page.hash}}" noink>
+                            <core-icon icon="label{{route != page.hash ? '-outline' : ''}}"></core-icon>
+                            <a href="{{page.url}}">{{page.name}}</a>
+                        </paper-item>
+                    </template>
+                </core-menu>
+            </nav>
+            <core-toolbar tool flex>
+                <div flex>{{selectedPage.page.name}}</div>
+                <core-icon-button icon="refresh"></core-icon-button>
+                <core-icon-button icon="add"></core-icon-button>
+            </core-toolbar>
+
+            <div layout horizontal center-center fit>
+                <core-animated-pages id="pages" selected="{{route}}" valueattr="hash"
+                                     transitions="slide-from-right">
+                    <template repeat="{{page, i in pages}}">
+                        <section hash="{{page.hash}}" layout vertical left-left>
+                            <div style="max-width:100%;">Loading...</div>
+                        </section>
+                    </template>
+                </core-animated-pages>
+            </div>
+        </core-scaffold>
+    </template>
+
+
+        <script type="text/javascript" src="js/app-ajax.js"></script>
+    <!--
+    <div>
+        <input id="getClientes" type="button" value="Get Clientes" >
+        <input id="updatePrefix" type="button" value="Update Prefix" >
+        <input id="showgraph" type="button" value="showgraph" >
+    </div>
+    
+    <div id="chartContainer" style="height: 700px; width: 100%;"></div>
+    
+    <div id="result"></div>   -->     
+</body>
 </html>

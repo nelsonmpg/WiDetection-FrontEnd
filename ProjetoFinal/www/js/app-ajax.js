@@ -8,10 +8,23 @@
     var cache = {};
 
     template.pages = [
-        {name: 'Teste Imagem', hash: 'one', url: 'http://localhost:8080/'},
-        {name: 'Shadow DOM 201', hash: 'two', url: '//www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/'},
-        {name: 'Shadow DOM 301', hash: 'three', url: '//www.html5rocks.com/en/tutorials/webcomponents/shadowdom-301/'},
-        {name: 'Custom Elements', hash: 'four', url: '//www.html5rocks.com/en/tutorials/webcomponents/customelements/'}
+        {
+            name: 'Status',
+            hash: 'one',
+            url: window.location.href.split("/#")[0] + '/html/status.html'
+        }, {
+            name: 'Drasboard',
+            hash: 'two',
+            url: window.location.href.split("/#")[0] + '/html/Drasboard.html'
+        }, {
+            name: 'Estatistica',
+            hash: 'three',
+            url: window.location.href.split("/#")[0] + '/html/Estatistica.html'
+        }, {
+            name: 'Acerca De ...',
+            hash: 'four',
+            url: window.location.href.split("/#")[0] + '/html/Acerca_De.html'
+        }
     ];
 
     template.addEventListener('template-bound', function (e) {
@@ -57,11 +70,10 @@
 
     template.menuItemSelected = function (e, detail, sender) {
         if (detail.isSelected) {
-
             // Need to wait one rAF so <core-ajax> has it's URL set.
             this.async(function () {
 //                if (!cache[ajax.url]) {
-                    ajax.go();
+                ajax.go();
 //                }
 
                 scaffold.closeDrawer();
@@ -75,7 +87,7 @@
     };
 
     template.onResponse = function (e, detail, sender) {
-        var article = detail.response.querySelector('body');
+        var article = detail.response.querySelector('conteiner');
 
 //        article.querySelector('.byline').remove();
 

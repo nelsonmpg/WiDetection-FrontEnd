@@ -1,7 +1,5 @@
 <polymer-element name="main-screen" attributes="menuTitle mainTitle">
-
     <!--<script src="../webcomponentsjs/webcomponents.js"></script>-->
-
     <template>
         <link rel="stylesheet" href="main-screen.css">
         <core-scaffold responsiveWidth="800px">
@@ -25,7 +23,29 @@
 
             <div fit class="content">
                 <core-pages id="pages" selected="0">
-                    <div flex><core-image sizing="contain" style="width:400px; height:400px;"  src="http://lorempixel.com/600/400"></core-image></div>
+                    <div flex>
+                        <core-ajax url="/getAllClientes" handleAs="json">                   
+                        </core-ajax>
+                        <div id="chartContainer" style="height: 700px; width: 100%;"></div>
+                        <script>
+                            window.addEventListener('polymer-ready', function (e) {
+                                var ajax = document.querySelector('core-ajax');
+
+                                console.log("+++++++++++++++++++++++++++++++");
+                                // Respond to events it fires.
+                                ajax.addEventListener('core-response', function (e) {
+                                    console.log(this.response);
+                                    arrayHosts = new TransformArray(this.response, "antena-Nel");
+                                    arrayHosts.updateGraph("", false);
+                                    arrayHosts.graph("chartContainer");
+                                });
+
+                                ajax.go(); // Call its API methods.
+                            });
+                        </script>
+                        <!--  <core-image sizing="contain" style="width:400px; height:400px;"  src="http://lorempixel.com/600/400">
+                                            </core-image>    -->
+                    </div>
                     <div> </div>
                     <div>You have selected "Account"</div>
                 </core-pages>
@@ -35,7 +55,6 @@
     </template>
 
     <script>
-
         Polymer("main-screen", {
             ready: function () {
                 this.pages = this.$.pages;

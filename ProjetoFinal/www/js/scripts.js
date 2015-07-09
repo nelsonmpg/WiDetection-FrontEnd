@@ -66,7 +66,7 @@ $(document).ready(function () {
     setInterval(function () {
         if (arrayHosts != null) {
             arrayHosts.updateGraphToInterval("", false);
-            console.log("+++++++++++++++++++++++++++++++");
+//            console.log("+++++++++++++++++++++++++++++++");
         }
     }, updateInterval);
 
