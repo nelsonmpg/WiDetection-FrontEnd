@@ -13,9 +13,9 @@
             hash: 'one',
             url: window.location.href.split("/#")[0] + '/html/status.html'
         }, {
-            name: 'Drasboard',
+            name: 'Dashboard',
             hash: 'two',
-            url: window.location.href.split("/#")[0] + '/html/Drasboard.html'
+            url: window.location.href.split("/#")[0] + '/html/Dashboard.html'
         }, {
             name: 'Estatistica',
             hash: 'three',

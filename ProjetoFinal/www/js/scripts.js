@@ -56,7 +56,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#showgraph").click(function () {
+    $("body").on("click", "#showgraph", function () {
         if (arrayHosts != null) {
             arrayHosts.graph("chartContainer");
             console.log("graph");

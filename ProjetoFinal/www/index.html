@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title></title>
+        <title>Projeto Final</title>
 
         <link rel="stylesheet" href="./css/styles.css" shim-shadowdom type="text/css" media="screen" />
+        <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap-theme.min.css" type="text/css" media="screen" />
+
 
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
         <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
 
-        
+   
+        <link rel="import" href="./vulcanized.html">
         <script type="text/javascript" src="libs/jquery-1.11.2.js"></script>
         <script type="text/javascript" src="libs/jquery.canvasjs.min.js"></script>
         <script type="text/javascript" src="js/TransformArray.js"></script> 
-        <script type="text/javascript" src="js/scripts.js"></script>          
-
-
-        <link rel="import" href="./vulcanized.html">
+        <script type="text/javascript" src="js/scripts.js"></script>       
 
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
@@ -61,7 +62,7 @@
                 <core-animated-pages id="pages" selected="{{route}}" valueattr="hash"
                                      transitions="slide-from-right">
                     <template repeat="{{page, i in pages}}">
-                        <section hash="{{page.hash}}" layout vertical left-left>
+                        <section hash="{{page.hash}}" layout horizontal left-left>
                             <div style="max-width:100%;">Loading...</div>
                         </section>
                     </template>
@@ -69,18 +70,6 @@
             </div>
         </core-scaffold>
     </template>
-
-
-        <script type="text/javascript" src="js/app-ajax.js"></script>
-    <!--
-    <div>
-        <input id="getClientes" type="button" value="Get Clientes" >
-        <input id="updatePrefix" type="button" value="Update Prefix" >
-        <input id="showgraph" type="button" value="showgraph" >
-    </div>
-    
-    <div id="chartContainer" style="height: 700px; width: 100%;"></div>
-    
-    <div id="result"></div>   -->     
+    <script type="text/javascript" src="js/app-ajax.js"></script>    
 </body>
 </html>
