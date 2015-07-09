@@ -1,0 +1,32 @@
+/* application font */
+core-scaffold {
+    font-family: sans-serif;
+}
+
+/* menu bar of the left panel */
+core-toolbar {
+    background: #000000;
+    color: #009688;
+}
+
+/* content of the left panel */
+core-header-panel {
+    background: #616161;
+    color: #33ff33;
+}
+
+.content {
+    padding: 20px;
+    background-color: #212121;
+}
+
+/* title bar of the right panel */
+core-scaffold::shadow core-toolbar {
+    background:#009688;
+    color: white;
+}
+/* content of the right panel */
+core-scaffold::shadow core-header-panel {
+    background: #ffccbc;
+    color: #212121;
+}
