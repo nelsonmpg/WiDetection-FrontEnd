@@ -59,6 +59,16 @@ var Server = function (port, dbr, con, configdb) {
             res.json(resul);
         });
     });
+    
+    //r.db("Teste2").table("cliente")("macCliente")    
+     this.app.get("/getAllClientes/", function (req, res) {
+        r.db("Teste2").table("cliente")("macAddress").coerceTo('array').run(connection, function (err, resul) {
+            if (err) {
+                res.json(err);
+            }
+            res.json(resul);
+        });
+    });
 
 
 //    this.app.get("/updatePrefix", function (req, res) {
