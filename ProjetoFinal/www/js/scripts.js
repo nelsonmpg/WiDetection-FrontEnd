@@ -66,7 +66,27 @@ $(document).ready(function () {
     setInterval(function () {
         if (arrayHosts != null) {
             arrayHosts.updateGraphToInterval("", false);
+            console.log("+++++++++++++++++++++++++++++++");
         }
     }, updateInterval);
+
+//    $("body").ready('polymer-ready', function (e) {
+//        var ajax = document.querySelector('core-ajax');
+//
+//        // Respond to events it fires.
+//        ajax.addEventListener('core-response', function (e) {
+//            console.log(this.response);
+//            arrayHosts = new TransformArray(this.response, "antena-Nel");
+//            arrayHosts.updateGraph("", false);
+//            arrayHosts.graph("chartContainer");
+//        });
+//
+//        ajax.go(); // Call its API methods.
+//    });
+//
+//    $("body").on('click', 'button', function () {
+//        alert("sadf");
+//    });
+
 
 });

@@ -49,14 +49,19 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
                     if (line[0] != "#" && line.length > 5) {
                         var prefix = line.substring(0, 6);
                         var vendor = line.substring(7, line.length);
-                        r.db(dbConfig.db).table("tblPrefix").insert({
-                            prefix: prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4),
-                            "vendor": vendor
+                        var keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
+                        r.db(dbConfig.db).table("tblPrefix").get(keyPrefix).replace(function (row) {
+                            return r.branch(
+                                    row.eq(null),
+                                    {
+                                        "prefix": keyPrefix,
+                                        "vendor": vendor
+                                    }, row)
                         }).run(connection, function (err, resul) {
                             if (err) {
                                 res.json(err);
                             }
-                            console.log(resul);
+//                            console.log(resul);
                         });
                     }
                 }
@@ -70,7 +75,7 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
 setTimeout(function () {
     new ServerSocket(8888, r, connection, dbConfig).start();
     new Server(8080, r, connection, dbConfig).start();
-}, 3000);
+}, 5000);
 
 function download(url, callback) {
     http.get(url, function (res) {

@@ -13,3 +13,8 @@ p {
     border-radius: 20px;
     background-color: #eee;
 }
+
+paper-button {
+    background: green;
+    color: yellow;
+}
