@@ -34,7 +34,8 @@ ServerSocket.prototype.start = function () {
                     var result = line.split(", ");
                     if (result.length < 8) {
                         var valsHost = result;
-                        r.db(dbConfig.db).table("cliente").get(valsHost[0]).replace(function (row) {
+                        var valuesHst = result;
+                        r.db(dbConfig.db).table("DispMoveis").get(valsHost[0]).replace(function (row) {
                             return r.branch(
                                     row.eq(null),
                                     {
@@ -59,7 +60,7 @@ ServerSocket.prototype.start = function () {
                                             return r.branch(
                                                     d('name').eq(client).default(false),
                                                     d.merge({values: d('values').append({
-                                                            "First_time": r.db(dbConfig.db).table("cliente").get(valsHost[0]).do(function (row) {
+                                                            "First_time": r.db(dbConfig.db).table("DispMoveis").get(valsHost[0]).do(function (row) {
                                                                 return  row("disp")("values").nth(0).getField("First_time")
                                                             }).limit(1).nth(0),
                                                             "Last_time": r.now(),
@@ -93,9 +94,50 @@ ServerSocket.prototype.start = function () {
 //                            console.log(client);
                             console.log(res);
                         });
+
+                        r.db(dbConfig.db).table("AntDisp").get(client).replace(function (row) {
+                            return r.branch(
+                                    row.eq(null),
+                                    {
+                                        "nomeAntena": client,
+                                        "host": [{
+                                                "macAddress": valuesHst[0],
+                                                "data": r.now()
+                                            }]
+                                    },
+                            r.branch(
+                                    row("host")("macAddress").contains(valuesHst[0]),
+                                    row.merge({
+                                        "host": row("host").map(function (d) {
+                                            return r.branch(
+                                                    d("macAddress").eq(valuesHst[0]).default(false),
+                                                    {
+                                                        "macAddress": valuesHst[0],
+                                                        "data": r.now()
+                                                    }, d)
+                                        })
+                                    }),
+                                    {
+                                        "nomeAntena": client,
+                                        "host": row("host").append({
+                                            "macAddress": valuesHst[0],
+                                            "data": r.now()
+                                        })
+
+                                    }))
+                        }).run(connection, function (err, resul) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            console.log(resul);
+                        });
+
+
+
                     } else {
                         var valsAp = result;
-                        r.db(dbConfig.db).table("ap").get(valsAp[0]).replace(function (row) {
+                        var valuesAp = result;
+                        r.db(dbConfig.db).table("DispAp").get(valsAp[0]).replace(function (row) {
                             return r.branch(
                                     row.eq(null),
                                     {
@@ -126,7 +168,7 @@ ServerSocket.prototype.start = function () {
                                     row.merge({
                                         "disp": row('disp').map(function (d) {
                                             return r.branch(d('name').eq(client).default(false), d.merge({values: d("values").append({
-                                                    "First_time": r.db(dbConfig.db).table("ap").get(valsAp[0]).do(function (row) {
+                                                    "First_time": r.db(dbConfig.db).table("DispAp").get(valsAp[0]).do(function (row) {
                                                         return  row("disp")("values").nth(0).getField("First_time")
                                                     }).limit(1).nth(0),
                                                     "Last_time": r.now(),
@@ -174,6 +216,44 @@ ServerSocket.prototype.start = function () {
 //                            console.log(client);
                             console.log(res);
                         });
+
+                        r.db(dbConfig.db).table("AntAp").get(client).replace(function (row) {
+                            return r.branch(
+                                    row.eq(null),
+                                    {
+                                        "nomeAntena": client,
+                                        "host": [{
+                                                "macAddress": valuesAp[0],
+                                                "data": r.now()
+                                            }]
+                                    },
+                            r.branch(
+                                    row("host")("macAddress").contains(valuesAp[0]),
+                                    row.merge({
+                                        "host": row("host").map(function (d) {
+                                            return r.branch(
+                                                    d("macAddress").eq(valuesAp[0]).default(false),
+                                                    {
+                                                        "macAddress": valuesAp[0],
+                                                        "data": r.now()
+                                                    }, d)
+                                        })
+                                    }),
+                                    {
+                                        "nomeAntena": client,
+                                        "host": row("host").append({
+                                            "macAddress": valuesAp[0],
+                                            "data": r.now()
+                                        })
+
+                                    }))
+                        }).run(connection, function (err, resul) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            console.log(resul);
+                        });
+
                     }
                 } else {
                     if (line[0] == "a" && line[1] == "n" && line[2] == "t") {
@@ -182,6 +262,26 @@ ServerSocket.prototype.start = function () {
                         console.log(this.clienteSend);
                     }
                 }
+            }
+            if (typeof client != "undefined" && client != "default") {
+                r.db(dbConfig.db).table("ActiveAnt").get(client).replace(function (row) {
+                    return r.branch(
+                            row.eq(null),
+                            {
+                                "nomeAntena": client,
+                                "data": r.now()
+                            },
+                    {
+                        "nomeAntena": client,
+                        "data": r.now()
+                    })
+                }).run(connection, function (err, resul) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(resul);
+                });
+
             }
             console.log('--------------------------------------------------------');
         });

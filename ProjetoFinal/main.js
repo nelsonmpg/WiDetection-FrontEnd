@@ -9,10 +9,13 @@ var connection = null;
 var dbConfig = {
     host: '185.15.22.55',
     port: 28015,
-    db: 'Teste4',
+    db: 'ProjetoFinal',
     tables: {
-        'cliente': 'macAddress',
-        'ap': 'macAddress',
+        'DispMoveis': 'macAddress',
+        'DispAp': 'macAddress',
+        "AntDisp": "nomeAntena",
+        "AntAp": "nomeAntena",
+        "ActiveAnt" : "nomeAntena",
         "tblPrefix": "prefix"
     }
 };
@@ -26,6 +29,11 @@ r.connect({
     connection = conn;
     console.log("Connected to ReThinkdb DataBase.");
 });
+
+function start() {
+    new ServerSocket(8888, r, connection, dbConfig).start();
+    new Server(8080, r, connection, dbConfig).start();
+};
 
 r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection) {
     r.dbCreate(dbConfig.db).run(connection, function (err, result) {
@@ -59,8 +67,9 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
                                     }, row)
                         }).run(connection, function (err, resul) {
                             if (err) {
-                                res.json(err);
+                                console.log(err);
                             }
+                            start();
 //                            console.log(resul);
                         });
                     }
@@ -72,10 +81,6 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
     });
 });
 
-setTimeout(function () {
-    new ServerSocket(8888, r, connection, dbConfig).start();
-    new Server(8080, r, connection, dbConfig).start();
-}, 5000);
 
 function download(url, callback) {
     http.get(url, function (res) {

@@ -10,6 +10,10 @@ var dataLength = 100;
 $(document).ready(function () {
     var socket = io.connect(window.location.href);
 
+    $("body").find("#contentor-principal").css({
+        height: $("body").height() * 0.876
+    });
+
     $("#updatePrefix").click(function () {
         $.ajax({
             type: "GET",

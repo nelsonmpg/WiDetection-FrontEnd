@@ -40,7 +40,7 @@ var Server = function (port, dbr, con, configdb) {
     });
 
     this.app.get("/getAllClientes", function (req, res) {
-        r.db(dbConfig.db).table("ap").pluck(
+        r.db(dbConfig.db).table("DispAp").pluck(
                 "macAddress",
                 "nameVendor",
                 {"disp": {
@@ -60,9 +60,9 @@ var Server = function (port, dbr, con, configdb) {
         });
     });
     
-    //r.db("Teste2").table("cliente")("macCliente")    
+    //r.db("Teste2").table("DispMoveis")("macCliente")    
      this.app.get("/getAllClientes/", function (req, res) {
-        r.db("Teste2").table("cliente")("macAddress").coerceTo('array').run(connection, function (err, resul) {
+        r.db("Teste2").table("DispMoveis")("macAddress").coerceTo('array').run(connection, function (err, resul) {
             if (err) {
                 res.json(err);
             }
@@ -123,7 +123,7 @@ Server.prototype.start = function () {
 
 
         // Listen to new device being inserted
-        r.db(dbConfig.db).table("cliente").changes().run(connection).then(function (cursor) {
+        r.db(dbConfig.db).table("DispMoveis").changes().run(connection).then(function (cursor) {
             cursor.each(function (err, row) {
                 socket.emit('newDevice', row);
             });
@@ -132,7 +132,7 @@ Server.prototype.start = function () {
         });
 
         // Listen to new device being inserted
-        r.db(dbConfig.db).table("ap").changes().run(connection).then(function (cursor) {
+        r.db(dbConfig.db).table("DispAp").changes().run(connection).then(function (cursor) {
             cursor.each(function (err, row) {
                 socket.emit('newDevice', row);
             });
