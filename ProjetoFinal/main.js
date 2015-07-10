@@ -15,7 +15,7 @@ var dbConfig = {
         'DispAp': 'macAddress',
         "AntDisp": "nomeAntena",
         "AntAp": "nomeAntena",
-        "ActiveAnt" : "nomeAntena",
+        "ActiveAnt": "nomeAntena",
         "tblPrefix": "prefix"
     }
 };
@@ -69,11 +69,11 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
                             if (err) {
                                 console.log(err);
                             }
-                            start();
 //                            console.log(resul);
                         });
                     }
                 }
+                start();
             } else {
                 console.log("error");
             }

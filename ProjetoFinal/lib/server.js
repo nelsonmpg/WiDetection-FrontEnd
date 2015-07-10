@@ -40,7 +40,7 @@ var Server = function (port, dbr, con, configdb) {
     });
 
     this.app.get("/getAllClientes", function (req, res) {
-        r.db(dbConfig.db).table("DispAp").pluck(
+        r.db(dbConfig.db).table("DispMoveis").pluck(
                 "macAddress",
                 "nameVendor",
                 {"disp": {
@@ -61,7 +61,7 @@ var Server = function (port, dbr, con, configdb) {
     });
     
     //r.db("Teste2").table("DispMoveis")("macCliente")    
-     this.app.get("/getAllClientes/", function (req, res) {
+     this.app.get("/132getAllClientes/", function (req, res) {
         r.db("Teste2").table("DispMoveis")("macAddress").coerceTo('array').run(connection, function (err, resul) {
             if (err) {
                 res.json(err);

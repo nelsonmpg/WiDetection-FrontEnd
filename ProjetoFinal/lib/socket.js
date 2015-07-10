@@ -10,6 +10,8 @@ var ServerSocket = function (port, dbr, con, configdb) {
     this.net = require('net');
     this.serverSck = net.createServer(this.net);
     this.clienteSend = "default";
+    this.lati = "39.59954418";
+    this.long = "-8.38958368";
     r = dbr;
     connection = con;
     dbConfig = configdb;
@@ -26,6 +28,8 @@ ServerSocket.prototype.start = function () {
         // Add a 'data' event handler to this instance of socket
         sock.on('data', function (data) {
             var client = this.clienteSend;
+            var latitude = this.lati;
+            var longitude = this.long;
             var aux = data.toString();
             var resultLine = aux.split("\r\n");
             for (var i in resultLine) {
@@ -44,8 +48,8 @@ ServerSocket.prototype.start = function () {
                                         "disp": [{
                                                 name: client,
                                                 "values": [{
-                                                        "First_time": r.now(), //(typeof valsHost[1] == "undefined") ? "" : valsHost[1],
-                                                        "Last_time": r.now(), //(typeof valsHost[2] == "undefined") ? "" : valsHost[2],
+                                                        "First_time": r.now().inTimezone("+01:00"), //(typeof valsHost[1] == "undefined") ? "" : valsHost[1],
+                                                        "Last_time": r.now().inTimezone("+01:00"), //(typeof valsHost[2] == "undefined") ? "" : valsHost[2],
                                                         "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
                                                         "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
                                                         "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
@@ -63,7 +67,7 @@ ServerSocket.prototype.start = function () {
                                                             "First_time": r.db(dbConfig.db).table("DispMoveis").get(valsHost[0]).do(function (row) {
                                                                 return  row("disp")("values").nth(0).getField("First_time")
                                                             }).limit(1).nth(0),
-                                                            "Last_time": r.now(),
+                                                            "Last_time": r.now().inTimezone("+01:00"),
                                                             "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
                                                             "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
                                                             "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
@@ -77,8 +81,8 @@ ServerSocket.prototype.start = function () {
                                         "disp": row("disp").append({
                                             "name": client,
                                             "values": [{
-                                                    "First_time": r.now(), //(typeof valsHost[1] == "undefined") ? "" : valsHost[1],
-                                                    "Last_time": r.now(), //(typeof valsHost[2] == "undefined") ? "" : valsHost[2],
+                                                    "First_time": r.now().inTimezone("+01:00"), //(typeof valsHost[1] == "undefined") ? "" : valsHost[1],
+                                                    "Last_time": r.now().inTimezone("+01:00"), //(typeof valsHost[2] == "undefined") ? "" : valsHost[2],
                                                     "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
                                                     "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
                                                     "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
@@ -102,7 +106,7 @@ ServerSocket.prototype.start = function () {
                                         "nomeAntena": client,
                                         "host": [{
                                                 "macAddress": valuesHst[0],
-                                                "data": r.now()
+                                                "data": r.now().inTimezone("+01:00")
                                             }]
                                     },
                             r.branch(
@@ -113,7 +117,7 @@ ServerSocket.prototype.start = function () {
                                                     d("macAddress").eq(valuesHst[0]).default(false),
                                                     {
                                                         "macAddress": valuesHst[0],
-                                                        "data": r.now()
+                                                        "data": r.now().inTimezone("+01:00")
                                                     }, d)
                                         })
                                     }),
@@ -121,7 +125,7 @@ ServerSocket.prototype.start = function () {
                                         "nomeAntena": client,
                                         "host": row("host").append({
                                             "macAddress": valuesHst[0],
-                                            "data": r.now()
+                                            "data": r.now().inTimezone("+01:00")
                                         })
 
                                     }))
@@ -146,8 +150,8 @@ ServerSocket.prototype.start = function () {
                                         "disp": [{
                                                 name: client,
                                                 "values": [{
-                                                        "First_time": r.now(),
-                                                        "Last_time": r.now(),
+                                                        "First_time": r.now().inTimezone("+01:00"),
+                                                        "Last_time": r.now().inTimezone("+01:00"),
                                                         "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
                                                         "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
                                                         "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
@@ -171,7 +175,7 @@ ServerSocket.prototype.start = function () {
                                                     "First_time": r.db(dbConfig.db).table("DispAp").get(valsAp[0]).do(function (row) {
                                                         return  row("disp")("values").nth(0).getField("First_time")
                                                     }).limit(1).nth(0),
-                                                    "Last_time": r.now(),
+                                                    "Last_time": r.now().inTimezone("+01:00"),
                                                     "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
                                                     "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
                                                     "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
@@ -192,8 +196,8 @@ ServerSocket.prototype.start = function () {
                                         "disp": row('disp').append({
                                             name: client,
                                             "values": [{
-                                                    "First_time": r.now(), //(typeof valsAp[1] == "undefined") ? "" : valsAp[1],
-                                                    "Last_time": r.now(), //(typeof valsAp[2] == "undefined") ? "" : valsAp[2],
+                                                    "First_time": r.now().inTimezone("+01:00"), //(typeof valsAp[1] == "undefined") ? "" : valsAp[1],
+                                                    "Last_time": r.now().inTimezone("+01:00"), //(typeof valsAp[2] == "undefined") ? "" : valsAp[2],
                                                     "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
                                                     "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
                                                     "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
@@ -224,7 +228,7 @@ ServerSocket.prototype.start = function () {
                                         "nomeAntena": client,
                                         "host": [{
                                                 "macAddress": valuesAp[0],
-                                                "data": r.now()
+                                                "data": r.now().inTimezone("+01:00")
                                             }]
                                     },
                             r.branch(
@@ -235,7 +239,7 @@ ServerSocket.prototype.start = function () {
                                                     d("macAddress").eq(valuesAp[0]).default(false),
                                                     {
                                                         "macAddress": valuesAp[0],
-                                                        "data": r.now()
+                                                        "data": r.now().inTimezone("+01:00")
                                                     }, d)
                                         })
                                     }),
@@ -243,7 +247,7 @@ ServerSocket.prototype.start = function () {
                                         "nomeAntena": client,
                                         "host": row("host").append({
                                             "macAddress": valuesAp[0],
-                                            "data": r.now()
+                                            "data": r.now().inTimezone("+01:00")
                                         })
 
                                     }))
@@ -258,6 +262,8 @@ ServerSocket.prototype.start = function () {
                 } else {
                     if (line[0] == "a" && line[1] == "n" && line[2] == "t") {
                         this.clienteSend = line.replace(/(\r\n|\n|\r)/gm, "");
+                        this.lati = "39.59954418";
+                        this.long = "-8.38958368";
 
                         console.log(this.clienteSend);
                     }
@@ -269,11 +275,15 @@ ServerSocket.prototype.start = function () {
                             row.eq(null),
                             {
                                 "nomeAntena": client,
-                                "data": r.now()
+                                "latitude": latitude,
+                                "longitude": longitude,
+                                "data": r.now().inTimezone("+01:00")
                             },
                     {
                         "nomeAntena": client,
-                        "data": r.now()
+                        "latitude": latitude,
+                        "longitude": longitude,
+                        "data": r.now().inTimezone("+01:00")
                     })
                 }).run(connection, function (err, resul) {
                     if (err) {
