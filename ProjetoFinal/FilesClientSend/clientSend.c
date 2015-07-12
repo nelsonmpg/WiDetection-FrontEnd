@@ -15,6 +15,8 @@ struct config {
     char ipserver[MAXBUF];
     char portServer[MAXBUF];
     char nameAnt[MAXBUF];
+    char latitude[MAXBUF];
+    char longitude[MAXBUF];
 };
 
 int sock;
@@ -26,6 +28,8 @@ size_t size;
 int portSrv;
 const char * serverIp;
 const char * antenaNome;
+const char * latit;
+const char * longi;
 
 struct config get_config(char *filename) {
     struct config configstruct;
@@ -46,6 +50,12 @@ struct config get_config(char *filename) {
                 //printf("%s",configstruct.ccserver);
             } else if (i == 2) {
                 memcpy(configstruct.nameAnt, cfline, strlen(cfline));
+                //printf("%s",configstruct.port);
+            } else if (i == 3) {
+                memcpy(configstruct.latitude, cfline, strlen(cfline));
+                //printf("%s",configstruct.port);
+            } else if (i == 4) {
+                memcpy(configstruct.longitude, cfline, strlen(cfline));
                 //printf("%s",configstruct.port);
             }
             i++;
@@ -88,6 +98,17 @@ void * SendDiffFile(void *arg) {
     if (send(sock, antenaNome, strlen(antenaNome), 0) < 0) {
         puts("Send failed");
     }
+    sleep(1);
+
+    if (send(sock, latit, strlen(latit), 0) < 0) {
+        puts("Send failed");
+    }
+    sleep(1);
+
+    if (send(sock, longi, strlen(longi), 0) < 0) {
+        puts("Send failed");
+    }
+    sleep(1);
 
     while (1) {
         system("./runDifFile.sh");
@@ -106,13 +127,15 @@ void * SendDiffFile(void *arg) {
 }
 
 int main(int argc, char *argv[]) {
-	system("./clearFiles.sh");
+    system("./clearFiles.sh");
     struct config configstruct;
     configstruct = get_config(FILECFG);
 
     serverIp = configstruct.ipserver;
     antenaNome = configstruct.nameAnt;
     portSrv = atoi(configstruct.portServer);
+    latit = configstruct.latitude;
+    longi = configstruct.longitude;
 
     pthread_t threadp1;
     pthread_t threadp2;

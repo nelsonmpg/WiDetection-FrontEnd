@@ -189,9 +189,9 @@ var carregarmapa = function (local) {
     var iconsLength = icons.length;
 //    var map = new google.maps.Map($("body").find("#map")[0], {
     var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 18,
+        zoom: 19,
         center: new google.maps.LatLng(local[0][1], local[0][2]),
-        mapTypeId: google.maps.MapTypeId.HYBRID, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
+        mapTypeId: google.maps.MapTypeId.SATELLITE, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
         mapTypeControl: false,
         streetViewControl: false,
         panControl: false,

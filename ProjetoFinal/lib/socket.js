@@ -10,8 +10,8 @@ var ServerSocket = function (port, dbr, con, configdb) {
     this.net = require('net');
     this.serverSck = net.createServer(this.net);
     this.clienteSend = "default";
-    this.lati = "39.59954418";
-    this.long = "-8.38958368";
+    this.lati = "";
+    this.long = "";
     r = dbr;
     connection = con;
     dbConfig = configdb;
@@ -262,14 +262,22 @@ ServerSocket.prototype.start = function () {
                 } else {
                     if (line[0] == "a" && line[1] == "n" && line[2] == "t") {
                         this.clienteSend = line.replace(/(\r\n|\n|\r)/gm, "");
-                        this.lati = "39.59954418";
-                        this.long = "-8.38958368";
-
                         console.log(this.clienteSend);
+                    }
+                    if (line[0] == "l" && line[1] == "a" && line[2] == "t") {
+                        this.lati = line.split("$")[1].replace(/(\r\n|\n|\r)/gm, "");
+                        console.log(this.lati);
+                    }
+                    if (line[0] == "l" && line[1] == "o" && line[2] == "n") {
+                        this.long = line.split("$")[1].replace(/(\r\n|\n|\r)/gm, "");
+                        console.log(this.long);
                     }
                 }
             }
-            if (typeof client != "undefined" && client != "default") {
+            if (typeof client != "undefined" &&
+                    typeof latitude != "undefined" &&
+                    typeof longitude != "undefined" &&
+                    client != "default") {
                 r.db(dbConfig.db).table("ActiveAnt").get(client).replace(function (row) {
                     return r.branch(
                             row.eq(null),
@@ -284,7 +292,7 @@ ServerSocket.prototype.start = function () {
                         "latitude": latitude,
                         "longitude": longitude,
                         "data": r.now().inTimezone("+01:00")
-                    })
+                    });
                 }).run(connection, function (err, resul) {
                     if (err) {
                         console.log(err);
