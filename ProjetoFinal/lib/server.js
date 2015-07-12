@@ -70,6 +70,18 @@ var Server = function (port, dbr, con, configdb) {
         });
     });
 
+    /**
+     * retornar antenas ativas
+     * Falta alterar a consulta para retornar apenas as activas
+     */
+     this.app.get("/getAntActive/", function (req, res) {
+        r.db("ProjetoFinal").table('ActiveAnt').coerceTo('array').run(connection, function (err, resul) {
+            if (err) {
+                res.json(err);
+            }
+            res.json(resul);
+        });
+    });
 
 //    this.app.get("/updatePrefix", function (req, res) {
 //        download(url, function (data) {
