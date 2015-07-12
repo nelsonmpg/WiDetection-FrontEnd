@@ -83,28 +83,28 @@ $(document).ready(function () {
     /**
      * click no item estatistica do menu
      */
-    $("body").on("click", "nav > a:nth-child(3)", function () {
-        $("#contentor-principal").html("<div class='container'><div class='row col-md-12'></div></div>");
-        $.ajax({
-            type: "GET",
-            url: "/getAntActive",
-            dataType: 'json',
-            success: function (data) {
-                for (ant in data) {
-                    $("#contentor-principal > div > div").append("<div class='divAntena'><img src='images/antena.png' style='width:100%;height:100%'><p class='text-right'>" + data[ant].nomeAntena + "</p>" +
-                            "<div class='mapOpen' data-nomeAntena=" + data[ant].nomeAntena + " data-lat=" + data[ant].latitude + " data-lon=" + data[ant].longitude + "><p class='text-right'>lat:" + data[ant].latitude + "</p>" +
-                            "<p class='text-right'>lon:" + data[ant].longitude + "</p></div></div>");
-                }
-            },
-            error: function (error) {
-                console.log(JSON.stringify(error));
-            }
-        });
-    });
+//    $("body").on("click", "nav > div:nth-child(3)", function () {
+//        $("#contentor-principal").html("<div class='container'><div class='row col-md-12'></div></div>");
+//        $.ajax({
+//            type: "GET",
+//            url: "/getAntActive",
+//            dataType: 'json',
+//            success: function (data) {
+//                for (ant in data) {
+//                    $("#contentor-principal > div > div").append("<div class='divAntena'><img src='images/antena.png' style='width:100%;height:100%'><p class='text-right'>" + data[ant].nomeAntena + "</p>" +
+//                            "<div class='mapOpen' data-nomeAntena=" + data[ant].nomeAntena + " data-lat=" + data[ant].latitude + " data-lon=" + data[ant].longitude + "><p class='text-right'>lat:" + data[ant].latitude + "</p>" +
+//                            "<p class='text-right'>lon:" + data[ant].longitude + "</p></div></div>");
+//                }
+//            },
+//            error: function (error) {
+//                console.log(JSON.stringify(error));
+//            }
+//        });
+//    });
 
     $("body").on("click", ".mapOpen > p", function () {
-        alert();
-        $("#contentor-principal").append("<div id='map' class='row'></div>");
+//        alert();
+        $("#contentor-principal > div > div#addmap").append("<div id='map' class='row'></div>");
         carregarmapa([["<h4>" + this.parentElement.getAttribute("data-nomeAntena") + "</h4>", this.parentElement.getAttribute("data-lat"), this.parentElement.getAttribute("data-lon")]]);
     });
 
@@ -124,7 +124,6 @@ function showPageToDiv(page, name) {
                 dataType: "text",
                 success: function (data) {
                     $("#contentor-principal").html(data);
-                    $("#contentor-principal").show(efectDiv, timeEfect);
                     switch (page) {
                         case "status.html":
                             break;
@@ -132,6 +131,25 @@ function showPageToDiv(page, name) {
                             $("body").find('.selectpicker').selectpicker();
                             break;
                         case "Estatistica.html":
+                            $.ajax({
+                                type: "GET",
+                                url: "/getAntActive",
+                                dataType: 'json',
+                                success: function (data) {
+                                    for (var ant in data) {
+                                        $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp'>" +
+                                                "<img src='./images/antena.png'>" +
+                                                "<p class='text-center'>" + data[ant].nomeAntena + "</p>" +
+                                                "<div class='mapOpen' data-nomeAntena='" + data[ant].nomeAntena + "' data-lat='" + data[ant].latitude + "' data-lon='" + data[ant].longitude + "'>" +
+                                                "<p class='text-center'>lat: " + data[ant].latitude + "</p>" +
+                                                "<p class='text-center'>lon: " + data[ant].longitude + "</p>" +
+                                                "</div></div>");
+                                    }
+                                },
+                                error: function (error) {
+                                    console.log(JSON.stringify(error));
+                                }
+                            });
                             break;
                         case "Acerca_De.html":
                             break;
@@ -141,7 +159,8 @@ function showPageToDiv(page, name) {
                     alert("error " + err);
                 },
                 complete: function () {
-                    alert("finished");
+                    $("#contentor-principal").show(efectDiv, timeEfect);
+                    //alert("finished");
                 }
             });
 
@@ -150,7 +169,7 @@ function showPageToDiv(page, name) {
 }
 //carregar mapa
 var carregarmapa = function (local) {
-    alert();
+//    alert();
     // Define your locations: HTML content for the info window, latitude, longitude
     //var locations = [['<h4>Bondi Beach</h4>', -33.890542, 151.274856],['<h4>Coogee Beach</h4>', -33.923036, 151.259052],['<h4>Cronulla Beach</h4>', -34.028249, 151.157507],['<h4>Manly Beach</h4>', -33.80010128657071, 151.28747820854187],['<h4>Maroubra Beach</h4>', -33.950198, 151.259302]];
     var locations = local;
@@ -168,11 +187,11 @@ var carregarmapa = function (local) {
         iconURLPrefix + 'yellow-dot.png'
     ]
     var iconsLength = icons.length;
-
+//    var map = new google.maps.Map($("body").find("#map")[0], {
     var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 2,
+        zoom: 18,
         center: new google.maps.LatLng(local[0][1], local[0][2]),
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeId: google.maps.MapTypeId.HYBRID, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
         mapTypeControl: false,
         streetViewControl: false,
         panControl: false,
@@ -212,17 +231,17 @@ var carregarmapa = function (local) {
             iconCounter = 0;
         }
     }
-
-    function autoCenter() {
-        //  Create a new viewpoint bound
-        var bounds = new google.maps.LatLngBounds();
-        //  Go through each...
-        for (var i = 0; i < markers.length; i++) {
-            bounds.extend(markers[i].position);
-        }
-        //  Fit these bounds to the map
-        map.fitBounds(bounds);
-    }
     autoCenter();
-
 };
+
+
+function autoCenter() {
+    //  Create a new viewpoint bound
+    var bounds = new google.maps.LatLngBounds();
+    //  Go through each...
+    for (var i = 0; i < markers.length; i++) {
+        bounds.extend(markers[i].position);
+    }
+    //  Fit these bounds to the map
+    map.fitBounds(bounds);
+}

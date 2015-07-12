@@ -30,10 +30,11 @@ r.connect({
     console.log("Connected to ReThinkdb DataBase.");
 });
 
-function start() {
+function startServers() {
     new ServerSocket(8888, r, connection, dbConfig).start();
     new Server(8080, r, connection, dbConfig).start();
-};
+}
+;
 
 r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection) {
     r.dbCreate(dbConfig.db).run(connection, function (err, result) {
@@ -49,33 +50,43 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
                 });
             })(tbl);
         }
-        download(url, function (data) {
-            if (data) {
-                var lines = data.split("\n");
-                for (var i in lines) {
-                    var line = lines[i].trim();
-                    if (line[0] != "#" && line.length > 5) {
-                        var prefix = line.substring(0, 6);
-                        var vendor = line.substring(7, line.length);
-                        var keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
-                        r.db(dbConfig.db).table("tblPrefix").get(keyPrefix).replace(function (row) {
-                            return r.branch(
-                                    row.eq(null),
-                                    {
-                                        "prefix": keyPrefix,
-                                        "vendor": vendor
-                                    }, row)
-                        }).run(connection, function (err, resul) {
-                            if (err) {
-                                console.log(err);
-                            }
+        r.db(dbConfig.db).table("tblPrefix").coerceTo("array").count().run(connection, function (err, resul) {
+            if (err) {
+                console.log(err);
+            }
+//            console.log(resul);
+            if (!(resul > 0) || typeof resul == "undefined") {
+                download(url, function (data) {
+                    if (data) {
+                        var lines = data.split("\n");
+                        for (var i in lines) {
+                            var line = lines[i].trim();
+                            if (line[0] != "#" && line.length > 5) {
+                                var prefix = line.substring(0, 6);
+                                var vendor = line.substring(7, line.length);
+                                var keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
+                                r.db(dbConfig.db).table("tblPrefix").get(keyPrefix).replace(function (row) {
+                                    return r.branch(
+                                            row.eq(null),
+                                            {
+                                                "prefix": keyPrefix,
+                                                "vendor": vendor
+                                            }, row)
+                                }).run(connection, function (err, resul) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
 //                            console.log(resul);
-                        });
+                                });
+                            }
+                        }
+                        startServers();
+                    } else {
+                        console.log("error");
                     }
-                }
-                start();
+                });
             } else {
-                console.log("error");
+                startServers();
             }
         });
     });
