@@ -1,17 +1,24 @@
-
 var updateInterval = 1000;
-//var dataLength = 350; // number of dataPoints visible at any point
-var disps = []; // dataPoints
-
 var arrayHosts = null;
 var dps = [];
 var dataLength = 100;
+var timeEfect = 200;
+
+// blind, bounce, clip, drop, explode, fold, highlight, puff, pulsate, shake, slide
+var efectDiv = "drop";
+
 
 $(document).ready(function () {
     var socket = io.connect(window.location.href);
 
     $("body").find("#contentor-principal").css({
         height: $("body").height() * 0.876
+    });
+
+    showPageToDiv("status.html", "Status");
+
+    $("body").on("click", ".addNewPAge", function () {
+        showPageToDiv($(this).data("page"), $(this).data("name"));
     });
 
     $("#updatePrefix").click(function () {
@@ -73,24 +80,61 @@ $(document).ready(function () {
 //            console.log("+++++++++++++++++++++++++++++++");
         }
     }, updateInterval);
-
-//    $("body").ready('polymer-ready', function (e) {
-//        var ajax = document.querySelector('core-ajax');
-//
-//        // Respond to events it fires.
-//        ajax.addEventListener('core-response', function (e) {
-//            console.log(this.response);
-//            arrayHosts = new TransformArray(this.response, "antena-Nel");
-//            arrayHosts.updateGraph("", false);
-//            arrayHosts.graph("chartContainer");
-//        });
-//
-//        ajax.go(); // Call its API methods.
-//    });
-//
-//    $("body").on('click', 'button', function () {
-//        alert("sadf");
-//    });
-
-
 });
+
+function showPageToDiv(page, name) {
+    $(".mdl-layout-title").html(name);
+    var page = page; //data-page
+    if ($("#contentor-principal").data("page") != page) {
+        $("#contentor-principal").data("page", page);
+        $("#contentor-principal").effect(efectDiv, timeEfect, function () {
+            $.ajax({
+                method: 'GET',
+                url: "./html/" + page,
+                cache: false,
+                dataType: "text",
+                success: function (data) {
+                    $("#contentor-principal").html(data);
+                    $("#contentor-principal").show(efectDiv, timeEfect);
+                    switch (page) {
+                        case "status.html":
+                            break;
+                        case "Dashboard.html":
+                            $("body").find('.selectpicker').selectpicker();
+                            break;
+                        case "Estatistica.html":
+                            break;
+                        case "Acerca_De.html":
+                            break;
+                    }
+                }, 
+                error: function (err) {
+                    alert("error " + err);
+                },
+                complete : function (){
+                    alert("finished");
+                }
+            });
+
+//            $.get("./html/" + page, function (data) {
+//                $("#contentor-principal").html(data);
+//                $("#contentor-principal").show(efectDiv, timeEfect);
+//                switch (page) {
+//                    case "status.html":
+//                        break;
+//                    case "Dashboard.html":
+//                        $("body").find('.selectpicker').selectpicker();
+//                        break;
+//                    case "Estatistica.html":
+//                        break;
+//                    case "Acerca_De.html":
+//                        break;
+//                }
+//            }).fail(function () {
+//                alert("error");
+//            }).always(function () {
+//                //alert("finished");
+//            });
+        });
+    }
+}

@@ -17,13 +17,20 @@
 -->
 <html lang="en">
     <head>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Projeto Final</title>
+
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="./css/jquery-ui.min.css">
+        <link rel="stylesheet" href="./css/jquery-ui.structure.min.css">
+
         <script type="text/javascript" src="libs/jquery-1.11.2.js"></script>
+        <script type="text/javascript" src="libs/jquery-ui.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js"></script>
+
 
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="./bower_components/bootstrap-3.0.3/css/bootstrap.min.css">
@@ -51,10 +58,6 @@
         <meta name="msapplication-TileImage" content="./images/touch/ms-touch-icon-144x144-precomposed.png">
         <meta name="msapplication-TileColor" content="#3372DF">
 
-        <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
-        <!--
-        <link rel="canonical" href="http://www.example.com/">
-        -->
 
         <link href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -74,8 +77,9 @@
         <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
             <header class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
                 <div class="mdl-layout__header-row">
-                    <span class="mdl-layout-title">Home</span>
-                    <div class="mdl-layout-spacer"></div>
+                    <span class="mdl-layout-title">Status</span>
+                    <!--<div class="mdl-layout-spacer"></div>
+                    
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
                         <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
                             <i class="material-icons">search</i>
@@ -93,47 +97,24 @@
                         <li class="mdl-menu__item">Contact</li>
                         <li class="mdl-menu__item">Legal information</li>
                     </ul>
+                    -->
                 </div>
             </header>
             <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
                 <header class="demo-drawer-header">
                     <i class="material-icons">leak_add wifi speaker_phone router tap_and_play</i>
                 </header>
-                <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-                    <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">settings_input_antenna</i>Satus</a>
-                    <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">dashboard</i>Dashboard</a>
-                    <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">insert_chart</i>Estatistica</a>
-                    <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">report</i>Acerca De ...</a>
-                    <div class="mdl-layout-spacer"></div>
+                <nav class="demo-navigation mdl-navigation">
+                    <div class="mdl-navigation__link addNewPAge" data-page="status.html" data-name="Status"><i class=" material-icons">settings_input_antenna</i>Satus</div>
+                    <div class="mdl-navigation__link addNewPAge" data-page="Dashboard.html" data-name="Dashboard"><i class=" material-icons">dashboard</i>Dashboard</div>
+                    <div class="mdl-navigation__link addNewPAge" data-page="Estatistica.html" data-name="Estatistica"><i class=" material-icons">insert_chart</i>Estatistica</div>
+                    <div class="mdl-navigation__link addNewPAge" data-page="Acerca_De.html" data-name="Acerca De ..."><i class=" material-icons">report</i>Acerca De ...</div>
                 </nav>
             </div>
             <main class="mdl-layout__content mdl-color--grey-100">
                 <div class="mdl-grid demo-content">
-                    <div id="contentor-principal" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="col-md-3">
-                                        <select class="selectpicker">
-                                            <option data-content="<i class='fa fa-mobile'> Dispositivos Moveis</i>"></option>
-                                            <option data-content="<i class='fa fa-wifi'> Access Points</i>"></option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select class="selectpicker">
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button id="showgraph" class="btn btn-default">Show Graph</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div id="chartContainer" style="height: 600px; width: 100%;"></div>
-                                </div>
-                            </div>
-                        </div>   
+                    <div id="contentor-principal" data-page="" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col">
+
                     </div>  
                 </div>
             </main>

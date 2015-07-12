@@ -1,34 +1,25 @@
-<body>
-<conteiner>
-    <div class="contentor">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xs-12 col-md-12">
-                    <div>
-                        <input id="getClientes" type="button" value="Get Clientes" >
-                        <input id="updatePrefix" type="button" value="Update Prefix" >
-                        <input id="showgraph" type="button" value="showgraph" >
-                    </div>
-                </div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <select class="selectpicker">
+                    <option data-content="<i class='fa fa-mobile'> Dispositivos Moveis</i>"></option>
+                    <option data-content="<i class='fa fa-wifi'> Access Points</i>"></option>
+                </select>
             </div>
-            <div class="row">
-                <div class="col-xs-12 col-md-12">
-                    <div id="chartContainer" style="height: 700px; width: 100%;"></div>
-
-                    <div id="result"></div> 
-                </div>
+            <div class="col-md-3">
+                <select class="selectpicker">
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button id="showgraph" class="btn btn-default">Show Graph</button>
             </div>
         </div>
     </div>
-    <script>
-
-        $("body").find(".contentor").css({
-            width: $("#pages").width() * 0.92,
-            height: $("#pages").height() * 0.80
-        });
-        console.log($("#pages").width());
-    </script>
-
-</conteiner>
-</body>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="chartContainer" style="height: 600px; width: 100%;"></div>
+        </div>
+    </div>
+</div>  
 

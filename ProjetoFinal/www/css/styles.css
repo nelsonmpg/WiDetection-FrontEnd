@@ -90,6 +90,7 @@ html, body {
           align-items: center;
   color: rgba(255, 255, 255, 0.56);
   font-weight: 500;
+  cursor: pointer !important;
 }
 .demo-navigation .mdl-navigation__link .material-icons {
   font-size: 24px;
