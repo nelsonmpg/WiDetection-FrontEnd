@@ -34,7 +34,6 @@ function startServers() {
     new ServerSocket(8888, r, connection, dbConfig).start();
     new Server(8080, r, connection, dbConfig).start();
 }
-;
 
 r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection) {
     r.dbCreate(dbConfig.db).run(connection, function (err, result) {

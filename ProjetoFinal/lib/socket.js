@@ -96,7 +96,7 @@ ServerSocket.prototype.start = function () {
                             }
 
 //                            console.log(client);
-                            console.log(res);
+//                            console.log(res);
                         });
 
                         r.db(dbConfig.db).table("AntDisp").get(client).replace(function (row) {
@@ -133,10 +133,8 @@ ServerSocket.prototype.start = function () {
                             if (err) {
                                 console.log(err);
                             }
-                            console.log(resul);
+//                            console.log(resul);
                         });
-
-
 
                     } else {
                         var valsAp = result;
@@ -218,7 +216,7 @@ ServerSocket.prototype.start = function () {
                                 console.log(JSON.stringify(err));
                             }
 //                            console.log(client);
-                            console.log(res);
+//                            console.log(res);
                         });
 
                         r.db(dbConfig.db).table("AntAp").get(client).replace(function (row) {
@@ -255,7 +253,7 @@ ServerSocket.prototype.start = function () {
                             if (err) {
                                 console.log(err);
                             }
-                            console.log(resul);
+//                            console.log(resul);
                         });
 
                     }
@@ -297,7 +295,7 @@ ServerSocket.prototype.start = function () {
                     if (err) {
                         console.log(err);
                     }
-                    console.log(resul);
+//                    console.log(resul);
                 });
 
             }

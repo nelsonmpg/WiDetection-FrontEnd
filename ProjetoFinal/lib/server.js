@@ -39,8 +39,20 @@ var Server = function (port, dbr, con, configdb) {
         });
     });
 
-    this.app.get("/getAllClientes", function (req, res) {
-        r.db(dbConfig.db).table("DispMoveis").pluck(
+    this.app.get("/getAllClientes/:disp", function (req, res) {
+        var tabela = "";
+//        console.log(req.params.disp);
+        if (req.params.disp.trim() == "Dispositivos Moveis") {
+            tabela = "DispMoveis";
+        } else if (req.params.disp.trim() == "Access Points") {
+            tabela = "DispAp";
+        } else {
+            console.log("Erro Tabela");
+            return;
+        }
+        
+        console.log("--- Pedido");
+        r.db(dbConfig.db).table(tabela).pluck(
                 "macAddress",
                 "nameVendor",
                 {"disp": {
@@ -56,16 +68,31 @@ var Server = function (port, dbr, con, configdb) {
             if (err) {
                 res.json(err);
             }
+        console.log("--- Resposta");
             res.json(resul);
         });
     });
-    
-    //r.db("Teste2").table("DispMoveis")("macCliente")    
-     this.app.get("/132getAllClientes/", function (req, res) {
-        r.db("Teste2").table("DispMoveis")("macAddress").coerceTo('array').run(connection, function (err, resul) {
+
+
+    this.app.get("/getAntenasAtivas", function (req, res) {
+        console.log("Pedido");
+        r.db(dbConfig.db).table('ActiveAnt').filter(function (row) {
+            return r.now().do(function (time) {
+                return row("data").gt(r.time(
+                        time.year(),
+                        time.month(),
+                        time.day(),
+                        time.hours(),
+                        time.minutes().sub(5),
+                        time.seconds(),
+                        time.timezone()
+                        ));
+            });
+        }).coerceTo("array").run(connection, function (err, resul) {
             if (err) {
                 res.json(err);
             }
+        console.log("Resposta");
             res.json(resul);
         });
     });
@@ -74,7 +101,7 @@ var Server = function (port, dbr, con, configdb) {
      * retornar antenas ativas
      * Falta alterar a consulta para retornar apenas as activas
      */
-     this.app.get("/getAntActive/", function (req, res) {
+    this.app.get("/getAntActive/", function (req, res) {
         r.db("ProjetoFinal").table('ActiveAnt').coerceTo('array').run(connection, function (err, resul) {
             if (err) {
                 res.json(err);
@@ -83,33 +110,6 @@ var Server = function (port, dbr, con, configdb) {
         });
     });
 
-//    this.app.get("/updatePrefix", function (req, res) {
-//        download(url, function (data) {
-//            if (data) {
-//                var lines = data.split("\n");
-//                for (var i in lines) {
-//                    var line = lines[i].trim();
-//                    if (line[0] != "#" && line.length > 5) {
-//                        var prefix = line.substring(0, 6);
-//                        var vendor = line.substring(7, line.length);
-//                        r.db(dbConfig.db).table("tblPrefix").insert({
-//                            prefix: prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4),
-//                            "vendor": vendor
-//                        }).run(connection, function (err, resul) {
-//                            if (err) {
-//                                res.json(err);
-//                            }
-//                            console.log(resul);
-//                        });
-//                    }
-//                }
-//                res.json("A atualizar prefixos.");
-//            } else {
-//                res.json("error");
-//                console.log("error");
-//            }
-//        });
-//    });
 };
 /**
  *

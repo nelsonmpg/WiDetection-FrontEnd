@@ -1,19 +1,21 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="col-md-3">
+            <div id="selectDisp" class="col-md-3">
                 <select class="selectpicker">
-                    <option data-content="<i class='fa fa-mobile'> Dispositivos Moveis</i>"></option>
-                    <option data-content="<i class='fa fa-wifi'> Access Points</i>"></option>
+                    <option data-disp="DispAp" data-content="<i class='fa fa-wifi'> Access Points</i>"></option>
+                    <option data-disp="DispMoveis" data-content="<i class='fa fa-mobile'> Dispositivos Moveis</i>"></option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div id="antenasAtivas" class="col-md-3">
                 <select class="selectpicker">
                 </select>
             </div>
-            <div class="col-md-2">
-                <button id="showgraph" class="btn btn-default">Show Graph</button>
-            </div>
+            <!--            
+                    <div class="col-md-2">
+                        <button id="showgraph" class="btn btn-default">Show Graph</button>
+                    </div>
+            -->
         </div>
     </div>
     <div class="row">

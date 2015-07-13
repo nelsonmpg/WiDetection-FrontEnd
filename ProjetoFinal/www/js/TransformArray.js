@@ -2,8 +2,11 @@ var chart = null;
 var oneGraph = false;
 var showNewGraph = false;
 var graphSelect = "";
+var updateInterGraph = null;
+var updateInterval = 1000;
 
 var TransformArray = function (array, antena) {
+//    oneGraph = false;
     this.array = array;
     this.size = array.length;
     this.dataLength = 500;
@@ -19,21 +22,17 @@ var TransformArray = function (array, antena) {
     this.allHosts();
 };
 
+TransformArray.prototype.getArray = function () {
+    return this.array;
+};
+
 TransformArray.prototype.allHosts = function () {
     for (var i in this.array) {
-        this.allhosts.push({
+        this.allhosts[this.array[i].macAddress] = {
             host: this.array[i].macAddress,
             vendor: this.array[i].nameVendor
-        });
+        };
     }
-};
-
-TransformArray.prototype.getAllHosts = function () {
-    return this.allhosts;
-};
-
-TransformArray.prototype.getGraphAllDisps = function () {
-    return this.graphAllDisps;
 };
 
 TransformArray.prototype.valsAllGraph = function () {
@@ -62,6 +61,7 @@ TransformArray.prototype.updateGraph = function (data, update) {
         if (update) {
             if (this.array[i].macAddress == data.new_val.macAddress) {
                 this.array[i].disp = data.new_val.disp;
+                console.log(this.array[i].macAddress);
             }
         }
         for (var j in this.array[i].disp) {
@@ -100,12 +100,13 @@ TransformArray.prototype.createUpdateScaleGraph = function () {
             this.valuesToGraph.push(val);
         }
     } else {
+//        var valPower = this.graphAllDisps[graphSelect][this.graphAllDisps[graphSelect].length - 1].y;
         var val = {
             type: "line",
             xValueType: "dateTime",
             showInLegend: true,
             lineThickness: 5,
-            legendText: graphSelect + " " + this.graphAllDisps[graphSelect][this.graphAllDisps[graphSelect].length - 1].y,
+//            legendText: graphSelect + " " + valPower,
             name: graphSelect,
             click: function (e) {
                 oneGraph = false;
@@ -114,21 +115,14 @@ TransformArray.prototype.createUpdateScaleGraph = function () {
             },
             dataPoints: this.graphAllDisps[graphSelect]
         };
-        chart.options.data[0].legendText = graphSelect + " " + this.graphAllDisps[graphSelect][this.graphAllDisps[graphSelect].length - 1].y;
+//        chart.options.data[0].legendText = valPower;
         this.valuesToGraph.push(val);
-
+//        console.log(this.allhosts[graphSelect]);
     }
     if (showNewGraph) {
         chart = null;
         this.graph(this.localGraph);
         showNewGraph = false;
-    }
-};
-
-TransformArray.prototype.updateGraphToInterval = function () {
-    this.updateGraph("", false);
-    if (chart != null) {
-        chart.render();
     }
 };
 
@@ -205,6 +199,20 @@ TransformArray.prototype.graph = function (local) {
             }
         }
     });
+};
+
+TransformArray.prototype.updateIntervalGraph = function () {
+    var self = this;
+    updateInterGraph = setInterval(function () {
+        self.updateGraph("", false);
+        if (chart != null) {
+            chart.render();
+        }
+    }, updateInterval);
+};
+
+TransformArray.prototype.stopIntervalGraph = function () {
+    clearInterval(updateInterGraph);
 };
 
 TransformArray.prototype.inicializaArray = function () {
