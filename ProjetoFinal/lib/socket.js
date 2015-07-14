@@ -16,11 +16,7 @@ var ServerSocket = function (port, configdb) {
 
     dbData = {
         host: dbConfig.host,
-        port: dbConfig.port}, function (err, conn) {
-        if (err) {
-            throw err;
-        }
-        console.log("Connected to ReThinkdb DataBase.");
+        port: dbConfig.port
     };
 };
 
@@ -319,8 +315,6 @@ ServerSocket.prototype.start = function () {
             console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort);
         });
     });
-
-
     console.log('Server Socket Wait : ' + this.port);
 };
 

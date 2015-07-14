@@ -13,10 +13,6 @@ $(document).ready(function () {
         height: $("body").height() * 0.876
     });
 
-//    $("body").find(".mdl-grid").css({
-//        height: $("body").height() * 0.90
-//    });
-
     showPageToDiv("status.html", "Status");
 
     $("body").on("click", ".addNewPAge", function () {
