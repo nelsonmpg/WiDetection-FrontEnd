@@ -11,6 +11,7 @@
     "body-parser": "^1.12.4",
     "express": "*",
     "rethinkdb": "^2.0.0-1",
-    "socket.io": "*"
+    "socket.io": "*",
+	"google-images2": "*"
   }
 }

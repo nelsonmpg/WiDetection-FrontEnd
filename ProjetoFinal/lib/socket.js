@@ -268,15 +268,15 @@ ServerSocket.prototype.start = function () {
                     }
                 } else {
                     if (line[0] == "a" && line[1] == "n" && line[2] == "t") {
-                        this.clienteSend = line.replace(/(\r\n|\n|\r)/gm, "");
+                        this.clienteSend = line.replace(/(\r\n|\n|\r)/gm, "").trim();
                         console.log(this.clienteSend);
                     }
                     if (line[0] == "l" && line[1] == "a" && line[2] == "t") {
-                        this.lati = line.split("$")[1].replace(/(\r\n|\n|\r)/gm, "");
+                        this.lati = line.split("$")[1].replace(/(\r\n|\n|\r)/gm, "").trim();
                         console.log(this.lati);
                     }
                     if (line[0] == "l" && line[1] == "o" && line[2] == "n") {
-                        this.long = line.split("$")[1].replace(/(\r\n|\n|\r)/gm, "");
+                        this.long = line.split("$")[1].replace(/(\r\n|\n|\r)/gm, "").trim();
                         console.log(this.long);
                     }
                 }

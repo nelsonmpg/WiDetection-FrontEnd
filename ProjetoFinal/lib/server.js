@@ -6,6 +6,7 @@ var socketio = require('socket.io');
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var r = require('rethinkdb');
+var clientIMG = require('google-images2');
 var dbConfig = "";
 var dbData = "";
 /**
@@ -49,7 +50,7 @@ Server.prototype.start = function () {
     // fornece ao cliente a pagina index.html
     this.app.use(express.static(__dirname + './../www'));
 
-    this.app.get("/getDispsAtive/:disp/:ant", function (req, res) {
+    this.app.get("/getDispsActive/:disp/:ant", function (req, res) {
         var tabela = "";
         if (req.params.disp.trim() == "Dispositivos Moveis") {
             tabela = "AntDisp";
@@ -60,12 +61,25 @@ Server.prototype.start = function () {
             return;
         }
         r.connect(dbData).then(function (connection) {
-            return r.db("ProjetoFinal").table("AntDisp").get("ant-NelsonTest").coerceTo('array').run(connection)
+            return r.db(dbConfig.db).table(tabela).get(req.params.ant).do(function (row) {
+                return row("host").filter(function (value) {
+                    return r.now().do(function (time) {
+                        return value("data").gt(r.time(
+                                time.year(),
+                                time.month(),
+                                time.day(),
+                                time.hours().sub(5),
+                                time.minutes(),
+                                time.seconds(),
+                                time.timezone()
+                                ));
+                    });
+                });
+            }).coerceTo('array').run(connection)
                     .finally(function () {
                         connection.close();
                     });
         }).then(function (output) {
-            console.log(output);
             res.json(output);
         }).error(function (err) {
             console.log(err);
@@ -114,8 +128,8 @@ Server.prototype.start = function () {
                             time.year(),
                             time.month(),
                             time.day(),
-                            time.hours(),
-                            time.minutes().sub(5),
+                            time.hours().sub(5),
+                            time.minutes(),
                             time.seconds(),
                             time.timezone()
                             ));
@@ -148,6 +162,51 @@ Server.prototype.start = function () {
         });
     });
 
+    /**
+     * retornar antenas ativas
+     * Falta alterar a consulta para retornar apenas as activas
+     */
+    this.app.get("/getHostByAntena", function (req, res) {
+        r.connect(dbData).then(function (conn) {
+            r.db("ProjetoFinal").table('AntDisp').coerceTo('array')
+                    .run(conn)
+                    .finally(function () {
+                        conn.close();
+                    });
+        }).then(function (output) {
+            res.json(output);
+        }).error(function (err) {
+            res.status(500).json({err: err});
+        });
+    });
+
+    /**
+     * 
+     */
+    this.app.get("/getFabLogo/:fab", function (req, res) {
+        clientIMG.search(req.params.fab + " wikipedia official logo .png", function (err, images) {
+            if (err) {
+                res.json(err);
+            }
+            res.json(images[0].url);
+        });
+    });
+
+
+    this.app.get("/GetDeviceByAntena/:nomeAntena", function (req, res) {//req.params.nomeAntena
+        r.connect(dbData).then(function (conn) {
+            r.db("ProjetoFinal").table('AntDisp').filter(function (row) {
+                return row("nomeAntena").eq(req.params.nomeAntena).default(false)
+            })("host").coerceTo('array').run(conn)
+                    .finally(function () {
+                        conn.close();
+                    });
+        }).then(function (output) {
+            res.json(output);
+        }).error(function (err) {
+            res.status(500).json({err: err});
+        });
+    });
 
     var self = this;
     this.io.on('connection', function (socket) {
@@ -157,21 +216,40 @@ Server.prototype.start = function () {
         console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 
+//        r.connect(dbData).then(function (c) {
+//            return r.db(dbConfig.db).table("DispMoveis").changes().run(c);
+//        }).then(function (cursor) {
+//            cursor.each(function (err, item) {
+//                socket.emit("newDevice", item);
+//            });
+//        });
+//
+//        r.connect(dbData).then(function (c) {
+//            return r.db(dbConfig.db).table("DispAp").changes().run(c);
+//        }).then(function (cursor) {
+//            cursor.each(function (err, item) {
+//                socket.emit("newDevice", item);
+//            });
+//        });
+
+
         r.connect(dbData).then(function (c) {
-            return r.db(dbConfig.db).table("DispMoveis").changes().run(c);
+            return r.db(dbConfig.db).table("AntAp").changes().run(c);
         }).then(function (cursor) {
             cursor.each(function (err, item) {
-                socket.emit("newDevice", item);
+                socket.emit("updateArrayDisp", "Access Points", item);
             });
         });
 
         r.connect(dbData).then(function (c) {
-            return r.db(dbConfig.db).table("DispAp").changes().run(c);
+            return r.db(dbConfig.db).table("AntDisp").changes().run(c);
         }).then(function (cursor) {
             cursor.each(function (err, item) {
-                socket.emit("newDevice", item);
+                socket.emit("updateArrayDisp", "Dispositivos Moveis", item);
             });
         });
+
+
 
     });
     console.log('Server HTTP Wait ' + this.port);

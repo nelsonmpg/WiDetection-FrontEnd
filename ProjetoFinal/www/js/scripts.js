@@ -1,6 +1,8 @@
 var arrayHosts = null;
 var lastDisp = "";
 var lastAntena = "";
+var geocoder;
+var address;
 
 // blind, bounce, clip, drop, explode, fold, highlight, puff, pulsate, shake, slide
 var efectDiv = "drop";
@@ -19,14 +21,15 @@ $(document).ready(function () {
         showPageToDiv($(this).data("page"), $(this).data("name"));
     });
 
-
-    socket.on('newDevice', function (data) {
+    socket.on('updateArrayDisp', function (disp, data) {
         if (arrayHosts != null) {
-            arrayHosts.updateGraph(data, true);
+            arrayHosts.updateArrayTransform(disp, data);
         }
     });
 
-    $("body").on("click", ".mapOpen > p", function () {
+    $("body").on("click", ".mapOpen > p.coordenadas", function () {
+        criarLightBox("map");
+        $("#popup").append(this.parentElement.getAttribute("data-nomeAntena"));
         carregarmapa([["<h4>" + this.parentElement.getAttribute("data-nomeAntena") + "</h4>", this.parentElement.getAttribute("data-lat"), this.parentElement.getAttribute("data-lon")]]);
     });
 
@@ -34,7 +37,21 @@ $(document).ready(function () {
         var disp = $("#selectDisp > .bootstrap-select > .dropdown-menu li.selected a").text();
         var antena = $("#antenasAtivas > .bootstrap-select > .dropdown-menu li.selected a").text();
         startAndShowGraph(disp, antena);
+    });
 
+    $("body").on("click", "#close", function () {
+        $("#hover").fadeOut(300, function () {
+            $(this).remove();
+        });
+        $("#popup").fadeOut(300, function () {
+            $(this).remove();
+        });
+    });
+
+    $("body").on("click", ".showDispDetail", function () {
+        criarLightBox("DispByAntena");
+        $("#popup").prepend(this.getAttribute("data-nomeAntena"));
+        carregarDispAtivos("DispByAntena", this.getAttribute("data-nomeAntena"));
     });
 
 });//Fim Document Ready
@@ -90,23 +107,40 @@ function showPageToDiv(page, name) {
  * @returns {undefined}
  */
 function carregarDivStatus() {
-    console.log("Carrregar Status!");
+    console.log("Carregar Status!");
     $.ajax({
         type: "GET",
         url: "/getAntActive",
         dataType: 'json',
         success: function (data) {
-            for (var ant in data) {
+            var antenas = data;
+            var hostAntena = "";
+            $("#divAntenas").html("");
+//            $.ajax({
+//                type: "GET",
+//                url: "/getHostByAntena/",
+//                dataType: 'json',
+//                success: function (data) {
+            hostAntena = data;
+            for (var ant in antenas) {
+//                        var num_host = 0;
+//                        for (host in hostAntena) {
+//                            if (hostAntena[host].nomeAntena == antenas[ant].nomeAntena) {
+//                                num_host = hostAntena[host].host.length;
+//                            }
+//                        }
                 $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp'>" +
                         "<img src='./images/antena.png'>" +
-                        "<p class='text-center'>" + data[ant].nomeAntena + "</p>" +
-                        "<div class='mapOpen' data-nomeAntena='" + data[ant].nomeAntena + "' data-lat='" + data[ant].latitude + "' data-lon='" + data[ant].longitude + "'>" +
-                        "<p class='text-center'>lat: " + data[ant].latitude + "</p>" +
-                        "<p class='text-center'>lon: " + data[ant].longitude + "</p>" +
+                        "<p class='text-center'>" + antenas[ant].nomeAntena + "</p>" +
+                        "<p class='text-center showDispDetail' data-nomeAntena='" + antenas[ant].nomeAntena + "'> Dispositivos: " + "num_host" + "</p>" +
+                        "<div class='mapOpen' data-nomeAntena='" + antenas[ant].nomeAntena + "' data-lat='" + antenas[ant].latitude + "' data-lon='" + antenas[ant].longitude + "'>" +
+                        "<p class='text-center coordenadas'>lat: " + antenas[ant].latitude + "</p>" +
+                        "<p class='text-center coordenadas'>lon: " + antenas[ant].longitude + "</p>" +
                         "</div></div>");
             }
-// para aparecer a div com os resultados
+
             $("#contentor-principal").show(efectDiv, timeEfect);
+            // para aparecer a div com os resultados
         },
         error: function (error) {
             console.log(JSON.stringify(error));
@@ -186,41 +220,24 @@ function carregarDivAbout() {
  * @returns {undefined}
  */
 function startAndShowGraph(disp, antena) {
-    // se o tipo dos dispositivos anteriormente selecionados seja diferente 
-    // do disp atual
-    if (lastDisp != disp) {
-        // atualiza o valor do estado antigo para o atual
-        lastDisp = disp;
-        lastAntena = antena;
-        // faz o pedido a base de dados de acordo com o tipo dos dispositivos
-        $.ajax({
-            type: "GET",
-            url: "/getAllClientes/" + disp,
-            dataType: 'json',
-            success: function (data) {
-                if (arrayHosts != null) {
-                    arrayHosts.stopIntervalGraph();
-                }
-                arrayHosts = new TransformArray(data, antena);
-                arrayHosts.updateGraph("", false);
-                arrayHosts.updateIntervalGraph();
-                arrayHosts.graph("chartContainer");
-            },
-            error: function (error) {
-                console.log(JSON.stringify(error));
+    // faz o pedido a base de dados de acordo com o tipo dos dispositivos
+    $.ajax({
+        type: "GET",
+        url: "/getDispsActive/" + disp + "/" + antena,
+        dataType: 'json',
+        success: function (data) {
+            if (arrayHosts != null) {
+                arrayHosts.stopIntervalGraph();
             }
-        });
-    } else {
-        if (lastAntena != antena) {
-            lastAntena = antena;
-            arrayHosts.stopIntervalGraph();
-            var arrayData = arrayHosts.getArray();
-            arrayHosts = new TransformArray(arrayData, antena);
-            arrayHosts.updateGraph("", false);
-            arrayHosts.updateIntervalGraph();
-            arrayHosts.graph("chartContainer");
+            arrayHosts = new TransformArray(data, antena, disp);
+//            arrayHosts.updateGraph("", false);
+//            arrayHosts.updateIntervalGraph();
+//            arrayHosts.graph("chartContainer");
+        },
+        error: function (error) {
+            console.log(JSON.stringify(error));
         }
-    }
+    });
 }
 
 //carregar mapa
@@ -244,7 +261,7 @@ function carregarmapa(local) {
         iconURLPrefix + 'yellow-dot.png'
     ];
     var iconsLength = icons.length;
-    var map = new google.maps.Map($("body").find("#addmap")[0], {
+    var map = new google.maps.Map($("body").find("#map")[0], {
         zoom: 20,
         center: new google.maps.LatLng(local[0][1], local[0][2]),
         mapTypeId: google.maps.MapTypeId.HYBRID, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
@@ -285,7 +302,7 @@ function carregarmapa(local) {
             iconCounter = 0;
         }
     }
-    autoCenter(markers, map);
+//    autoCenter(markers, map);
 }
 
 function autoCenter(markers, map) {
@@ -297,4 +314,62 @@ function autoCenter(markers, map) {
     }
     //  Fit these bounds to the map
     map.fitBounds(bounds);
+}
+
+function codeLatLng(lat, lon) {
+    var latlng = new google.maps.LatLng(lat, lon);
+    geocoder.geocode({'location': latlng}, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            if (results[1]) {
+                map.setZoom(11);
+                marker = new google.maps.Marker({
+                    position: latlng,
+                    map: map
+                });
+                infowindow.setContent(results[1].formatted_address);
+                infowindow.open(map, marker);
+            } else {
+                window.alert('No results found');
+            }
+        } else {
+            window.alert('Geocoder failed due to: ' + status);
+        }
+    });
+}
+;
+
+function criarLightBox(divNome) {
+    $("body").append("<div id='hover'></div>");
+    $("body").append("<div id='popup'><div id='" + divNome + "'></div><div id='close'>X</div></div>");
+}
+
+function carregarDispAtivos(div, nomeAntena) {
+    $.ajax({
+        type: "GET",
+        url: "/GetDeviceByAntena/" + nomeAntena,
+        dataType: 'json',
+        success: function (data) {
+            for (var cli in data[0]) {
+                if (data[0][cli].nameVendor != "undefined") {
+                    $.ajax({
+                        type: "GET",
+                        url:  "/getFabLogo/"+data[0][cli].nameVendor,
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                        },
+                        error: function (error) {
+                            console.log(JSON.stringify(error));
+                        }
+                    });
+
+                }
+                $("body").find("#" + div).append("<div class='DispDescript mdl-color--white mdl-shadow--2dp'>Mac.Address: " + data[0][cli].macAddress + " Data: " + data[0][cli].data + " Fabricante: " + data[0][cli].nameVendor + "  </div>");
+            }
+        },
+        error: function (error) {
+            console.log(JSON.stringify(error));
+        }
+    });
+
 }

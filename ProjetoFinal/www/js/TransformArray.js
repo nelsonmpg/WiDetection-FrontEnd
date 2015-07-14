@@ -1,59 +1,101 @@
-var chart = null;
-var oneGraph = false;
-var showNewGraph = false;
-var graphSelect = "";
-var updateInterGraph = null;
-var updateInterval = 1000;
+//var chart = null;
+//var oneGraph = false;
+//var showNewGraph = false;
+//var graphSelect = "";
+//var updateInterGraph = null;
 
-var TransformArray = function (array, antena) {
-//    oneGraph = false;
+var TransformArray = function (array, antena, tipoDisp) {
     this.array = array;
-    this.size = array.length;
+    this.antena = antena.replace(/(\r\n|\n|\r)/gm, "").trim();
+    this.tipoDisp = tipoDisp.replace(/(\r\n|\n|\r)/gm, "").trim();
     this.dataLength = 500;
-    this.allhosts = [];
+    this.updateInterval = 1000;
+    this.listaHostsAndStartValues = [];
     this.graphAllDisps = [];
-    this.antena = antena.replace(/(\r\n|\n|\r)/gm, "");
-    this.valuesToGraph = [];
-    this.localGraph;
-    this.showNewGraph;
-    this.timeRemove = 5;
 
-    this.valsAllGraph();
-    this.allHosts();
+//    console.log(this.inicializaArray());
+
+//    this.valuesToGraph = [];
+//    this.localGraph;
+//    this.showNewGraph;
+//    this.timeRemove = 5;
+
+    this.createListaHostAndStartValues(this.array);
+
+//    this.valsAllGraph();
+//    this.allHosts();
 };
 
-TransformArray.prototype.getArray = function () {
-    return this.array;
-};
-
-TransformArray.prototype.allHosts = function () {
-    for (var i in this.array) {
-        this.allhosts[this.array[i].macAddress] = {
-            host: this.array[i].macAddress,
-            vendor: this.array[i].nameVendor
+TransformArray.prototype.createListaHostAndStartValues = function (lista) {
+    for (var i in lista) {
+        var graphDisp = this.inicializaArray();
+        graphDisp.push({
+            x: new Date(),
+            y: 1 * lista[i].Power
+        });
+        if (graphDisp.length > this.dataLength) {
+            graphDisp.shift();
+        }
+        this.listaHostsAndStartValues[lista[i].macAddress] = {
+            Power: lista[i].Power,
+            data: lista[i].data,
+            macAddress: lista[i].macAddress,
+            nameVendor: lista[i].nameVendor,
+            listaValues: graphDisp
         };
     }
 };
 
-TransformArray.prototype.valsAllGraph = function () {
-    for (var i in this.array) {
-        for (var j in this.array[i].disp) {
-            if (this.array[i].disp[j].name.replace(/(\r\n|\n|\r)/gm, "") == this.antena) {
-                var graphDisp = this.inicializaArray();
-                for (var k in this.array[i].disp[j].values) {
-                    graphDisp.push({
-                        x: new Date(),
-                        y: 1 * this.array[i].disp[j].values[k].Power
-                    });
-                    if (graphDisp.length > this.dataLength) {
-                        graphDisp.shift();
-                    }
-                }
-                this.graphAllDisps[this.array[i].macAddress] = graphDisp;
-            }
+TransformArray.prototype.updateListaHostAndStartValues = function (newValues) {
+    for (var i in newValues.host) {
+        var val = this.listaHostsAndStartValues[newValues.host[i].macAddress];
+        var graphDisp = val.listaValues;
+        graphDisp.push({
+            x: new Date(),
+            y: 1 * newValues.host[i].Power
+        });
+        if (graphDisp.length > this.dataLength) {
+            graphDisp.shift();
+        }
+        this.listaHostsAndStartValues[newValues.host[i].macAddress] = {
+            Power: newValues.host[i].Power,
+            data: newValues.host[i].data,
+            macAddress: newValues.host[i].macAddress,
+            nameVendor: newValues.host[i].nameVendor,
+            listaValues: graphDisp
+        }; 
+    }
+};
+
+TransformArray.prototype.updateArrayTransform = function (disp, values) {
+    if (disp.replace(/(\r\n|\n|\r)/gm, "").trim() == this.tipoDisp &&
+            values.new_val.nomeAntena.replace(/(\r\n|\n|\r)/gm, "").trim() == this.antena) {
+        if (this.listaHostsAndStartValues.length = values.new_val.host.length) {
+            this.updateListaHostAndStartValues(values.new_val);
+            console.log(this.listaHostsAndStartValues);
         }
     }
 };
+
+//TransformArray.prototype.valsAllGraph = function () {
+//    for (var i in this.array) {
+//        for (var j in this.array[i].disp) {
+//            if (this.array[i].disp[j].name.replace(/(\r\n|\n|\r)/gm, "") == this.antena) {
+//                var graphDisp = this.inicializaArray();
+//                for (var k in this.array[i].disp[j].values) {
+//                    graphDisp.push({
+//                        x: new Date(),
+//                        y: 1 * this.array[i].disp[j].values[k].Power
+//                    });
+//                    if (graphDisp.length > this.dataLength) {
+//                        graphDisp.shift();
+//                    }
+//                }
+//                this.graphAllDisps[this.array[i].macAddress] = graphDisp;
+//            }
+//        }
+//    }
+//};
 
 TransformArray.prototype.updateGraph = function (data, update) {
     var graphDisp = [];
@@ -124,23 +166,6 @@ TransformArray.prototype.createUpdateScaleGraph = function () {
         this.graph(this.localGraph);
         showNewGraph = false;
     }
-};
-
-TransformArray.prototype.diffDates = function (last_date) {
-    var start_actual_time = last_date;
-    var end_actual_time = new Date().toLocaleString();
-
-    start_actual_time = new Date(start_actual_time);
-    end_actual_time = new Date(end_actual_time);
-
-    var diff = end_actual_time - start_actual_time;
-
-    var diffSeconds = diff / 1000;
-    var HH = Math.floor(diffSeconds / 3600);
-    var MM = Math.floor(diffSeconds % 3600) / 60;
-
-//    var formatted = ((HH < 10) ? ("0" + HH) : HH) + " : " + ((MM < 10) ? ("0" + MM) : MM);
-    return ((HH > 0) ? true : (MM > this.timeRemove) ? true : false);
 };
 
 TransformArray.prototype.graph = function (local) {
@@ -215,11 +240,30 @@ TransformArray.prototype.stopIntervalGraph = function () {
     clearInterval(updateInterGraph);
 };
 
+TransformArray.prototype.diffDates = function (last_date) {
+    var start_actual_time = last_date;
+    var end_actual_time = new Date().toLocaleString();
+
+    start_actual_time = new Date(start_actual_time);
+    end_actual_time = new Date(end_actual_time);
+
+    var diff = end_actual_time - start_actual_time;
+
+    var diffSeconds = diff / 1000;
+    var HH = Math.floor(diffSeconds / 3600);
+    var MM = Math.floor(diffSeconds % 3600) / 60;
+
+//    var formatted = ((HH < 10) ? ("0" + HH) : HH) + " : " + ((MM < 10) ? ("0" + MM) : MM);
+    return ((HH > 0) ? true : (MM > this.timeRemove) ? true : false);
+};
+
 TransformArray.prototype.inicializaArray = function () {
+    var d = new Date().getTime();
+    var newTime = d - (this.dataLength * 1000);
     var vals = [];
     for (var i = 0; i < this.dataLength; i++) {
         vals.push({
-            x: new Date(),
+            x: new Date(newTime + (i * 1000)),
             y: -127
         });
     }
