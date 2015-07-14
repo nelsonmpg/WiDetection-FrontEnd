@@ -1,11 +1,9 @@
 var cp = require('child_process');
 var http = require('http');
-var Server = require('./lib/server');
-var ServerSocket = require('./lib/socket');
 var r = require('rethinkdb');
-
+var dbData;
 var url = "http://web.stanford.edu/dept/its/projects/desktop/snsr/nmap-mac-prefixes.txt";
-var connection = null;
+
 var dbConfig = {
     host: '185.15.22.55',
     port: 28015,
@@ -20,19 +18,25 @@ var dbConfig = {
     }
 };
 
-r.connect({
+dbData = {
     host: dbConfig.host,
     port: dbConfig.port}, function (err, conn) {
     if (err) {
         throw err;
     }
-    connection = conn;
     console.log("Connected to ReThinkdb DataBase.");
-});
+};
 
 function startServers() {
-    new ServerSocket(8888, r, connection, dbConfig).start();
-    new Server(8080, r, connection, dbConfig).start();
+    var args1 = {port: 8080, configdb: dbConfig};
+    var child1 = cp.fork('./lib/server');
+    child1.send(args1);
+
+    var args2 = {port: 8888, configdb: dbConfig};
+    var child2 = cp.fork('./lib/socket');
+    child2.send(args2);
+
+    console.log("****************** Servers Start ******************");
 }
 
 r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection) {
@@ -49,46 +53,54 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
                 });
             })(tbl);
         }
-        r.db(dbConfig.db).table("tblPrefix").coerceTo("array").count().run(connection, function (err, resul) {
-            if (err) {
-                console.log(err);
-            }
-//            console.log(resul);
-            if (!(resul > 0) || typeof resul == "undefined") {
-                download(url, function (data) {
-                    if (data) {
-                        var lines = data.split("\n");
-                        for (var i in lines) {
-                            var line = lines[i].trim();
-                            if (line[0] != "#" && line.length > 5) {
-                                var prefix = line.substring(0, 6);
-                                var vendor = line.substring(7, line.length);
-                                var keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
-                                r.db(dbConfig.db).table("tblPrefix").get(keyPrefix).replace(function (row) {
-                                    return r.branch(
-                                            row.eq(null),
-                                            {
-                                                "prefix": keyPrefix,
-                                                "vendor": vendor
-                                            }, row)
-                                }).run(connection, function (err, resul) {
-                                    if (err) {
-                                        console.log(err);
-                                    }
-//                            console.log(resul);
-                                });
-                            }
-                        }
-                        startServers();
-                    } else {
-                        console.log("error");
+    });
+});
+
+
+r.connect(dbData).then(function (conn) {
+    return r.db(dbConfig.db).table("tblPrefix").coerceTo("array").count().run(conn)
+            .finally(function () {
+                conn.close();
+            });
+}).then(function (resul) {
+    // teste se a tabela dos prefixos esta vazia
+    if (!(resul > 0) || typeof resul == "undefined") {
+        download(url, function (data) {
+            if (data) {
+                var lines = data.split("\n");
+                var docsInsert = [];
+                for (var i in lines) {
+                    var line = lines[i].trim();
+                    if (line[0] != "#" && line.length > 5) {
+                        var prefix = line.substring(0, 6);
+                        var vendor = line.substring(7, line.length);
+                        var keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
+                        docsInsert.push({
+                            "prefix": keyPrefix,
+                            "vendor": vendor
+                        });
                     }
+                }
+                r.connect(dbData).then(function (conn) {
+                   return r.db(dbConfig.db).table("tblPrefix").insert(docsInsert).run(conn)
+                            .finally(function () {
+                                conn.close();
+                            });
+                }).then(function (output) {
+                    console.log("Query output:", output);
+                }).error(function (err) {
+                    console.log("Failed:", err);
                 });
-            } else {
                 startServers();
+            } else {
+                console.log("error");
             }
         });
-    });
+    } else {
+        startServers();
+    }
+}).error(function (err) {
+    console.log(err);
 });
 
 

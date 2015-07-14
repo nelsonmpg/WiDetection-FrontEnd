@@ -1,261 +1,305 @@
-//Better to construct options first and then pass it as a parameter
-var options = {
-    title: {
-        text: "Annual Expenses"
-    },
-    animationEnabled: true,
-    axisY: {
-        includeZero: false,
-        prefix: "$ "
-    },
-    toolTip: {
-        shared: true,
-        content: "<span style='\"'color: {color};'\"'><strong>{name}</strong></span> <span style='\"'color: dimgrey;'\"'>${y}</span> "
-    },
-    legend: {
-        fontSize: 14
-    },
-    data: [
-        {
-            type: "splineArea",
-            showInLegend: true,
-            name: "Salaries",
-            color: "rgba(54,158,173,.6)",
-            dataPoints: [
-                {x: new Date(2012, 2), y: 30000},
-                {x: new Date(2012, 3), y: 35000},
-                {x: new Date(2012, 4), y: 30000},
-                {x: new Date(2012, 5), y: 30400},
-                {x: new Date(2012, 6), y: 20900},
-                {x: new Date(2012, 7), y: 31000},
-                {x: new Date(2012, 8), y: 30200},
-                {x: new Date(2012, 9), y: 30000},
-                {x: new Date(2012, 10), y: 33000},
-                {x: new Date(2012, 11), y: 38000},
-                {x: new Date(2013, 0), y: 38900},
-                {x: new Date(2013, 1), y: 39000}
+var arrayHosts = null;
+var lastDisp = "";
+var lastAntena = "";
 
-            ]
-        },
-        {
-            type: "splineArea",
-            showInLegend: true,
-            name: "Office Cost",
-            color: "rgba(134,180,2,.7)",
-            dataPoints: [
-                {x: new Date(2012, 2), y: 20100},
-                {x: new Date(2012, 3), y: 16000},
-                {x: new Date(2012, 4), y: 14000},
-                {x: new Date(2012, 5), y: 18000},
-                {x: new Date(2012, 6), y: 18000},
-                {x: new Date(2012, 7), y: 21000},
-                {x: new Date(2012, 8), y: 22000},
-                {x: new Date(2012, 9), y: 25000},
-                {x: new Date(2012, 10), y: 23000},
-                {x: new Date(2012, 11), y: 25000},
-                {x: new Date(2013, 0), y: 26000},
-                {x: new Date(2013, 1), y: 25000}
-
-            ]
-        },
-        {
-            type: "splineArea",
-            showInLegend: true,
-            name: "Entertainment",
-            color: "rgba(194,70,66,.6)",
-            dataPoints: [
-                {x: new Date(2012, 2), y: 10100},
-                {x: new Date(2012, 3), y: 6000},
-                {x: new Date(2012, 4), y: 3400},
-                {x: new Date(2012, 5), y: 4000},
-                {x: new Date(2012, 6), y: 9000},
-                {x: new Date(2012, 7), y: 3900},
-                {x: new Date(2012, 8), y: 4200},
-                {x: new Date(2012, 9), y: 5000},
-                {x: new Date(2012, 10), y: 14300},
-                {x: new Date(2012, 11), y: 12300},
-                {x: new Date(2013, 0), y: 8300},
-                {x: new Date(2013, 1), y: 6300}
-
-            ]
-        },
-        {
-            type: "splineArea",
-            showInLegend: true,
-            color: "rgba(127,96,132,.6)",
-            name: "Maintenance",
-            dataPoints: [
-                {x: new Date(2012, 2), y: 1700},
-                {x: new Date(2012, 3), y: 2600},
-                {x: new Date(2012, 4), y: 1000},
-                {x: new Date(2012, 5), y: 1400},
-                {x: new Date(2012, 6), y: 900},
-                {x: new Date(2012, 7), y: 1000},
-                {x: new Date(2012, 8), y: 1200},
-                {x: new Date(2012, 9), y: 5000},
-                {x: new Date(2012, 10), y: 1300},
-                {x: new Date(2012, 11), y: 2300},
-                {x: new Date(2013, 0), y: 2800},
-                {x: new Date(2013, 1), y: 1300}
-
-            ]
-        }
-
-    ]
-};
-var xVal = 0;
-var yVal = -100;
-var updateInterval = 1000;
-var dataLength = 350; // number of dataPoints visible at any point
-var dps = []; // dataPoints
-var dps2 = []; // dataPoints
-var dps3 = []; // dataPoints
+// blind, bounce, clip, drop, explode, fold, highlight, puff, pulsate, shake, slide
+var efectDiv = "drop";
+var timeEfect = 200;
 
 $(document).ready(function () {
     var socket = io.connect(window.location.href);
-    $("#updatePrefix").click(function () {
-//    $.getJSON("/updatePrefix", function (data) {
-//            console.log("success");
-//            $("#result").append(JSON.stringify(data) + "<br>");
-//        }).fail(function () {
-//            console.log("error");
-//        });
-//        
+
+    $("body").find("#contentor-principal").css({
+        height: $("body").height() * 0.876
+    });
+
+//    $("body").find(".mdl-grid").css({
+//        height: $("body").height() * 0.90
+//    });
+
+    showPageToDiv("status.html", "Status");
+
+    $("body").on("click", ".addNewPAge", function () {
+        showPageToDiv($(this).data("page"), $(this).data("name"));
+    });
+
+
+    socket.on('newDevice', function (data) {
+        if (arrayHosts != null) {
+            arrayHosts.updateGraph(data, true);
+        }
+    });
+
+    $("body").on("click", ".mapOpen > p", function () {
+        carregarmapa([["<h4>" + this.parentElement.getAttribute("data-nomeAntena") + "</h4>", this.parentElement.getAttribute("data-lat"), this.parentElement.getAttribute("data-lon")]]);
+    });
+
+    $("body").on('click', '#selectDisp > .bootstrap-select > .dropdown-menu li a, #antenasAtivas > .bootstrap-select > .dropdown-menu li a', function () {
+        var disp = $("#selectDisp > .bootstrap-select > .dropdown-menu li.selected a").text();
+        var antena = $("#antenasAtivas > .bootstrap-select > .dropdown-menu li.selected a").text();
+        startAndShowGraph(disp, antena);
+
+    });
+
+});//Fim Document Ready
+
+/**
+ * Chama a funcao de acordo com o botao do menu carregado e atualiza o nome do 
+ * separador na barra
+ * @param {type} page
+ * @param {type} name
+ * @returns {undefined}
+ */
+function showPageToDiv(page, name) {
+    $(".mdl-layout-title").html(name);
+    var page = page; //data-page
+    if ($("#contentor-principal").data("page") != page) {
+        $("#contentor-principal").data("page", page);
+        $("#contentor-principal").effect(efectDiv, timeEfect, function () {
+            $.ajax({
+                method: 'GET',
+                url: "./html/" + page,
+                cache: false,
+                dataType: "text",
+                success: function (data) {
+                    $("#contentor-principal").html(data);
+                    switch (page) {
+                        case "status.html":
+                            carregarDivStatus();
+                            break;
+                        case "Dashboard.html":
+                            carregarDivDashboard();
+                            break;
+                        case "Estatistica.html":
+                            carregarDivEstatistica();
+                            break;
+                        case "Acerca_De.html":
+                            carregarDivAbout();
+                            break;
+                    }
+                },
+                error: function (err) {
+                    alert("error " + err);
+                },
+                complete: function () {
+                    //alert("finished");
+                }
+            });
+
+        });
+    }
+}
+
+/**
+ * Carrega o layout da div do status
+ * @returns {undefined}
+ */
+function carregarDivStatus() {
+    console.log("Carrregar Status!");
+    $.ajax({
+        type: "GET",
+        url: "/getAntActive",
+        dataType: 'json',
+        success: function (data) {
+            for (var ant in data) {
+                $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp'>" +
+                        "<img src='./images/antena.png'>" +
+                        "<p class='text-center'>" + data[ant].nomeAntena + "</p>" +
+                        "<div class='mapOpen' data-nomeAntena='" + data[ant].nomeAntena + "' data-lat='" + data[ant].latitude + "' data-lon='" + data[ant].longitude + "'>" +
+                        "<p class='text-center'>lat: " + data[ant].latitude + "</p>" +
+                        "<p class='text-center'>lon: " + data[ant].longitude + "</p>" +
+                        "</div></div>");
+            }
+// para aparecer a div com os resultados
+            $("#contentor-principal").show(efectDiv, timeEfect);
+        },
+        error: function (error) {
+            console.log(JSON.stringify(error));
+        }
+    });
+}
+
+/**
+ * Carrega a div do Dashboard
+ * @returns {undefined}
+ */
+function carregarDivDashboard() {
+    console.log("Carrregar Dashboard!");
+    lastDisp = "";
+    lastAntena = "";
+    $("body").find('.selectpicker').selectpicker();
+    $.ajax({
+        type: "GET",
+        url: "/getAntenasAtivas",
+        dataType: 'json',
+        success: function (data) {
+            var listOpt = "";
+            for (var i in data) {
+                listOpt += "<option data-ant='" + data[i].nomeAntena + "'>" + data[i].nomeAntena + "</option>";
+            }
+            if (data.length == 0) {
+                $('#selectDisp > .bootstrap-select > .dropdown-menu li a').prop('disabled', true);
+                $('#selectDisp > .bootstrap-select > .dropdown-menu li a').selectpicker('refresh');
+                $('#antenasAtivas > .bootstrap-select > .dropdown-menu li a').prop('disabled', true);
+                $('#antenasAtivas > .bootstrap-select > .dropdown-menu li a').selectpicker('refresh');
+
+            } else {
+                $("body").find('#antenasAtivas > select').html(listOpt).selectpicker('refresh');
+                var disp = $("#selectDisp > .bootstrap-select > .dropdown-menu li.selected a").text();
+                var antena = $("#antenasAtivas > .bootstrap-select > .dropdown-menu li.selected a").text();
+                startAndShowGraph(disp, antena);
+            }
+
+            // para aparecer a div com os resultados
+            $("#contentor-principal").show(efectDiv, timeEfect);
+        },
+        error: function (error) {
+            console.log(JSON.stringify(error));
+        }
+    });
+}
+
+/**
+ * Carrega a div da estatistica
+ * @returns {undefined}
+ */
+function carregarDivEstatistica() {
+    console.log("Carrregar Estatistica!");
+
+
+// para aparecer a div com os resultados
+    $("#contentor-principal").show(efectDiv, timeEfect);
+}
+
+/**
+ * Carrea a div do Acerca de
+ * @returns {undefined}
+ */
+function carregarDivAbout() {
+    console.log("Carrregar About!");
+
+
+// para aparecer a div com os resultados
+    $("#contentor-principal").show(efectDiv, timeEfect);
+}
+
+/**
+ * Mostra o grafico na sua div de acordo com a selecao dos 
+ * dropdrowns selecionados
+ * @param {type} disp tipo dos dispositivos
+ * @param {type} antena antena selecionada
+ * @returns {undefined}
+ */
+function startAndShowGraph(disp, antena) {
+    // se o tipo dos dispositivos anteriormente selecionados seja diferente 
+    // do disp atual
+    if (lastDisp != disp) {
+        // atualiza o valor do estado antigo para o atual
+        lastDisp = disp;
+        lastAntena = antena;
+        // faz o pedido a base de dados de acordo com o tipo dos dispositivos
         $.ajax({
             type: "GET",
-            url: "/updatePrefix",
+            url: "/getAllClientes/" + disp,
             dataType: 'json',
             success: function (data) {
-                $("#result").append(JSON.stringify(data) + "<br>");
+                if (arrayHosts != null) {
+                    arrayHosts.stopIntervalGraph();
+                }
+                arrayHosts = new TransformArray(data, antena);
+                arrayHosts.updateGraph("", false);
+                arrayHosts.updateIntervalGraph();
+                arrayHosts.graph("chartContainer");
             },
             error: function (error) {
                 console.log(JSON.stringify(error));
             }
         });
+    } else {
+        if (lastAntena != antena) {
+            lastAntena = antena;
+            arrayHosts.stopIntervalGraph();
+            var arrayData = arrayHosts.getArray();
+            arrayHosts = new TransformArray(arrayData, antena);
+            arrayHosts.updateGraph("", false);
+            arrayHosts.updateIntervalGraph();
+            arrayHosts.graph("chartContainer");
+        }
+    }
+}
+
+//carregar mapa
+function carregarmapa(local) {
+//    alert();
+    // Define your locations: HTML content for the info window, latitude, longitude
+    //var locations = [['<h4>Bondi Beach</h4>', -33.890542, 151.274856],['<h4>Coogee Beach</h4>', -33.923036, 151.259052],['<h4>Cronulla Beach</h4>', -34.028249, 151.157507],['<h4>Manly Beach</h4>', -33.80010128657071, 151.28747820854187],['<h4>Maroubra Beach</h4>', -33.950198, 151.259302]];
+    var locations = local;
+    var markers = new Array();
+
+    // Setup the different icons and shadows
+    var iconURLPrefix = 'http://maps.google.com/mapfiles/ms/icons/';
+
+    var icons = [
+        iconURLPrefix + 'red-dot.png',
+        iconURLPrefix + 'green-dot.png',
+        iconURLPrefix + 'blue-dot.png',
+        iconURLPrefix + 'orange-dot.png',
+        iconURLPrefix + 'purple-dot.png',
+        iconURLPrefix + 'pink-dot.png',
+        iconURLPrefix + 'yellow-dot.png'
+    ];
+    var iconsLength = icons.length;
+    var map = new google.maps.Map($("body").find("#addmap")[0], {
+        zoom: 20,
+        center: new google.maps.LatLng(local[0][1], local[0][2]),
+        mapTypeId: google.maps.MapTypeId.HYBRID, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
+        mapTypeControl: false,
+        streetViewControl: false,
+        panControl: false,
+        zoomControlOptions: {
+            position: google.maps.ControlPosition.LEFT_BOTTOM
+        }
     });
 
-    $("#getClientes").click(function () {
-        $.getJSON("/getClientes/Clientes/cliente/48:5D:60:3C:32:44", function (data) {
-            console.log("success");
-            $("#result").html(JSON.stringify(data));
-        }).done(function () {
-            console.log("second success");
-        }).fail(function () {
-            console.log("error");
-        }).always(function () {
-            console.log("complete");
+    var infowindow = new google.maps.InfoWindow({
+        maxWidth: 160
+    });
+
+    var iconCounter = 0;
+
+    // Add the markers and infowindows to the map
+    for (var i = 0; i < locations.length; i++) {
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+            map: map,
+            icon: icons[iconCounter]
         });
-//        $.ajax({
-//            type: "GET",
-//            url: "/getClientes/Clientes/cliente/48:5D:60:3C:32:44",
-//            dataType: 'json',
-//            success: function (data) {
-//                $("#result").html(JSON.stringify(data));
-//            },
-//            error: function (error) {
-//                console.log(JSON.stringify(error));
-//            }
-//        });
-    });
-    socket.on('newDevice', function (data) {
-//        console.log(data.new_val.disp);
-    });
-    
-    $("#chartContainer").CanvasJSChart(options);
-    
-    var updateChart = function (count) {
-        count = count || 1;
-        // count is number of times loop runs to generate random dataPoints.
-        for (var j = 0; j < count; j++) {
-//            yVal = yVal + Math.round(5 + Math.random() * (-5 - 5));
-            var d = new Date();
-            dps.push({
-                x: d,
-                y: yVal + Math.round(55 + Math.random() * (-5 - 5))
-            });
-            dps2.push({
-                x: d,
-                y: yVal + Math.round(45 + Math.random() * (-5 - 5))
-            });
-            dps3.push({
-                x: d,
-                y: yVal + Math.round(15 + Math.random() * (-5 - 5))
-            });
-            xVal++;
-        };
-        
-        if (dps.length > dataLength) {
-            dps.shift();
-            dps2.shift();
-            dps3.shift();
-        }
-        // updating legend text with  updated with y Value 
-        chart.options.data[0].legendText = " Teste1  " + dps[dps.length - 1].y;
-        chart.options.data[1].legendText = " Teste2  " + dps2[dps2.length - 1].y;
-        chart.options.data[2].legendText = " Teste3  " + dps3[dps3.length - 1].y;
-        chart.render();
-    };
-    var chart = new CanvasJS.Chart("chartContainer", {
-        zoomEnabled: true,
-//        theme: "theme3",
-        title: {
-            text: "Power dos Dispositivos Encontrados"
-        },
-        toolTip: {
-            shared: true
-        },
-        axisY: {
-            title: "Power"
-        },
-        axisX: {
-            valueFormatString: "H:mm:ss",
-            interval: 1,
-            labelAngle: -50,
-            title: "Tempo"
-        },
-        data: [{
-                type: "line",
-                xValueType: "dateTime",
-                showInLegend: true,
-                name: "teste1",
-                dataPoints: dps
-            }, {
-                type: "line",
-                xValueType: "dateTime",
-                showInLegend: true,
-                name: "teste2",
-                dataPoints: dps2
-            }, {
-                type: "line",
-                xValueType: "dateTime",
-                showInLegend: true,
-                name: "teste3",
-                dataPoints: dps3
-            }],
-        legend: {
-            horizontalAlign: "right", // left, center ,right 
-            verticalAlign: "center", // top, center, bottom,
-            fontSize: 20,
-            fontWeight: "bold",
-            fontFamily: "calibri",
-            fontColor: "dimGrey",
-            cursor: "pointer",
-            itemclick: function (e) {
-                if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                    e.dataSeries.visible = false;
-                } else {
-                    e.dataSeries.visible = true;
-                }
-                chart.render();
-            }
-        }
-    });
-    // generates first set of dataPoints
-    updateChart(dataLength);
-    // update chart after specified time. 
-    setInterval(function () {
-        updateChart();
-    }, updateInterval);
 
+        markers.push(marker);
 
-});
+        google.maps.event.addListener(marker, 'click', (function (marker, i) {
+            return function () {
+                infowindow.setContent(locations[i][0]);
+                infowindow.open(map, marker);
+            };
+        })(marker, i));
+
+        iconCounter++;
+        // We only have a limited number of possible icon colors, so we may have to restart the counter
+        if (iconCounter >= iconsLength) {
+            iconCounter = 0;
+        }
+    }
+    autoCenter(markers, map);
+}
+
+function autoCenter(markers, map) {
+    //  Create a new viewpoint bound
+    var bounds = new google.maps.LatLngBounds();
+    //  Go through each...
+    for (var i = 0; i < markers.length; i++) {
+        bounds.extend(markers[i].position);
+    }
+    //  Fit these bounds to the map
+    map.fitBounds(bounds);
+}

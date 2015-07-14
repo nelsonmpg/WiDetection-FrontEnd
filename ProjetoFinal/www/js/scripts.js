@@ -1,12 +1,10 @@
 var arrayHosts = null;
-var dps = [];
-var dataLength = 100;
-var timeEfect = 200;
 var lastDisp = "";
 var lastAntena = "";
 
 // blind, bounce, clip, drop, explode, fold, highlight, puff, pulsate, shake, slide
 var efectDiv = "drop";
+var timeEfect = 200;
 
 $(document).ready(function () {
     var socket = io.connect(window.location.href);
@@ -87,7 +85,6 @@ function showPageToDiv(page, name) {
                     //alert("finished");
                 }
             });
-
         });
     }
 }
@@ -236,6 +233,7 @@ function carregarmapa(local) {
     // Define your locations: HTML content for the info window, latitude, longitude
     //var locations = [['<h4>Bondi Beach</h4>', -33.890542, 151.274856],['<h4>Coogee Beach</h4>', -33.923036, 151.259052],['<h4>Cronulla Beach</h4>', -34.028249, 151.157507],['<h4>Manly Beach</h4>', -33.80010128657071, 151.28747820854187],['<h4>Maroubra Beach</h4>', -33.950198, 151.259302]];
     var locations = local;
+    var markers = new Array();
 
     // Setup the different icons and shadows
     var iconURLPrefix = 'http://maps.google.com/mapfiles/ms/icons/';
@@ -251,8 +249,7 @@ function carregarmapa(local) {
     ];
     var iconsLength = icons.length;
     var map = new google.maps.Map($("body").find("#addmap")[0], {
-//    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 2,
+        zoom: 20,
         center: new google.maps.LatLng(local[0][1], local[0][2]),
         mapTypeId: google.maps.MapTypeId.HYBRID, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
         mapTypeControl: false,
@@ -267,7 +264,6 @@ function carregarmapa(local) {
         maxWidth: 160
     });
 
-    var markers = new Array();
     var iconCounter = 0;
 
     // Add the markers and infowindows to the map
@@ -284,7 +280,7 @@ function carregarmapa(local) {
             return function () {
                 infowindow.setContent(locations[i][0]);
                 infowindow.open(map, marker);
-            }
+            };
         })(marker, i));
 
         iconCounter++;
@@ -293,18 +289,16 @@ function carregarmapa(local) {
             iconCounter = 0;
         }
     }
-
-    function autoCenter() {
-        //  Create a new viewpoint bound
-        var bounds = new google.maps.LatLngBounds();
-        //  Go through each...
-        for (var i = 0; i < markers.length; i++) {
-            bounds.extend(markers[i].position);
-        }
-        //  Fit these bounds to the map
-        map.fitBounds(bounds);
-    }
-
-    autoCenter();
+    autoCenter(markers, map);
 }
 
+function autoCenter(markers, map) {
+    //  Create a new viewpoint bound
+    var bounds = new google.maps.LatLngBounds();
+    //  Go through each...
+    for (var i = 0; i < markers.length; i++) {
+        bounds.extend(markers[i].position);
+    }
+    //  Fit these bounds to the map
+    map.fitBounds(bounds);
+}
