@@ -1,176 +1,144 @@
-//var chart = null;
-//var oneGraph = false;
-//var showNewGraph = false;
-//var graphSelect = "";
-//var updateInterGraph = null;
-
+/**
+ * 
+ * @param {type} array
+ * @param {type} antena
+ * @param {type} tipoDisp
+ * @returns {TransformArray}
+ */
 var TransformArray = function (array, antena, tipoDisp) {
     this.array = array;
     this.antena = antena.replace(/(\r\n|\n|\r)/gm, "").trim();
     this.tipoDisp = tipoDisp.replace(/(\r\n|\n|\r)/gm, "").trim();
-    this.dataLength = 500;
+    this.dataLength = 200;
     this.updateInterval = 1000;
-    this.listaHostsAndStartValues = [];
+    this.listaHostsStartAndUpdateValues = [];
     this.graphAllDisps = [];
+    this.valuesToGraph = [];
+    this.localGraph;
+    this.chart = null;
+    this.oneGraph = false;
+    this.graphSelect;
+    this.showNewGraph = false;
+    this.lastSizeListArray = 1;
+    this.timeRemove = 5;
+    this.updateInterGraph = null;
 
-//    console.log(this.inicializaArray());
-
-//    this.valuesToGraph = [];
-//    this.localGraph;
-//    this.showNewGraph;
-//    this.timeRemove = 5;
-
-    this.createListaHostAndStartValues(this.array);
-
-//    this.valsAllGraph();
-//    this.allHosts();
+    this.createAndUpdateListaHostAndValues(this.array);
 };
 
-TransformArray.prototype.createListaHostAndStartValues = function (lista) {
+TransformArray.prototype.createAndUpdateListaHostAndValues = function (lista) {
     for (var i in lista) {
-        var graphDisp = this.inicializaArray();
-        graphDisp.push({
-            x: new Date(),
-            y: 1 * lista[i].Power
-        });
-        if (graphDisp.length > this.dataLength) {
-            graphDisp.shift();
+        if (!this.diffDates(lista[i].data)) {
+            var val = this.listaHostsStartAndUpdateValues[lista[i].macAddress];
+            var graphDisp = (typeof val == "undefined") ? this.inicializaArray() : val.listaValues;
+            graphDisp.push({
+                x: new Date(),
+                y: 1 * lista[i].Power
+            });
+            if (graphDisp.length > this.dataLength) {
+                graphDisp.shift();
+            }
+            this.listaHostsStartAndUpdateValues[lista[i].macAddress] = {
+                Power: lista[i].Power,
+                data: lista[i].data,
+                macAddress: lista[i].macAddress,
+                nameVendor: lista[i].nameVendor,
+                listaValues: graphDisp
+            };
         }
-        this.listaHostsAndStartValues[lista[i].macAddress] = {
-            Power: lista[i].Power,
-            data: lista[i].data,
-            macAddress: lista[i].macAddress,
-            nameVendor: lista[i].nameVendor,
-            listaValues: graphDisp
-        };
     }
-};
-
-TransformArray.prototype.updateListaHostAndStartValues = function (newValues) {
-    for (var i in newValues.host) {
-        var val = this.listaHostsAndStartValues[newValues.host[i].macAddress];
-        var graphDisp = val.listaValues;
-        graphDisp.push({
-            x: new Date(),
-            y: 1 * newValues.host[i].Power
-        });
-        if (graphDisp.length > this.dataLength) {
-            graphDisp.shift();
-        }
-        this.listaHostsAndStartValues[newValues.host[i].macAddress] = {
-            Power: newValues.host[i].Power,
-            data: newValues.host[i].data,
-            macAddress: newValues.host[i].macAddress,
-            nameVendor: newValues.host[i].nameVendor,
-            listaValues: graphDisp
-        }; 
+    var sizeArr = this.countHosts(this.listaHostsStartAndUpdateValues);
+    if (this.lastSizeListArray != sizeArr) {
+        this.lastSizeListArray = sizeArr;
+        this.showNewGraph = true;
     }
 };
 
 TransformArray.prototype.updateArrayTransform = function (disp, values) {
     if (disp.replace(/(\r\n|\n|\r)/gm, "").trim() == this.tipoDisp &&
             values.new_val.nomeAntena.replace(/(\r\n|\n|\r)/gm, "").trim() == this.antena) {
-        if (this.listaHostsAndStartValues.length = values.new_val.host.length) {
-            this.updateListaHostAndStartValues(values.new_val);
-            console.log(this.listaHostsAndStartValues);
-        }
+        this.createAndUpdateListaHostAndValues(values.new_val.host);
     }
 };
 
-//TransformArray.prototype.valsAllGraph = function () {
-//    for (var i in this.array) {
-//        for (var j in this.array[i].disp) {
-//            if (this.array[i].disp[j].name.replace(/(\r\n|\n|\r)/gm, "") == this.antena) {
-//                var graphDisp = this.inicializaArray();
-//                for (var k in this.array[i].disp[j].values) {
-//                    graphDisp.push({
-//                        x: new Date(),
-//                        y: 1 * this.array[i].disp[j].values[k].Power
-//                    });
-//                    if (graphDisp.length > this.dataLength) {
-//                        graphDisp.shift();
-//                    }
-//                }
-//                this.graphAllDisps[this.array[i].macAddress] = graphDisp;
-//            }
-//        }
-//    }
-//};
-
-TransformArray.prototype.updateGraph = function (data, update) {
-    var graphDisp = [];
-    for (var i in this.array) {
-        if (update) {
-            if (this.array[i].macAddress == data.new_val.macAddress) {
-                this.array[i].disp = data.new_val.disp;
-                console.log(this.array[i].macAddress);
-            }
+TransformArray.prototype.updateGraph = function () {
+    for (var i in this.listaHostsStartAndUpdateValues) {
+        var val = this.listaHostsStartAndUpdateValues[i];
+        var graphDisp = val.listaValues;
+        graphDisp.push({
+            x: new Date(),
+            y: 1 * val.Power
+        });
+        if (graphDisp.length > this.dataLength) {
+            graphDisp.shift();
         }
-        for (var j in this.array[i].disp) {
-            if (this.array[i].disp[j].name.replace(/(\r\n|\n|\r)/gm, "") == this.antena) {
-                var graphDisp = (this.graphAllDisps[this.array[i].macAddress] == "undefined") ? this.inicializaArray() : this.graphAllDisps[this.array[i].macAddress];
-                graphDisp.push({
-                    x: new Date(),
-                    y: 1 * this.array[i].disp[j].values[this.array[i].disp[j].values.length - 1].Power
-                });
-                if (graphDisp.length > this.dataLength) {
-                    graphDisp.shift();
-                }
-                this.graphAllDisps[this.array[i].macAddress] = graphDisp;
-            }
-        }
+        this.listaHostsStartAndUpdateValues[i] = {
+            Power: val.Power,
+            data: val.data,
+            macAddress: val.macAddress,
+            nameVendor: val.nameVendor,
+            listaValues: graphDisp
+        };
     }
     this.createUpdateScaleGraph();
 };
 
 TransformArray.prototype.createUpdateScaleGraph = function () {
     this.valuesToGraph = [];
-    if (!oneGraph) {
-        for (var i in this.graphAllDisps) {
+    var self = this;
+    if (!this.oneGraph) {
+        for (var i in this.listaHostsStartAndUpdateValues) {
             var val = {
                 type: "line",
                 xValueType: "dateTime",
                 lineThickness: 3,
                 name: i,
                 click: function (e) {
-                    oneGraph = true;
-                    showNewGraph = true;
-                    graphSelect = e.dataSeries.name;
+                    self.oneGraph = true;
+                    self.showNewGraph = true;
+                    self.graphSelect = e.dataSeries.name;
                 },
-                dataPoints: this.graphAllDisps[i]
+                dataPoints: this.listaHostsStartAndUpdateValues[i].listaValues
             };
             this.valuesToGraph.push(val);
         }
+
     } else {
-//        var valPower = this.graphAllDisps[graphSelect][this.graphAllDisps[graphSelect].length - 1].y;
+        var powerVal = this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues[this.dataLength - 1].y;
         var val = {
             type: "line",
             xValueType: "dateTime",
+            lineThickness: 3,
             showInLegend: true,
-            lineThickness: 5,
-//            legendText: graphSelect + " " + valPower,
-            name: graphSelect,
+            legendText: this.graphSelect + " " + powerVal,
+            name: this.graphSelect,
+            toolTipContent: "<span>MacAddress: {name}</span><br>"+
+                    "<span>Power: {y}</span><br>" +
+                    "<span>Hora: {x}</span><br>" +
+                    "<span>Fabricante: " + this.listaHostsStartAndUpdateValues[this.graphSelect].nameVendor + "</span>",
             click: function (e) {
-                oneGraph = false;
-                showNewGraph = true;
-                graphSelect = "";
+                self.oneGraph = false;
+                self.showNewGraph = true;
+                self.graphSelect = "";
             },
-            dataPoints: this.graphAllDisps[graphSelect]
+            dataPoints: this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues
         };
-//        chart.options.data[0].legendText = valPower;
+        this.chart.options.data[0].legendText = this.graphSelect + " " + powerVal;
         this.valuesToGraph.push(val);
-//        console.log(this.allhosts[graphSelect]);
     }
-    if (showNewGraph) {
-        chart = null;
+    if (this.showNewGraph && this.chart != null) {
+        this.stopIntervalGraph();
+        this.chart = null;
         this.graph(this.localGraph);
-        showNewGraph = false;
+        this.showNewGraph = false;
+        this.updateIntervalGraph();
     }
 };
 
 TransformArray.prototype.graph = function (local) {
     this.localGraph = local;
-    chart = new CanvasJS.Chart(this.localGraph, {
+    var self = this;
+    this.chart = new CanvasJS.Chart(this.localGraph, {
 //        zoomEnabled: true,
 //        theme: "theme3",
         animationEnabled: true,
@@ -220,29 +188,28 @@ TransformArray.prototype.graph = function (local) {
                 } else {
                     e.dataSeries.visible = true;
                 }
-                chart.render();
+                self.chart.render();
             }
         }
     });
+    this.chart.render();
 };
 
 TransformArray.prototype.updateIntervalGraph = function () {
     var self = this;
-    updateInterGraph = setInterval(function () {
-        self.updateGraph("", false);
-        if (chart != null) {
-            chart.render();
-        }
-    }, updateInterval);
+    this.updateInterGraph = setInterval(function () {
+        self.updateGraph();
+        self.chart.render();
+    }, self.updateInterval);
 };
 
 TransformArray.prototype.stopIntervalGraph = function () {
-    clearInterval(updateInterGraph);
+    clearInterval(this.updateInterGraph);
 };
 
 TransformArray.prototype.diffDates = function (last_date) {
     var start_actual_time = last_date;
-    var end_actual_time = new Date().toLocaleString();
+    var end_actual_time = new Date();
 
     start_actual_time = new Date(start_actual_time);
     end_actual_time = new Date(end_actual_time);
@@ -264,8 +231,16 @@ TransformArray.prototype.inicializaArray = function () {
     for (var i = 0; i < this.dataLength; i++) {
         vals.push({
             x: new Date(newTime + (i * 1000)),
-            y: -127
+            y: 0
         });
     }
     return vals;
+};
+
+TransformArray.prototype.countHosts = function (list) {
+    var a = 0;
+    for (var i in list) {
+        a++;
+    }
+    return a;
 };

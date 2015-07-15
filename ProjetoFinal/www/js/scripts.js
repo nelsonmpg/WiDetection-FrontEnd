@@ -245,6 +245,8 @@ $(document).ready(function () {
  */
 function showPageToDiv(page, name) {
     $(".mdl-layout-title").html(name);
+    lastDisp = "";
+    lastAntena = "";
     var page = page; //data-page
     if ($("#contentor-principal").data("page") != page) {
         $("#contentor-principal").data("page", page);
@@ -337,8 +339,6 @@ function carregarDivStatus() {
  */
 function carregarDivDashboard() {
     console.log("Carrregar Dashboard!");
-    lastDisp = "";
-    lastAntena = "";
     $("body").find('.selectpicker').selectpicker();
     $.ajax({
         type: "GET",
@@ -404,23 +404,27 @@ function carregarDivAbout() {
  */
 function startAndShowGraph(disp, antena) {
     // faz o pedido a base de dados de acordo com o tipo dos dispositivos
-    $.ajax({
-        type: "GET",
-        url: "/getDispsActive/" + disp + "/" + antena,
-        dataType: 'json',
-        success: function (data) {
-            if (arrayHosts != null) {
-                arrayHosts.stopIntervalGraph();
+    if (lastDisp != disp || lastAntena != antena) {
+        lastDisp = disp;
+        lastAntena = antena;
+        $.ajax({
+            type: "GET",
+            url: "/getDispsActive/" + disp + "/" + antena,
+            dataType: 'json',
+            success: function (data) {
+                if (arrayHosts != null) {
+                    arrayHosts.stopIntervalGraph();
+                }
+                arrayHosts = new TransformArray(data, antena, disp);
+                arrayHosts.updateGraph();
+                arrayHosts.updateIntervalGraph();
+                arrayHosts.graph("chartContainer");
+            },
+            error: function (error) {
+                console.log(JSON.stringify(error));
             }
-            arrayHosts = new TransformArray(data, antena, disp);
-//            arrayHosts.updateGraph("", false);
-//            arrayHosts.updateIntervalGraph();
-//            arrayHosts.graph("chartContainer");
-        },
-        error: function (error) {
-            console.log(JSON.stringify(error));
-        }
-    });
+        });
+    }
 }
 
 //carregar mapa
