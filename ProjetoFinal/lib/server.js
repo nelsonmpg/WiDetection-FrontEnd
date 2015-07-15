@@ -68,8 +68,8 @@ Server.prototype.start = function () {
                                 time.year(),
                                 time.month(),
                                 time.day(),
-                                time.hours().sub(5),
-                                time.minutes(),
+                                time.hours(),
+                                time.minutes().sub(5),
                                 time.seconds(),
                                 time.timezone()
                                 ));
@@ -128,8 +128,8 @@ Server.prototype.start = function () {
                             time.year(),
                             time.month(),
                             time.day(),
-                            time.hours().sub(5),
-                            time.minutes(),
+                            time.hours(),
+                            time.minutes().sub(5),
                             time.seconds(),
                             time.timezone()
                             ));
