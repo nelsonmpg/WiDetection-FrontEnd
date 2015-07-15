@@ -193,11 +193,16 @@ Server.prototype.start = function () {
     });
 
 
+    /**
+     * Retorna o numero de AP's e Disp da antena passada
+     */
     this.app.get("/GetDeviceByAntena/:nomeAntena", function (req, res) {//req.params.nomeAntena
         r.connect(dbData).then(function (conn) {
-            return r.db("ProjetoFinal").table('AntDisp').filter(function (row) {
-                return row("nomeAntena").eq(req.params.nomeAntena).default(false)
-            })("host").nth(0).coerceTo('array')
+            return r.db(dbConfig.db).table('AntAp').filter({"nomeAntena": req.params.nomeAntena}).map(function (row) {
+                return [{"nome": row("nomeAntena"), "count": row("host").count()}]
+            }).map(function (row2) {
+                return [{"AP": row2.nth(0)("count"), "DISP": r.db(dbConfig.db).table('AntDisp').filter({"nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)}]
+            }).nth(0).nth(0).coerceTo('array')
                     .run(conn)
                     .finally(function () {
                         conn.close();
@@ -207,6 +212,38 @@ Server.prototype.start = function () {
         }).error(function (err) {
             res.status(500).json({err: err});
         });
+    });
+
+    /**
+     * Retorna o numero de AP's e Disp da antena passada
+     */
+    this.app.get("/getHostbyTipoNome/:tipo/:nomeAntena", function (req, res) {//req.params.nomeAntena
+        if (req.params.tipo == "AP") {
+            r.connect(dbData).then(function (conn) {
+                return r.db(dbConfig.db).table('AntAp').filter({"nomeAntena": req.params.nomeAntena})("host").coerceTo('array')
+                        .run(conn)
+                        .finally(function () {
+                            conn.close();
+                        });
+            }).then(function (output) {
+                res.json(output);
+            }).error(function (err) {
+                res.status(500).json({err: err});
+            });
+        } else {
+            r.connect(dbData).then(function (conn) {
+                return r.db(dbConfig.db).table('AntDisp').filter({"nomeAntena": req.params.nomeAntena})("host").coerceTo('array')
+                        .run(conn)
+                        .finally(function () {
+                            conn.close();
+                        });
+            }).then(function (output) {
+                res.json(output);
+            }).error(function (err) {
+                res.status(500).json({err: err});
+            });
+
+        }
     });
 
     var self = this;
