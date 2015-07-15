@@ -71,7 +71,7 @@ Server.prototype.start = function () {
                                 time.hours(),
                                 time.minutes().sub(5),
                                 time.seconds(),
-                                time.timezone()
+                                "+01:00"
                                 ));
                     });
                 });
@@ -131,7 +131,7 @@ Server.prototype.start = function () {
                             time.hours(),
                             time.minutes().sub(5),
                             time.seconds(),
-                            time.timezone()
+                            "+01:00"
                             ));
                 });
             }).coerceTo("array").run(conn).finally(function () {

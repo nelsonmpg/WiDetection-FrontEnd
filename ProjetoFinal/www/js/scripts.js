@@ -83,6 +83,10 @@ function showPageToDiv(page, name) {
                             carregarDivStatus();
                             break;
                         case "Dashboard.html":
+                            $("body").find("#contentor-principal > .container").css({
+                                width: "100%",
+                                height: $("#contentor-principal").height() * 1
+                            });
                             carregarDivDashboard();
                             break;
                         case "Estatistica.html":
@@ -167,10 +171,11 @@ function carregarDivDashboard() {
                 listOpt += "<option data-ant='" + data[i].nomeAntena + "'>" + data[i].nomeAntena + "</option>";
             }
             if (data.length == 0) {
-                $('#selectDisp > .bootstrap-select > .dropdown-menu li a').prop('disabled', true);
-                $('#selectDisp > .bootstrap-select > .dropdown-menu li a').selectpicker('refresh');
-                $('#antenasAtivas > .bootstrap-select > .dropdown-menu li a').prop('disabled', true);
-                $('#antenasAtivas > .bootstrap-select > .dropdown-menu li a').selectpicker('refresh');
+                $('#selectDisp > select.selectpicker').prop('disabled', true).selectpicker('refresh');
+                $('#antenasAtivas > select.selectpicker').prop('disabled', true).selectpicker('refresh');
+                $("body").find("#chartContainer").css({
+                    "background": "url('./images/antena.png') 100% 100% no-repeat"
+                });
 
             } else {
                 $("body").find('#antenasAtivas > select').html(listOpt).selectpicker('refresh');

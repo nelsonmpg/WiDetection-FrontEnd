@@ -56,6 +56,16 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
     });
 });
 
+//r.connect(dbData).then(function (conn) {
+//    return r.db(dbConfig.db).table('ActiveAnt').delete().run(conn)
+//            .finally(function () {
+//                conn.close();
+//            });
+//}).then(function (output) {
+//    console.log(output);
+//}).error(function (err) {
+//    console.log(err);
+//});
 
 r.connect(dbData).then(function (conn) {
     return r.db(dbConfig.db).table("tblPrefix").coerceTo("array").count().run(conn)
@@ -82,7 +92,7 @@ r.connect(dbData).then(function (conn) {
                     }
                 }
                 r.connect(dbData).then(function (conn) {
-                   return r.db(dbConfig.db).table("tblPrefix").insert(docsInsert).run(conn)
+                    return r.db(dbConfig.db).table("tblPrefix").insert(docsInsert).run(conn)
                             .finally(function () {
                                 conn.close();
                             });
