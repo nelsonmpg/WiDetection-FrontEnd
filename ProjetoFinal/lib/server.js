@@ -150,7 +150,7 @@ Server.prototype.start = function () {
      */
     this.app.get("/getTodasAntenas/", function (req, res) {
         r.connect(dbData).then(function (conn) {
-            return r.db("ProjetoFinal").table('ActiveAnt').coerceTo('array')
+            return r.db(dbConfig.db).table('ActiveAnt').coerceTo('array')
                     .run(conn)
                     .finally(function () {
                         conn.close();
@@ -168,7 +168,7 @@ Server.prototype.start = function () {
      */
     this.app.get("/getHostByAntena", function (req, res) {
         r.connect(dbData).then(function (conn) {
-            r.db("ProjetoFinal").table('AntDisp').coerceTo('array')
+            r.db(dbConfig.db).table('AntDisp').coerceTo('array')
                     .run(conn)
                     .finally(function () {
                         conn.close();
@@ -195,10 +195,27 @@ Server.prototype.start = function () {
 
     this.app.get("/GetDeviceByAntena/:nomeAntena", function (req, res) {//req.params.nomeAntena
         r.connect(dbData).then(function (conn) {
-            return r.db("ProjetoFinal").table('AntDisp').filter(function (row) {
+            return r.db(dbConfig.db).table('AntDisp').filter(function (row) {
                 return row("nomeAntena").eq(req.params.nomeAntena).default(false)
             })("host").nth(0).coerceTo('array')
                     .run(conn)
+                    .finally(function () {
+                        conn.close();
+                    });
+        }).then(function (output) {
+            res.json(output);
+        }).error(function (err) {
+            res.status(500).json({err: err});
+        });
+    });
+
+    this.app.get("/getAallAnteasIDspAp", function (req, res) {
+        r.connect(dbData).then(function (conn) {
+            return r.db(dbConfig.db).table('AntAp').map(function (row) {
+                return [{"nome": row("nomeAntena"), "count": row("host").count()}]
+            }).map(function (row2) {
+                return {"AP": row2.nth(0), "DISP": {"nome": row2("nome").nth(0), "count": r.db("ProjetoFinal").table('AntDisp').filter({"nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)}}
+            }).coerceTo('array').run(conn)
                     .finally(function () {
                         conn.close();
                     });

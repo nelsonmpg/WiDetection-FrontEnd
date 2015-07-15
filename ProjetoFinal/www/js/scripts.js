@@ -1,4 +1,5 @@
 var arrayHosts = null;
+var arrayGraph = null;
 var lastDisp = "";
 var lastAntena = "";
 var geocoder;
@@ -250,7 +251,7 @@ function showPageToDiv(page, name) {
     var page = page; //data-page
     if ($("#contentor-principal").data("page") != page) {
         $("#contentor-principal").data("page", page);
-        $("#contentor-principal").effect(efectDiv, timeEfect, function () {
+        $("#contentor-principal").hide(efectDiv, timeEfect, function () {
             $.ajax({
                 method: 'GET',
                 url: "./html/" + page,
@@ -264,7 +265,7 @@ function showPageToDiv(page, name) {
                             break;
                         case "Dashboard.html":
                             $("body").find("#contentor-principal > .container").css({
-                                width: "100%",
+                                width: $("#contentor-principal").width() * 1,
                                 height: $("#contentor-principal").height() * 1
                             });
                             carregarDivDashboard();
@@ -382,10 +383,28 @@ function carregarDivDashboard() {
  */
 function carregarDivEstatistica() {
     console.log("Carrregar Estatistica!");
+    
+    $.ajax({
+        type: "GET",
+        url: "/getAallAnteasIDspAp",
+        dataType: 'json',
+        success: function (data) {
+            arrayGraph = new ArrayToGraph(data, "Qauntidade de Dispositivos / Antena", "chartContainer2");
+            
+            // para aparecer a div com os resultados
+            $("#contentor-principal").show(efectDiv, timeEfect);
+            arrayGraph.createArrayToGraphTwoBar();
+            
+        },
+        error: function (error) {
+            console.log(JSON.stringify(error));
+        }
+    });
+    
+    
+    
 
 
-// para aparecer a div com os resultados
-    $("#contentor-principal").show(efectDiv, timeEfect);
 }
 
 /**

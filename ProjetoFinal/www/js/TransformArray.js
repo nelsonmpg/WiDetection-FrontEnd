@@ -112,7 +112,7 @@ TransformArray.prototype.createUpdateScaleGraph = function () {
             showInLegend: true,
             legendText: this.graphSelect + " " + powerVal,
             name: this.graphSelect,
-            toolTipContent: "<span>MacAddress: {name}</span><br>"+
+            toolTipContent: "<span>MacAddress: {name}</span><br>" +
                     "<span>Power: {y}</span><br>" +
                     "<span>Hora: {x}</span><br>" +
                     "<span>Fabricante: " + this.listaHostsStartAndUpdateValues[this.graphSelect].nameVendor + "</span>",
@@ -139,8 +139,8 @@ TransformArray.prototype.graph = function (local) {
     this.localGraph = local;
     var self = this;
     this.chart = new CanvasJS.Chart(this.localGraph, {
-//        zoomEnabled: true,
-//        theme: "theme3",
+        zoomEnabled: true,
+        exportEnabled: true,
         animationEnabled: true,
         theme: "theme4",
         title: {
