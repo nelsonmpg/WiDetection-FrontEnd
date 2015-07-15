@@ -148,7 +148,7 @@ Server.prototype.start = function () {
      * retornar antenas ativas
      * Falta alterar a consulta para retornar apenas as activas
      */
-    this.app.get("/getAntActive/", function (req, res) {
+    this.app.get("/getTodasAntenas/", function (req, res) {
         r.connect(dbData).then(function (conn) {
             return r.db("ProjetoFinal").table('ActiveAnt').coerceTo('array')
                     .run(conn)
@@ -195,9 +195,10 @@ Server.prototype.start = function () {
 
     this.app.get("/GetDeviceByAntena/:nomeAntena", function (req, res) {//req.params.nomeAntena
         r.connect(dbData).then(function (conn) {
-            r.db("ProjetoFinal").table('AntDisp').filter(function (row) {
+            return r.db("ProjetoFinal").table('AntDisp').filter(function (row) {
                 return row("nomeAntena").eq(req.params.nomeAntena).default(false)
-            })("host").coerceTo('array').run(conn)
+            })("host").nth(0).coerceTo('array')
+                    .run(conn)
                     .finally(function () {
                         conn.close();
                     });

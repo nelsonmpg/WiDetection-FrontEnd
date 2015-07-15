@@ -44,19 +44,25 @@
     width:100%;
 }
 
-#contentor-principal,#divAntenas {
+#contentor-principal {
     width: 100%;
     height: 100%;
     margin: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-/*.container {
-    margin-top: 15px;
-    margin-left: 0;
-}*/
+.container {
+    overflow-y: auto;
+}
 
 
-.divAntena, .DispDescript {
+.divAntena {
+    margin: 0.5%; 
+    position: relative;
+    float: left;
+}
+.DispDescript {
     /*    -webkit-box-shadow: 15px 6px 32px -2px rgba(0,0,0,0.24);
         -moz-box-shadow: 15px 6px 32px -2px rgba(0,0,0,0.24);
         box-shadow: 15px 6px 32px -2px rgba(0,0,0,0.24);*/
