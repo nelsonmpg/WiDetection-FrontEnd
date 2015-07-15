@@ -198,3 +198,7 @@
 .divAntena  {
     cursor: pointer;
 }
+
+#btnBack{
+    visibility: hidden;
+}

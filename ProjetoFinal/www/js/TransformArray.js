@@ -142,7 +142,7 @@ TransformArray.prototype.graph = function (local) {
         zoomEnabled: true,
         exportEnabled: true,
         animationEnabled: true,
-        theme: "theme4",
+        theme: "theme3",
         title: {
             text: "Power dos Dispositivos Encontrados",
             fontSize: 22

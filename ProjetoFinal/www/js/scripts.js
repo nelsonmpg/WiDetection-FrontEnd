@@ -94,20 +94,21 @@ $(document).ready(function () {
             url: "/GetDeviceByAntena/" + nomeAntena,
             dataType: 'json',
             success: function (data) {
-                graphOneCol = new ArrayToGraph(data, nomeAntena, "AntDetail", "column");
+                graphOneCol = new ArrayToGraph(data,"Quantidade de dispositipos encontrados na Antena:", nomeAntena, "AntDetail", "column");
                 graphOneCol.createArrayToGraphOneBar();
-//                var graf = new BarChart(nomeAntena, "column", a);
-//                graf.criar("AntDetail", click);
-
             },
             error: function (error) {
                 console.log(JSON.stringify(error));
             }
         });
+    });
 
-
-
-
+    $("body").on("click", "#btnBack", function () {
+        arrayGraph = null;
+        carregarDivEstatistica();
+        $("body").find("#btnBack").css({
+            visibility: "hidden"
+        });
     });
 
 
@@ -121,6 +122,9 @@ $(document).ready(function () {
  * @returns {undefined}
  */
 function showPageToDiv(page, name) {
+    if (arrayHosts != null) {
+        arrayHosts.stopIntervalGraph();
+    }
     $(".mdl-layout-title").html(name);
     lastDisp = "";
     lastAntena = "";
@@ -189,7 +193,7 @@ function carregarDivStatus() {
                         "</div></div>");
             }
             if (antenas.length == 0) {
-                $("#divAntenas").append("<div class='jumbotron'><h2>Não existem antenas ativas de momento</h2><p><a id='verTodasAntenas' class='btn btn-primary btn-lg' href='#' role='button'>Ver todas as antentenas</a></p></p></div>");
+                $("#divAntenas").append("<div class='jumbotron'><h2>N&atilde;o existem antenas ativas de momento</h2>" + /*"<p><a id='verTodasAntenas' class='btn btn-primary btn-lg' href='#' role='button'>Ver todas as antentenas</a></p></p> " +*/ "</div>");
             }
 
             $("#contentor-principal").show(efectDiv, timeEfect);
@@ -220,9 +224,7 @@ function carregarDivDashboard() {
             if (data.length == 0) {
                 $('#selectDisp > select.selectpicker').prop('disabled', true).selectpicker('refresh');
                 $('#antenasAtivas > select.selectpicker').prop('disabled', true).selectpicker('refresh');
-                $("body").find("#chartContainer").css({
-                    "background": "url('./images/antena.png') 100% 100% no-repeat"
-                });
+                $("body").find("#chartContainer").append("<div class='jumbotron'><h2>N&atilde;o existem antenas ativas de momento</h2></div>");
 
             } else {
                 $("body").find('#antenasAtivas > select').html(listOpt).selectpicker('refresh');
@@ -252,7 +254,7 @@ function carregarDivEstatistica() {
         url: "/getAallAnteasIDspAp",
         dataType: 'json',
         success: function (data) {
-            arrayGraph = new ArrayToGraph(data, "Qauntidade de Dispositivos / Antena", "chartContainer", "column");
+            arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
 
             // para aparecer a div com os resultados
             $("#contentor-principal").show(efectDiv, timeEfect);
@@ -263,11 +265,6 @@ function carregarDivEstatistica() {
             console.log(JSON.stringify(error));
         }
     });
-
-
-
-
-
 }
 
 /**
