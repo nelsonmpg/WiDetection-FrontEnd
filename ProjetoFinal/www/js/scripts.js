@@ -3,6 +3,7 @@ var lastDisp = "";
 var lastAntena = "";
 var geocoder;
 var address;
+var temp;
 
 // blind, bounce, clip, drop, explode, fold, highlight, puff, pulsate, shake, slide
 var efectDiv = "drop";
@@ -53,6 +54,185 @@ $(document).ready(function () {
         $("#popup").prepend(this.getAttribute("data-nomeAntena"));
         carregarDispAtivos("DispByAntena", this.getAttribute("data-nomeAntena"));
     });
+
+    $("body").on("click", "#verTodasAntenas", function () {
+        //getTodasAntenas
+        $.ajax({
+            type: "GET",
+            url: "/getTodasAntenas",
+            dataType: 'json',
+            success: function (data) {
+                $("#divAntenas").html("");
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'>" +
+                            "<img src='./images/antena.png'>" +
+                            "<p class='text-center'>" + data[i].nomeAntena + "</p>" +
+                            "<p class='text-center showDispDetail' data-nomeAntena='" + data[i].nomeAntena + "'> Dispositivos: " + "num_host" + "</p>" +
+                            "<div class='mapOpen' data-nomeAntena='" + data[i].nomeAntena + "' data-lat='" + data[i].latitude + "' data-lon='" + data[i].longitude + "'>" +
+                            "<p class='text-center coordenadas'>lat: " + data[i].latitude + "</p>" +
+                            "<p class='text-center coordenadas'>lon: " + data[i].longitude + "</p>" +
+                            "</div></div>");
+                }
+
+            },
+            error: function (error) {
+                console.log(JSON.stringify(error));
+            }
+        });
+
+    });
+
+    //Alteraçao
+    $("body").on("click", ".divAntenartttt", function () {
+        criarLightBox("AntDetail");
+        var nomeAntena = this.lastChild.getAttribute("data-nomeAntena");
+        $("#popup").prepend(nomeAntena);
+        $.ajax({
+            type: "GET",
+            url: "/GetDeviceByAntena/" + nomeAntena,
+            dataType: 'json',
+            success: function (data) {
+                temp = [];
+                for (var cli in data) {
+                    var entrou = 0;
+                    for (var a in temp) {
+                        if (temp[a].text == data[cli].nameVendor) {
+                            temp[a].count = temp[a].count + 1 + "";
+                            entrou = 1;
+                        }
+                    }
+                    if (entrou == 0) {
+                        temp.push({text: data[cli].nameVendor, count: "1"});
+                    }
+                }
+                console.log(temp[0]);
+
+
+                $("body").find("#AntDetail").append("<div class='bubbleChart'></div>")
+                var bubbleChart = new d3.svg.BubbleChart({
+                    supportResponsive: true,
+                    //container: => use @default
+                    size: 600,
+                    //viewBoxSize: => use @default
+                    innerRadius: 600 / 3.5,
+                    //outerRadius: => use @default
+                    radiusMin: 50,
+                    //radiusMax: use @default
+                    //intersectDelta: use @default
+                    //intersectInc: use @default
+                    //circleColor: use @default
+                    data: {
+                        items: temp,
+//                        items: [
+//                            {text: "Java", count: "236"},
+//                            {text: ".Net", count: "382"},
+//                            {text: "Php", count: "170"},
+//                            {text: "Ruby", count: "123"},
+//                            {text: "D", count: "12"},
+//                            {text: "Python", count: "170"},
+//                            {text: "C/C++", count: "382"},
+//                            {text: "Pascal", count: "10"},
+//                            {text: "Something", count: "170"},
+//                        ],
+                        eval: function (item) {
+                            return item.count;
+                        },
+                        classed: function (item) {
+                            return item.text.split(" ").join("");
+                        }
+                    },
+                    plugins: [
+                        {
+                            name: "central-click",
+                            options: {
+                                text: "(See more detail)",
+                                style: {
+                                    "font-size": "12px",
+                                    "font-style": "italic",
+                                    "font-family": "Source Sans Pro, sans-serif",
+                                    //"font-weight": "700",
+                                    "text-anchor": "middle",
+                                    "fill": "white"
+                                },
+                                attr: {dy: "65px"},
+                                centralClick: function () {
+                                    //alert("Here is more details!!");
+                                }
+                            }
+                        },
+                        {
+                            name: "lines",
+                            options: {
+                                format: [
+                                    {// Line #0
+                                        textField: "count",
+                                        classed: {count: true},
+                                        style: {
+                                            "font-size": "28px",
+                                            "font-family": "Source Sans Pro, sans-serif",
+                                            "text-anchor": "middle",
+                                            fill: "white"
+                                        },
+                                        attr: {
+                                            dy: "0px",
+                                            x: function (d) {
+                                                return d.cx;
+                                            },
+                                            y: function (d) {
+                                                return d.cy;
+                                            }
+                                        }
+                                    },
+                                    {// Line #1
+                                        textField: "text",
+                                        classed: {text: true},
+                                        style: {
+                                            "font-size": "14px",
+                                            "font-family": "Source Sans Pro, sans-serif",
+                                            "text-anchor": "middle",
+                                            fill: "white"
+                                        },
+                                        attr: {
+                                            dy: "20px",
+                                            x: function (d) {
+                                                return d.cx;
+                                            },
+                                            y: function (d) {
+                                                return d.cy;
+                                            }
+                                        }
+                                    }
+                                ],
+                                centralFormat: [
+                                    {// Line #0
+                                        style: {"font-size": "50px"},
+                                        attr: {}
+                                    },
+                                    {// Line #1
+                                        style: {"font-size": "30px"},
+                                        attr: {dy: "40px"}
+                                    }
+                                ]
+                            }
+                        }]
+                });
+
+
+
+                // $("body").find("#" + div).append("<div class='DispDescript mdl-color--white mdl-shadow--2dp'>Mac.Address: " + data[0][cli].macAddress + " Data: " + data[0][cli].data + " Fabricante: " + data[0][cli].nameVendor + "  </div>");
+
+            },
+            error: function (error) {
+                console.log(JSON.stringify(error));
+            }
+        });
+
+
+
+
+    });
+
 
 });//Fim Document Ready
 
@@ -116,7 +296,7 @@ function carregarDivStatus() {
     console.log("Carregar Status!");
     $.ajax({
         type: "GET",
-        url: "/getAntActive",
+        url: "/getAntenasAtivas",
         dataType: 'json',
         success: function (data) {
             var antenas = data;
@@ -128,21 +308,24 @@ function carregarDivStatus() {
 //                dataType: 'json',
 //                success: function (data) {
             hostAntena = data;
-            for (var ant in antenas) {
+            for (var i = 0; i < antenas.length; i++) {
 //                        var num_host = 0;
 //                        for (host in hostAntena) {
 //                            if (hostAntena[host].nomeAntena == antenas[ant].nomeAntena) {
 //                                num_host = hostAntena[host].host.length;
 //                            }
 //                        }
-                $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp'>" +
+                $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'>" +
                         "<img src='./images/antena.png'>" +
-                        "<p class='text-center'>" + antenas[ant].nomeAntena + "</p>" +
-                        "<p class='text-center showDispDetail' data-nomeAntena='" + antenas[ant].nomeAntena + "'> Dispositivos: " + "num_host" + "</p>" +
-                        "<div class='mapOpen' data-nomeAntena='" + antenas[ant].nomeAntena + "' data-lat='" + antenas[ant].latitude + "' data-lon='" + antenas[ant].longitude + "'>" +
-                        "<p class='text-center coordenadas'>lat: " + antenas[ant].latitude + "</p>" +
-                        "<p class='text-center coordenadas'>lon: " + antenas[ant].longitude + "</p>" +
+                        "<p class='text-center'>" + antenas[i].nomeAntena + "</p>" +
+                        "<p class='text-center showDispDetail' data-nomeAntena='" + antenas[i].nomeAntena + "'> Dispositivos: " + "num_host" + "</p>" +
+                        "<div class='mapOpen' data-nomeAntena='" + antenas[i].nomeAntena + "' data-lat='" + antenas[i].latitude + "' data-lon='" + antenas[i].longitude + "'>" +
+                        "<p class='text-center coordenadas'>lat: " + antenas[i].latitude + "</p>" +
+                        "<p class='text-center coordenadas'>lon: " + antenas[i].longitude + "</p>" +
                         "</div></div>");
+            }
+            if (antenas.length == 0) {
+                $("#divAntenas").append("<div class='jumbotron'><h2>Não existem antenas ativas de momento</h2><p><a id='verTodasAntenas' class='btn btn-primary btn-lg' href='#' role='button'>Ver todas as antentenas</a></p></p></div>");
             }
 
             $("#contentor-principal").show(efectDiv, timeEfect);
