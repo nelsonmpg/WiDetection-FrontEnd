@@ -1,5 +1,6 @@
 var arrayHosts = null;
 var arrayGraph = null;
+var graphOneCol = null;
 var lastDisp = "";
 var lastAntena = "";
 var geocoder;
@@ -88,58 +89,15 @@ $(document).ready(function () {
     $("body").on("click", ".divAntena", function () {
         criarLightBox("AntDetail");
         var nomeAntena = this.lastChild.getAttribute("data-nomeAntena");
-        //$("#popup").prepend(nomeAntena);
         $.ajax({
             type: "GET",
             url: "/GetDeviceByAntena/" + nomeAntena,
             dataType: 'json',
             success: function (data) {
-                console.log(data);
-
-                var a = []
-                for (var valor in data) {
-                    a.push({label: data[valor][0], y: data[valor][1]});
-                }
-
-
-                //click numa coluna do gráfico
-                var click = function (e) {
-                    console.log(e.dataPoint.label);
-                    if (e.dataPoint.label == "AP") {
-                        $.ajax({
-                            type: "GET",
-                            url: "/getHostbyTipoNome/" + "AP/" + nomeAntena,
-                            dataType: 'json',
-                            success: function (data) {
-                                console.log(data);
-                            },
-                            error: function (error) {
-                                console.log(JSON.stringify(error));
-                            }
-                        });
-                    } else {
-                        $.ajax({
-                            type: "GET",
-                            url: "/getHostbyTipoNome/" + "DISP/" + nomeAntena,
-                            dataType: 'json',
-                            success: function (data) {
-                                console.log(data);
-                            },
-                            error: function (error) {
-                                console.log(JSON.stringify(error));
-                            }
-                        });
-                    }
-
-                };
-
-                var graf = new BarChart(nomeAntena, "column", a);
-                graf.criar("AntDetail", click);
-
-
-
-
-                // $("body").find("#" + div).append("<div class='DispDescript mdl-color--white mdl-shadow--2dp'>Mac.Address: " + data[0][cli].macAddress + " Data: " + data[0][cli].data + " Fabricante: " + data[0][cli].nameVendor + "  </div>");
+                graphOneCol = new ArrayToGraph(data, nomeAntena, "AntDetail", "column");
+                graphOneCol.createArrayToGraphOneBar();
+//                var graf = new BarChart(nomeAntena, "column", a);
+//                graf.criar("AntDetail", click);
 
             },
             error: function (error) {
@@ -182,10 +140,6 @@ function showPageToDiv(page, name) {
                             carregarDivStatus();
                             break;
                         case "Dashboard.html":
-                            $("body").find("#contentor-principal > .container").css({
-                                width: $("#contentor-principal").width() * 1,
-                                height: $("#contentor-principal").height() * 1
-                            });
                             carregarDivDashboard();
                             break;
                         case "Estatistica.html":
@@ -218,37 +172,33 @@ function carregarDivStatus() {
         type: "GET",
         url: "/getAntenasAtivas",
         dataType: 'json',
-        async: false,
+//        async: false,
         success: function (data) {
             antenas = data;
             var hostAntena = "";
             $("#divAntenas").html("");
             hostAntena = data;
+            for (var i = 0; i < antenas.length; i++) {
+                $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'>" +
+                        "<img src='./images/antena.png'>" +
+                        "<p class='text-center'>" + antenas[i].nomeAntena + "</p>" +
+                        "<p class='text-center showDispDetail' data-nomeAntena='" + antenas[i].nomeAntena + "'> Dispositivos: " + "num_host" + "</p>" +
+                        "<div class='mapOpen' data-nomeAntena='" + antenas[i].nomeAntena + "' data-lat='" + antenas[i].latitude + "' data-lon='" + antenas[i].longitude + "'>" +
+                        "<p class='text-center coordenadas'>lat: " + antenas[i].latitude + "</p>" +
+                        "<p class='text-center coordenadas'>lon: " + antenas[i].longitude + "</p>" +
+                        "</div></div>");
+            }
+            if (antenas.length == 0) {
+                $("#divAntenas").append("<div class='jumbotron'><h2>Não existem antenas ativas de momento</h2><p><a id='verTodasAntenas' class='btn btn-primary btn-lg' href='#' role='button'>Ver todas as antentenas</a></p></p></div>");
+            }
+
+            $("#contentor-principal").show(efectDiv, timeEfect);
+            // para aparecer a div com os resultados
         },
         error: function (error) {
             console.log(JSON.stringify(error));
         }
     });
-
-
-
-    console.log(antenas);
-    for (var i = 0; i < antenas.length; i++) {
-        $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'>" +
-                "<img src='./images/antena.png'>" +
-                "<p class='text-center'>" + antenas[i].nomeAntena + "</p>" +
-                "<p class='text-center showDispDetail' data-nomeAntena='" + antenas[i].nomeAntena + "'> Dispositivos: " + "num_host" + "</p>" +
-                "<div class='mapOpen' data-nomeAntena='" + antenas[i].nomeAntena + "' data-lat='" + antenas[i].latitude + "' data-lon='" + antenas[i].longitude + "'>" +
-                "<p class='text-center coordenadas'>lat: " + antenas[i].latitude + "</p>" +
-                "<p class='text-center coordenadas'>lon: " + antenas[i].longitude + "</p>" +
-                "</div></div>");
-    }
-    if (antenas.length == 0) {
-        $("#divAntenas").append("<div class='jumbotron'><h2>Não existem antenas ativas de momento</h2><p><a id='verTodasAntenas' class='btn btn-primary btn-lg' href='#' role='button'>Ver todas as antentenas</a></p></p></div>");
-    }
-
-    $("#contentor-principal").show(efectDiv, timeEfect);
-    // para aparecer a div com os resultados
 }
 
 /**
@@ -296,26 +246,26 @@ function carregarDivDashboard() {
  */
 function carregarDivEstatistica() {
     console.log("Carrregar Estatistica!");
-    
+
     $.ajax({
         type: "GET",
         url: "/getAallAnteasIDspAp",
         dataType: 'json',
         success: function (data) {
-            arrayGraph = new ArrayToGraph(data, "Qauntidade de Dispositivos / Antena", "chartContainer2");
-            
+            arrayGraph = new ArrayToGraph(data, "Qauntidade de Dispositivos / Antena", "chartContainer", "column");
+
             // para aparecer a div com os resultados
             $("#contentor-principal").show(efectDiv, timeEfect);
             arrayGraph.createArrayToGraphTwoBar();
-            
+
         },
         error: function (error) {
             console.log(JSON.stringify(error));
         }
     });
-    
-    
-    
+
+
+
 
 
 }
@@ -464,7 +414,7 @@ function codeLatLng(lat, lon) {
 
 function criarLightBox(divNome) {
     $("body").append("<div id='hover'></div>");
-    $("body").append("<div id='popup'><div id='" + divNome + "'></div><div id='close'>X</div></div>");
+    $("body").append("<div id='popup'><div id='" + divNome + "' class='esticar-vertical'></div><div id='close'>X</div></div>");
 }
 
 function carregarDispAtivos(div, nomeAntena) {
