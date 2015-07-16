@@ -87,8 +87,9 @@ $(document).ready(function () {
 
     //Alteracao
     $("body").on("click", ".divAntena", function () {
+        
         //criarLightBox("AntDetail");
-        var nomeAntena = this.lastChild.getAttribute("data-nomeAntena");
+        var nomeAntena = this.getAttribute("data-nomeAntena");
         $("#divAntenas").html("");
         var numAP;
         var numDISP;
@@ -99,28 +100,22 @@ $(document).ready(function () {
             success: function (data) {
                 numAP = data[0].length;
                 $.ajax({
-            type: "GET",
-            url: "/getAtives/DISP/" + nomeAntena,
-            dataType: 'json',
-            success: function (data) {
-                
-                console.log(data);
-                numDIS = data[0].length;
-                console.log(numAP + " - " + numDIS);
-//                data[0][0]="Disp";
-//                data[0][1]=numDISP;
-                    var valor = [];
-                   valor[0]=numAP;
-                   valor[1]=numDIS;
-                console.log(valor);
-                graphOneCol = new ArrayToGraph(valor, "Quantidade de dispositipos ativos na Antena:", nomeAntena, "divAntenas", "column");
-                graphOneCol.clickToBarGraph(1);
-                graphOneCol.createArrayToStatusBarGraph();
-            },
-            error: function (error) {
-                console.log(JSON.stringify(error));
-            }
-        });
+                    type: "GET",
+                    url: "/getAtives/DISP/" + nomeAntena,
+                    dataType: 'json',
+                    success: function (data) {
+                        numDIS = data[0].length;
+                        var valor = [];
+                        valor[0] = numAP;
+                        valor[1] = numDIS;
+                        graphOneCol = new ArrayToGraph(valor, "Quantidade de dispositipos ativos na Antena:", nomeAntena, "divAntenas", "column");
+                        graphOneCol.clickToBarGraph(1);
+                        graphOneCol.createArrayToStatusBarGraph();
+                    },
+                    error: function (error) {
+                        console.log(JSON.stringify(error));
+                    }
+                });
             },
             error: function (error) {
                 console.log(JSON.stringify(error));
