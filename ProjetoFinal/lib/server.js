@@ -63,7 +63,7 @@ Server.prototype.start = function () {
         r.connect(dbData).then(function (connection) {
             return r.db(dbConfig.db).table(tabela).get(req.params.ant).do(function (row) {
                 return row("host").filter(function (value) {
-                    return r.now().do(function (time) {
+                    return r.now().inTimezone("+01:00").do(function (time) {
                         return value("data").gt(r.time(
                                 time.year(),
                                 time.month(),
@@ -71,7 +71,7 @@ Server.prototype.start = function () {
                                 time.hours(),
                                 time.minutes().sub(5),
                                 time.seconds(),
-                                "+01:00"
+                                time.timezone()
                                 ));
                     });
                 });
@@ -123,15 +123,15 @@ Server.prototype.start = function () {
     this.app.get("/getAntenasAtivas", function (req, res) {
         r.connect(dbData).then(function (conn) {
             return r.db(dbConfig.db).table('ActiveAnt').filter(function (row) {
-                return r.now().do(function (time) {
+                return r.now().inTimezone("+01:00").do(function (time) {
                     return row("data").gt(r.time(
                             time.year(),
                             time.month(),
                             time.day(),
-                            time.hours().sub(24),
-                            time.minutes(),
+                            time.hours(),
+                            time.minutes().sub(5),
                             time.seconds(),
-                            "+01:00"
+                            time.timezone()
                             ));
                 });
             }).coerceTo("array").run(conn).finally(function () {
@@ -201,7 +201,8 @@ Server.prototype.start = function () {
             return r.db(dbConfig.db).table('AntAp').filter({"nomeAntena": req.params.nomeAntena}).map(function (row) {
                 return [{"nome": row("nomeAntena"), "count": row("host").count()}]
             }).map(function (row2) {
-                return [{"AP": row2.nth(0)("count"), "DISP": r.db(dbConfig.db).table('AntDisp').filter({"nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)}]
+                return [{"AP": row2.nth(0)("count"),
+                        "DISP": r.db(dbConfig.db).table('AntDisp').filter({"nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)}]
             }).nth(0).nth(0).coerceTo('array')
                     .run(conn)
                     .finally(function () {

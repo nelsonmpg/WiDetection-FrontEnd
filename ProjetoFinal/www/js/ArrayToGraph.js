@@ -16,6 +16,11 @@ var ArrayToGraph = function (array, titulo, subtitulo, local, type) {
     this.chart = null;
     this.dataTograph = [];
     this.click = null;
+    this.anguloX = 0;
+};
+
+ArrayToGraph.prototype.changeAnguloX = function (angulo) {
+    this.anguloX = angulo;
 };
 
 ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
@@ -80,25 +85,37 @@ ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
     this.createAndShowGraphOneBar(this.dataTograph);
 };
 
-ArrayToGraph.prototype.clickToBarGraph = function (bar) {
+ArrayToGraph.prototype.clickToBarGraph = function (func) {
     var self = this;
-    //this.type = "pie";
-    this.click = function (bar) {
-        var query = "/getHostbyTipoNome/" + ((bar == "AP") ? "AP/" : "DISP/") + this.subtitulo;
-        $.ajax({
-            type: "GET",
-            url: query,
-            dataType: 'json',
-            success: function (data) {
-                self = new ArrayToGraph(data[0], "Quantidade de dispositipos encontrados na Antena:", self.subtitulo, "AntDetail", "column");
-                self.createArrayToGraphOneBar2();
+    switch (func) {
+        case 0:
+            this.click = function (bar) {
+                var query = "/getHostbyTipoNome/" + ((bar == "AP") ? "AP/" : "DISP/") + this.subtitulo;
+                $.ajax({
+                    type: "GET",
+                    url: query,
+                    dataType: 'json',
+                    success: function (data) {
+                        self = new ArrayToGraph(data[0], "Fabricantes por Dispositivo na Antena:", self.subtitulo, "chartContainer", "column");
+                        self.changeAnguloX(-50);
+                        self.createArrayToGraphOneBar2();
+                    },
+                    error: function (error) {
+                        console.log(JSON.stringify(error));
+                    }
+                });
+            };
+            break;
+        case 1:
+            this.click = function (bar) {
+                $("body").find("#close").click();
+//                alert(bar + " - " + func);
+            };
+            break;
+        default :
+            break;
+    }
 
-            },
-            error: function (error) {
-                console.log(JSON.stringify(error));
-            }
-        });
-    };
 
 };
 
@@ -145,6 +162,7 @@ ArrayToGraph.prototype.clickToDualBarGraph = function (event) {
         dataType: 'json',
         success: function (data) {
             graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos encontrados na Antena:", event, "chartContainer", "column");
+            graphOneCol.clickToBarGraph(0);
             graphOneCol.createArrayToGraphOneBar();
             $("body").find("#btnBack").css({
                 visibility: "visible"
@@ -216,6 +234,13 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function (dataValues) {
         title: {
             text: self.titulo,
             fontSize: 30
+        },
+        axisX: {
+            labelAngle: self.anguloX,
+            labelFontSize: 14,
+            interval: 1, labelFontFamily: "verdana",
+            labelFontColor: "black",
+            titleFontColor: "black"
         },
         subtitles: [{
                 text: self.subtitulo

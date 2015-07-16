@@ -109,8 +109,10 @@ ServerSocket.prototype.start = function () {
                                             "host": [{
                                                     "macAddress": valuesHst[0],
                                                     "data": r.now().inTimezone("+01:00"),
-                                                    "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
-                                                    "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsHost[0].substring(0, 8)).getField("vendor").default("")
+                                                    "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
+                                                    "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                    "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
+                                                    "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                                 }]
                                         },
                                 r.branch(
@@ -122,8 +124,10 @@ ServerSocket.prototype.start = function () {
                                                         {
                                                             "macAddress": valuesHst[0],
                                                             "data": r.now().inTimezone("+01:00"),
-                                                            "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
-                                                            "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsHost[0].substring(0, 8)).getField("vendor").default("")
+                                                            "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
+                                                            "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                            "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
+                                                            "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                                         }, d)
                                             })
                                         }),
@@ -132,11 +136,13 @@ ServerSocket.prototype.start = function () {
                                             "host": row("host").append({
                                                 "macAddress": valuesHst[0],
                                                 "data": r.now().inTimezone("+01:00"),
-                                                "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
-                                                "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsHost[0].substring(0, 8)).getField("vendor").default("")
+                                                "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
+                                                "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
+                                                "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                             })
 
-                                        }))
+                                        }));
                             }, {nonAtomic: true}).run(conn)
                                     .finally(function () {
                                         conn.close();
@@ -232,9 +238,14 @@ ServerSocket.prototype.start = function () {
                                             "nomeAntena": client,
                                             "host": [{
                                                     "macAddress": valuesAp[0],
+                                                    "channel": (typeof valuesAp[3] == "undefined") ? "" : valuesAp[3],
+                                                    "Privacy": (typeof valuesAp[5] == "undefined") ? "" : valuesAp[5],
+                                                    "Cipher": (valuesAp.length == 14) ? ((typeof valuesAp[6] == "undefined") ? "" : (typeof valuesAp[6].split(",")[0] == "undefined") ? "" : valuesAp[6].split(",")[0]) : valuesAp[6],
+                                                    "Authentication": (valuesAp.length == 14) ? ((typeof valuesAp[6] == "undefined") ? "" : (typeof valuesAp[6].split(",")[1] == "undefined") ? "" : valuesAp[6].split(",")[1]) : valuesAp[7],
+                                                    "ESSID": (valuesAp.length == 14) ? ((typeof valuesAp[12] == "undefined") ? "" : valuesAp[12]) : ((typeof valuesAp[13] == "undefined") ? "" : valuesAp[13]),
                                                     "data": r.now().inTimezone("+01:00"),
-                                                    "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]),
-                                                    "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsAp[0].substring(0, 8)).getField("vendor").default("")
+                                                    "Power": (valuesAp.length == 14) ? ((typeof valuesAp[7] == "undefined") ? "" : valuesAp[7]) : ((typeof valuesAp[8] == "undefined") ? "" : valuesAp[8]),
+                                                    "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesAp[0].substring(0, 8)).getField("vendor").default("")
                                                 }]
                                         },
                                 r.branch(
@@ -245,9 +256,14 @@ ServerSocket.prototype.start = function () {
                                                         d("macAddress").eq(valuesAp[0]).default(false),
                                                         {
                                                             "macAddress": valuesAp[0],
+                                                            "channel": (typeof valuesAp[3] == "undefined") ? "" : valuesAp[3],
+                                                            "Privacy": (typeof valuesAp[5] == "undefined") ? "" : valuesAp[5],
+                                                            "Cipher": (valuesAp.length == 14) ? ((typeof valuesAp[6] == "undefined") ? "" : (typeof valuesAp[6].split(",")[0] == "undefined") ? "" : valuesAp[6].split(",")[0]) : valuesAp[6],
+                                                            "Authentication": (valuesAp.length == 14) ? ((typeof valuesAp[6] == "undefined") ? "" : (typeof valuesAp[6].split(",")[1] == "undefined") ? "" : valuesAp[6].split(",")[1]) : valuesAp[7],
+                                                            "ESSID": (valuesAp.length == 14) ? ((typeof valuesAp[12] == "undefined") ? "" : valuesAp[12]) : ((typeof valuesAp[13] == "undefined") ? "" : valuesAp[13]),
                                                             "data": r.now().inTimezone("+01:00"),
-                                                            "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]),
-                                                            "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsAp[0].substring(0, 8)).getField("vendor").default("")
+                                                            "Power": (valuesAp.length == 14) ? ((typeof valuesAp[7] == "undefined") ? "" : valuesAp[7]) : ((typeof valuesAp[8] == "undefined") ? "" : valuesAp[8]),
+                                                            "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesAp[0].substring(0, 8)).getField("vendor").default("")
                                                         }, d)
                                             })
                                         }),
@@ -255,9 +271,14 @@ ServerSocket.prototype.start = function () {
                                             "nomeAntena": client,
                                             "host": row("host").append({
                                                 "macAddress": valuesAp[0],
+                                                "channel": (typeof valuesAp[3] == "undefined") ? "" : valuesAp[3],
+                                                "Privacy": (typeof valuesAp[5] == "undefined") ? "" : valuesAp[5],
+                                                "Cipher": (valuesAp.length == 14) ? ((typeof valuesAp[6] == "undefined") ? "" : (typeof valuesAp[6].split(",")[0] == "undefined") ? "" : valuesAp[6].split(",")[0]) : valuesAp[6],
+                                                "Authentication": (valuesAp.length == 14) ? ((typeof valuesAp[6] == "undefined") ? "" : (typeof valuesAp[6].split(",")[1] == "undefined") ? "" : valuesAp[6].split(",")[1]) : valuesAp[7],
+                                                "ESSID": (valuesAp.length == 14) ? ((typeof valuesAp[12] == "undefined") ? "" : valuesAp[12]) : ((typeof valuesAp[13] == "undefined") ? "" : valuesAp[13]),
                                                 "data": r.now().inTimezone("+01:00"),
-                                                "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8]),
-                                                "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valsAp[0].substring(0, 8)).getField("vendor").default("")
+                                                "Power": (valuesAp.length == 14) ? ((typeof valuesAp[7] == "undefined") ? "" : valuesAp[7]) : ((typeof valuesAp[8] == "undefined") ? "" : valuesAp[8]),
+                                                "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesAp[0].substring(0, 8)).getField("vendor").default("")
                                             })
                                         }));
                             }, {nonAtomic: true}).run(conn)
