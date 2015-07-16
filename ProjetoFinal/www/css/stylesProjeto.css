@@ -8,6 +8,10 @@
     z-index: 900;
 }
 
+main {
+    overflow: hidden !important;
+}
+
 .demo-drawer-header {
     height: 80px;
 }

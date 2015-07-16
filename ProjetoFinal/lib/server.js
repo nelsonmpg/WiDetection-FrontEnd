@@ -215,12 +215,47 @@ Server.prototype.start = function () {
         });
     });
 
-    this.app.get("/getAallAnteasIDspAp", function (req, res) {
+    this.app.get("/GetDeviceByAntena/:nomeAntena", function (req, res) {//req.params.nomeAntena
         r.connect(dbData).then(function (conn) {
-            return r.db(dbConfig.db).table('AntAp').map(function (row) {
+            return r.db(dbConfig.db).table('AntAp').filter({"nomeAntena": req.params.nomeAntena}).map(function (row) {
                 return [{"nome": row("nomeAntena"), "count": row("host").count()}]
             }).map(function (row2) {
-                return {"AP": row2.nth(0), "DISP": {"nome": row2("nome").nth(0), "count": r.db("ProjetoFinal").table('AntDisp').filter({"nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)}}
+                return [{"AP": row2.nth(0)("count"), "DISP": r.db(dbConfig.db).table('AntDisp').filter({"nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)}]
+            }).nth(0).nth(0).coerceTo('array')
+                    .run(conn)
+                    .finally(function () {
+                        conn.close();
+                    });
+        }).then(function (output) {
+            res.json(output);
+        }).error(function (err) {
+            res.status(500).json({err: err});
+        });
+    });
+
+    /**
+     * Retorna os Dispositivos detectados nos ultimos 5 minutos por antena
+     */
+    this.app.get("/getAtives/:tipo/:nomeAntena", function (req, res) {//req.params.nomeAntena
+        var table = (req.params.tipo.toUpperCase() == "AP") ? "AntAp": "AntDisp";
+        r.connect(dbData).then(function (conn) { //dbConfig.db 
+            return r.db(dbConfig.db).table(table).filter({"nomeAntena": req.params.nomeAntena}).map(function (row) {
+                return row("host").map(function (row2) {
+                    return r.now().inTimezone("+01:00").do(function (time) {
+                        return {"l": row2,
+                            "estado": row2("data").gt(r.time(
+                                    time.year(),
+                                    time.month(),
+                                    time.day(),
+                                    time.hours(),
+                                    time.minutes().sub(5),
+                                    time.seconds(),
+                                    time.timezone()
+                                    ))};
+                    })
+                })
+            }).map(function (x) {
+                return x.filter({"estado": true})("l")
             }).coerceTo('array').run(conn)
                     .finally(function () {
                         conn.close();
@@ -231,7 +266,7 @@ Server.prototype.start = function () {
             res.status(500).json({err: err});
         });
     });
-    
+
     /**
      * Retorna o numero de AP's e Disp da antena passada
      */
