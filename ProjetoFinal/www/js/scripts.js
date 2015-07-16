@@ -109,7 +109,7 @@ $(document).ready(function () {
                         valor[0] = numAP;
                         valor[1] = numDIS;
                         graphOneCol = new ArrayToGraph(valor, "Quantidade de dispositipos ativos na Antena:", nomeAntena, "divAntenas", "column");
-                        graphOneCol.clickToBarGraph(1);
+                        graphOneCol.clickToBarGraph(2);
                         graphOneCol.createArrayToStatusBarGraph();
                     },
                     error: function (error) {

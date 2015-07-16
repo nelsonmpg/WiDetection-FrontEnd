@@ -112,7 +112,28 @@ ArrayToGraph.prototype.clickToBarGraph = function (func) {
 //                alert(bar + " - " + func);
             };
             break;
+        case 2:
+            self = this;
+            this.click = function (bar) {
+                var query = "/getAtives/" + ((bar == "AP") ? "AP/" : "DISP/") + this.subtitulo;
+                $.ajax({
+                    type: "GET",
+                    url: query,
+                    dataType: 'json',
+                    success: function (data) {
+                        $("#"+self.local).html("");
+                        antenas = new HostArray("#divAntenas", data[0]);
+                        antenas.listaAp();
+                                                
+                    },
+                    error: function (error) {
+                        console.log(JSON.stringify(error));
+                    }
+                });
+            };
+            break;
         default :
+            alert(this);
             break;
     }
 
@@ -122,14 +143,14 @@ ArrayToGraph.prototype.clickToBarGraph = function (func) {
 ArrayToGraph.prototype.createArrayToStatusBarGraph = function () {
     var pointsGraph = [];
     var self = this;
-        pointsGraph.push({
-            label: "AP",
-            y: 1 * this.array[0]
-        });
-        pointsGraph.push({
-            label: "Disp",
-            y: 1 * this.array[1]
-        });
+    pointsGraph.push({
+        label: "AP",
+        y: 1 * this.array[0]
+    });
+    pointsGraph.push({
+        label: "Disp",
+        y: 1 * this.array[1]
+    });
     this.dataTograph = [{
             type: this.type, //change type to bar, line, area, pie, etc
             click: function (e) {
@@ -137,6 +158,7 @@ ArrayToGraph.prototype.createArrayToStatusBarGraph = function () {
             },
             dataPoints: pointsGraph
         }];
+    this.clickToBarGraph(2);
     this.createAndShowGraphOneBar(this.dataTograph);
 };
 
