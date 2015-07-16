@@ -19,7 +19,7 @@ var Ap = function (local, Authentication, Cipher, ESSID, Power, Privacy, macAddr
 }
 
 Host.prototype.createAndAddToDivHost = function () {
-    $("body").find(this.local).append("<div class=' mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'><div class='divAntena' data-nomeAntena='" + this.nome + "'>" +
+    $("body").find(this.local).append("<div class=' mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'><div class='divAntena divBoxItem' data-nomeAntena='" + this.nome + "'>" +
             "<img src='" + this.image + "'>" +
             "<p class='text-center'>" + this.nome + "</p>" +
             "<div>" +
@@ -35,11 +35,11 @@ Host.prototype.createAndAddToDivHost = function () {
 };
 
 Ap.prototype.createAndAddToDivAp = function () {
-    $("body").find(this.local).append("<div class='divAntena  mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2' data-macAddress='" + this.macAddress + "'>" +
+    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2' data-macAddress='" + this.macAddress + "'>" +
             "<img src='" + this.image + "'>" +
             "<p class='text-center'>" + this.ESSID + "</p>" +
             "<div>" +
-            "<p class='text-center coordenadas'>Mac.Address: " + this.macAddress + "</p>" +
-            "<p class='text-center coordenadas'>Aut: " + this.Authentication + "</p>" +
+            "<p class='text-center'>Mac.Address: " + this.macAddress + "</p>" +
+            "<p class='text-center'>Aut: " + this.Authentication + "</p>" +
             "</div>");
 };

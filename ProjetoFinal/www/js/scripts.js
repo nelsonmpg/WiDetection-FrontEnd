@@ -67,7 +67,7 @@ $(document).ready(function () {
                 $("#divAntenas").html("");
                 console.log(data);
                 for (var i = 0; i < data.length; i++) {
-                    $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'>" +
+                    $("#divAntenas").append("<div class='divBoxItem divAntena mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'>" +
                             "<img src='./images/antena.png'>" +
                             "<p class='text-center'>" + data[i].nomeAntena + "</p>" +
                             "<p class='text-center showDispDetail' data-nomeAntena='" + data[i].nomeAntena + "'> Dispositivos: " + "num_host" + "</p>" +
