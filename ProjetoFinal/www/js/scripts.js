@@ -57,40 +57,17 @@ $(document).ready(function () {
         });
     });
 
-    $("body").on("click", "#verTodasAntenas", function () {
-        //getTodasAntenas
-        $.ajax({
-            type: "GET",
-            url: "/getTodasAntenas",
-            dataType: 'json',
-            success: function (data) {
-                $("#divAntenas").html("");
-                console.log(data);
-                for (var i = 0; i < data.length; i++) {
-                    $("#divAntenas").append("<div class='divAntena mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'>" +
-                            "<img src='./images/antena.png'>" +
-                            "<p class='text-center'>" + data[i].nomeAntena + "</p>" +
-                            "<p class='text-center showDispDetail' data-nomeAntena='" + data[i].nomeAntena + "'> Dispositivos: " + "num_host" + "</p>" +
-                            "<div class='mapOpen' data-nomeAntena='" + data[i].nomeAntena + "' data-lat='" + data[i].latitude + "' data-lon='" + data[i].longitude + "'>" +
-                            "<p class='text-center coordenadas'>lat: " + data[i].latitude + "</p>" +
-                            "<p class='text-center coordenadas'>lon: " + data[i].longitude + "</p>" +
-                            "</div></div>");
-                }
-
-            },
-            error: function (error) {
-                console.log(JSON.stringify(error));
-            }
-        });
-
-    });
+//    $("body").on("click", "#verTodasAntenas", function () {
+//        //getTodasAntenas
+//       
+//
+//    });
 
     //Alteracao
     $("body").on("click", ".divAntena", function () {
-        
-        //criarLightBox("AntDetail");
+
         var nomeAntena = this.getAttribute("data-nomeAntena");
-        $("#divAntenas").html("");
+        var local = this.getAttribute("data-local");
         var numAP;
         var numDISP;
         $.ajax({
@@ -108,7 +85,7 @@ $(document).ready(function () {
                         var valor = [];
                         valor[0] = numAP;
                         valor[1] = numDIS;
-                        graphOneCol = new ArrayToGraph(valor, "Quantidade de dispositipos ativos na Antena:", nomeAntena, "divAntenas", "column");
+                        graphOneCol = new ArrayToGraph(valor, "Quantidade de dispositipos ativos na Antena:", nomeAntena, local, "column");
                         graphOneCol.clickToBarGraph(1);
                         graphOneCol.createArrayToStatusBarGraph();
                     },
@@ -145,14 +122,14 @@ $(document).ready(function () {
     $("body").on("click", "#btnBackEstatistica", function () {
         arrayGraph = null;
         carregarDivEstatistica();
-        $("body").find("#btnBackEstatistica").css({
+        $("body").find(".btnBack").css({
             visibility: "hidden"
         });
     });
 
     $("body").on("click", "#btnBackStus", function () {
         carregarDivStatus();
-        $("body").find("#btnBackStus").css({
+        $("body").find(".btnBack").css({
             visibility: "hidden"
         });
     });
@@ -223,7 +200,7 @@ function carregarDivStatus() {
         dataType: 'json',
 //        async: false,
         success: function (data) {
-            antenas = new HostArray("#divAntenas", data);
+            antenas = new HostArray("divAntenas", data);
             antenas.setImage(0);
             antenas.listaHost();
             $("#contentor-principal").show(efectDiv, timeEfect);
@@ -279,22 +256,39 @@ function carregarDivDashboard() {
 function carregarDivEstatistica() {
     console.log("Carrregar Estatistica!");
 
+
     $.ajax({
         type: "GET",
-        url: "/getAllAntenasAndDisps",
+        url: "/getTodasAntenas",
         dataType: 'json',
         success: function (data) {
-            arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
-
-            // para aparecer a div com os resultados
+            antenas = new HostArray("chartContainer", data);
+            antenas.setImage(0);
+            antenas.listaHost();
             $("#contentor-principal").show(efectDiv, timeEfect);
-            arrayGraph.createArrayToGraphTwoBar();
-
         },
         error: function (error) {
             console.log(JSON.stringify(error));
         }
     });
+
+
+//    $.ajax({
+//        type: "GET",
+//        url: "/getAllAntenasAndDisps",
+//        dataType: 'json',
+//        success: function (data) {
+//            arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
+//
+//            // para aparecer a div com os resultados
+//            $("#contentor-principal").show(efectDiv, timeEfect);
+//            arrayGraph.createArrayToGraphTwoBar();
+//
+//        },
+//        error: function (error) {
+//            console.log(JSON.stringify(error));
+//        }
+//    });
 }
 
 /**
