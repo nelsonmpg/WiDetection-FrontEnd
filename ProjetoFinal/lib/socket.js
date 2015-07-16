@@ -109,10 +109,10 @@ ServerSocket.prototype.start = function () {
                                             "host": [{
                                                     "macAddress": valuesHst[0],
                                                     "data": r.now().inTimezone("+01:00"),
-                                                    "Power": (typeof [3] == "undefined") ? "" : [3],
-                                                    "BSSID": (typeof [5] == "undefined") ? "" : [5],
-                                                    "Probed_ESSIDs": (typeof [6] == "undefined") ? "" : [6],
-                                                    "nameVendor": r.db(dbConfig.db).table("tblPrefix").get([0].substring(0, 8)).getField("vendor").default("")
+                                                    "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
+                                                    "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                    "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
+                                                    "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                                 }]
                                         },
                                 r.branch(
@@ -124,10 +124,10 @@ ServerSocket.prototype.start = function () {
                                                         {
                                                             "macAddress": valuesHst[0],
                                                             "data": r.now().inTimezone("+01:00"),
-                                                            "Power": (typeof [3] == "undefined") ? "" : [3],
-                                                            "BSSID": (typeof [5] == "undefined") ? "" : [5],
-                                                            "Probed_ESSIDs": (typeof [6] == "undefined") ? "" : [6],
-                                                            "nameVendor": r.db(dbConfig.db).table("tblPrefix").get([0].substring(0, 8)).getField("vendor").default("")
+                                                            "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
+                                                            "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                            "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
+                                                            "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                                         }, d)
                                             })
                                         }),
@@ -136,13 +136,13 @@ ServerSocket.prototype.start = function () {
                                             "host": row("host").append({
                                                 "macAddress": valuesHst[0],
                                                 "data": r.now().inTimezone("+01:00"),
-                                                "Power": (typeof [3] == "undefined") ? "" : [3],
-                                                "BSSID": (typeof [5] == "undefined") ? "" : [5],
-                                                "Probed_ESSIDs": (typeof [6] == "undefined") ? "" : [6],
-                                                "nameVendor": r.db(dbConfig.db).table("tblPrefix").get([0].substring(0, 8)).getField("vendor").default("")
+                                                "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
+                                                "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
+                                                "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                             })
 
-                                        }))
+                                        }));
                             }, {nonAtomic: true}).run(conn)
                                     .finally(function () {
                                         conn.close();
