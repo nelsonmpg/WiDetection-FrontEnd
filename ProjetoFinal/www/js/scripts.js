@@ -96,14 +96,18 @@ $(document).ready(function () {
         //criarLightBox("AntDetail");
         var nomeAntena = this.lastChild.getAttribute("data-nomeAntena");
         $("#divAntenas").html("");
+        var numAP;
+        var numDISP;
         $.ajax({
             type: "GET",
-            url: "/GetDeviceByAntena/" + nomeAntena,
+            url: "/getAtives/AP/" + nomeAntena,
             dataType: 'json',
+            async: false,
             success: function (data) {
-                graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos encontrados na Antena:", nomeAntena, "divAntenas", "column");
-                graphOneCol.clickToBarGraph(1);
-                graphOneCol.createArrayToGraphOneBar();
+                console.log(data);
+//                graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos ativos na Antena:", nomeAntena, "divAntenas", "column");
+//                graphOneCol.clickToBarGraph(1);
+//                graphOneCol.createArrayToGraphOneBar();
             },
             error: function (error) {
                 console.log(JSON.stringify(error));
