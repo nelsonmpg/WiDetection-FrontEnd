@@ -30,11 +30,11 @@ $(document).ready(function () {
         }
     });
 
-    $("body").on("click", ".mapOpen > p.coordenadas", function () {
-        criarLightBox("map");
-        $("#popup").append(this.parentElement.getAttribute("data-nomeAntena"));
-        carregarmapa([["<h4>" + this.parentElement.getAttribute("data-nomeAntena") + "</h4>", this.parentElement.getAttribute("data-lat"), this.parentElement.getAttribute("data-lon")]]);
-    });
+//    $("body").on("click", ".mapOpen > p.coordenadas", function () {
+//        criarLightBox("map");
+//        $("#popup").append(this.parentElement.getAttribute("data-nomeAntena"));
+//        carregarmapa([["<h4>" + this.parentElement.getAttribute("data-nomeAntena") + "</h4>", this.parentElement.getAttribute("data-lat"), this.parentElement.getAttribute("data-lon")]]);
+//    });
 
     $("body").on('click', '#selectDisp > .bootstrap-select > .dropdown-menu li a, #antenasAtivas > .bootstrap-select > .dropdown-menu li a', function () {
         var disp = $("#selectDisp > .bootstrap-select > .dropdown-menu li.selected a").text();
@@ -87,14 +87,15 @@ $(document).ready(function () {
 
     //Alteraçao
     $("body").on("click", ".divAntena", function () {
-        criarLightBox("AntDetail");
+        //criarLightBox("AntDetail");
         var nomeAntena = this.lastChild.getAttribute("data-nomeAntena");
+        $("#divAntenas").html("");
         $.ajax({
             type: "GET",
             url: "/GetDeviceByAntena/" + nomeAntena,
             dataType: 'json',
             success: function (data) {
-                graphOneCol = new ArrayToGraph(data,"Quantidade de dispositipos encontrados na Antena:", nomeAntena, "AntDetail", "column");
+                graphOneCol = new ArrayToGraph(data,"Quantidade de dispositipos encontrados na Antena:", nomeAntena, "divAntenas", "column");
                 graphOneCol.clickToBarGraph();
                 graphOneCol.createArrayToGraphOneBar();
             },
@@ -103,6 +104,25 @@ $(document).ready(function () {
             }
         });
     });
+    
+    //body > div > div > div.demo-drawer.mdl-layout__drawer.mdl-color--blue-grey-900.mdl-color-text--blue-grey-50 > header > i
+       $("body").on("click", "span", function () {
+           var nome_antena = "ant-NelsonIPT";
+           var tipo = "Ap"
+           //criarLightBox("AntDetail");
+           $.ajax({
+            type: "GET",
+            url: "/getAtives/" +tipo +"/"+  nome_antena,
+            dataType: 'json',
+            success: function (data) {
+           console.log(data);
+            },
+            error: function (error) {
+                console.log(JSON.stringify(error));
+            }
+        });
+    });
+    
 
     $("body").on("click", "#btnBack", function () {
         arrayGraph = null;

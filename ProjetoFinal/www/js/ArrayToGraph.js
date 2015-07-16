@@ -82,6 +82,7 @@ ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
 
 ArrayToGraph.prototype.clickToBarGraph = function (bar) {
     var self = this;
+    //this.type = "pie";
     this.click = function (bar) {
         var query = "/getHostbyTipoNome/" + ((bar == "AP") ? "AP/" : "DISP/") + this.subtitulo;
         $.ajax({
