@@ -119,6 +119,27 @@ ArrayToGraph.prototype.clickToBarGraph = function (func) {
 
 };
 
+ArrayToGraph.prototype.createArrayToStatusBarGraph = function () {
+    var pointsGraph = [];
+    var self = this;
+        pointsGraph.push({
+            label: "AP",
+            y: 1 * this.array[0]
+        });
+        pointsGraph.push({
+            label: "Disp",
+            y: 1 * this.array[1]
+        });
+    this.dataTograph = [{
+            type: this.type, //change type to bar, line, area, pie, etc
+            click: function (e) {
+                self.click(e.dataPoint.label);
+            },
+            dataPoints: pointsGraph
+        }];
+    this.createAndShowGraphOneBar(this.dataTograph);
+};
+
 ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
     var pointsAp = [];
     var pointsDisp = [];
@@ -172,7 +193,6 @@ ArrayToGraph.prototype.clickToDualBarGraph = function (event) {
             console.log(JSON.stringify(error));
         }
     });
-
 };
 
 ArrayToGraph.prototype.createAndShowGraph = function (dataVelues) {
