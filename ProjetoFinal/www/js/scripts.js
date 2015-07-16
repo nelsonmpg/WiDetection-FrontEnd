@@ -57,16 +57,10 @@ $(document).ready(function () {
         });
     });
 
-//    $("body").on("click", "#verTodasAntenas", function () {
-//        //getTodasAntenas
-//       
-//
-//    });
-
     //Alteracao
     $("body").on("click", ".divAntena", function () {
         var nomeAntena = this.getAttribute("data-nomeAntena");
-        var local = this.getAttribute("data-local");
+        var local = this.getAttribute("data-local").substring(1,this.getAttribute("data-local").toString().length);
         var numAP;
         var numDISP;
         switch (this.getAttribute("data-tipo")) {

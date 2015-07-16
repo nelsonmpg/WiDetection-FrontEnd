@@ -5,17 +5,17 @@ var Host = function (local, nome, lat, long, image) {
     this.long = long;
     this.image = image;
     switch (local) {
-        case "divAntenas":
+        case "#divAntenas":
             this.typegraph = "now";
             break;
-        case "chartContainer":
+        case "#chartContainer":
             this.typegraph = "all";
             break;
     }
 };
 
 Host.prototype.createAndAddToDivHost = function () {
-    $("body").find("#" + this.local).append("<div class=' mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'><div class='divAntena' data-tipo='" + this.typegraph + "' data-local='" + this.local + "' data-nomeAntena='" + this.nome + "'>" +
+    $("body").find(this.local).append("<div class='mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'><div class='divAntena' data-tipo='" + this.typegraph + "' data-local='" + this.local + "' data-nomeAntena='" + this.nome + "'>" +
             "<img src='" + this.image + "'>" +
             "<p class='text-center'>" + this.nome + "</p>" +
             "<div>" +
@@ -43,11 +43,31 @@ var Ap = function (local, Authentication, Cipher, ESSID, Power, Privacy, macAddr
 };
 
 Ap.prototype.createAndAddToDivAp = function () {
-    $("body").find(this.local).append("<div class='divAntena  mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2' data-macAddress='" + this.macAddress + "'>" +
+    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2' data-macAddress='" + this.macAddress + "'>" +
             "<img src='" + this.image + "'>" +
             "<p class='text-center'>" + this.ESSID + "</p>" +
             "<div>" +
-            "<p class='text-center coordenadas'>Mac.Address: " + this.macAddress + "</p>" +
-            "<p class='text-center coordenadas'>Aut: " + this.Authentication + "</p>" +
+            "<p class='text-center'>Mac.Address: " + this.macAddress + "</p>" +
+            "<p class='text-center'>Aut: " + this.Authentication + "</p>" +
+            "</div>");
+};
+
+var Disp = function (local, BSSID, Power, Probed_ESSIDs, macAddress, nameVendor) {
+    this.local = local;
+    this.BSSID = BSSID;
+    this.Power = Power;
+    this.Probed_ESSIDs = Probed_ESSIDs;
+    this.macAddress = macAddress;
+    this.nameVendor = nameVendor;
+    this.image = "./images/device.png";
+};
+
+Disp.prototype.createAndAddToDivDisp = function () {
+    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2' data-macAddress='" + this.macAddress + "'>" +
+            "<img src='" + this.image + "'>" +
+            "<p class='text-center'>" + this.nameVendor + "</p>" +
+            "<div>" +
+            "<p class='text-center'>Power: " + this.Power + "</p>" +
+            "<p class='text-center'>Aut: " + this.BSSID + "</p>" +
             "</div>");
 };

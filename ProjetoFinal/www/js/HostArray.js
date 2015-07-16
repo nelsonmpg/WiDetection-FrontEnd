@@ -1,5 +1,5 @@
 var HostArray = function (local, arrayHosts) {
-    this.local = local;
+    this.local = "#" + local;
     this.arrayHosts = arrayHosts;
     this.image = this.setImage(0);
     this.arrayElements = [];
@@ -20,7 +20,7 @@ HostArray.prototype.setImage = function (img) {
 };
 
 HostArray.prototype.listaHost = function () {
-    $("body").find("#" + this.local).html("");
+    $("body").find(this.local).html("");
     var self = this;
     for (var i = 0; i < this.arrayHosts.length; i++) {
         this.arrayElements.push(
@@ -32,7 +32,7 @@ HostArray.prototype.listaHost = function () {
                         self.image).createAndAddToDivHost());
     }
     if (this.arrayHosts.length == 0) {
-        $("body").find("#" + this.local).append("<div class='jumbotron'><h2>N&atilde;o existem antenas ativas de momento</h2></div>");
+        $("body").find(this.local).append("<div class='jumbotron'><h2>N&atilde;o existem antenas ativas de momento</h2></div>");
     }
 };
 
@@ -49,7 +49,25 @@ HostArray.prototype.listaAp = function () {
                         self.arrayHosts[i].Power,
                         self.arrayHosts[i].Privacy,
                         self.arrayHosts[i].macAddress,
-                        self.arrayHosts[i].nameVendor ).createAndAddToDivAp());
+                        self.arrayHosts[i].nameVendor).createAndAddToDivAp());
+    }
+    if (this.arrayHosts.length == 0) {
+        $("body").find(this.local).append("<div class='jumbotron'><h2>N&atilde;o existem antenas ativas de momento</h2></div>");
+    }
+};
+
+HostArray.prototype.listaDisp = function () {
+    $("body").find(this.local).html("");
+    var self = this;
+    for (var i = 0; i < this.arrayHosts.length; i++) {
+        this.arrayElements.push(
+                new Disp(
+                        self.local,
+                        self.arrayHosts[i].BSSID,
+                        self.arrayHosts[i].Power,
+                        self.arrayHosts[i].Probed_ESSIDs,
+                        self.arrayHosts[i].macAddress,
+                        self.arrayHosts[i].nameVendor).createAndAddToDivDisp());
     }
     if (this.arrayHosts.length == 0) {
         $("body").find(this.local).append("<div class='jumbotron'><h2>N&atilde;o existem antenas ativas de momento</h2></div>");
