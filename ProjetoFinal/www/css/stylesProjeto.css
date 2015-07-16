@@ -94,10 +94,6 @@ main {
     height:100%
 }
 
-.mapOpen > p {
-    margin: auto;
-}
-
 #addmap {
     width:600px; 
     height:300px; 
@@ -203,6 +199,6 @@ main {
     cursor: pointer;
 }
 
-#btnBack{
+#btnBackEstatistica, #btnBackStus {
     visibility: hidden;
 }

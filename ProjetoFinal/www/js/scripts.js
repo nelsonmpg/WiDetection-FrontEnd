@@ -39,11 +39,11 @@ $(document).ready(function () {
         }
     });
 
-//    $("body").on("click", ".mapOpen > p.coordenadas", function () {
-//        criarLightBox("map");
-//        $("#popup").append(this.parentElement.getAttribute("data-nomeAntena"));
-//        carregarmapa([["<h4>" + this.parentElement.getAttribute("data-nomeAntena") + "</h4>", this.parentElement.getAttribute("data-lat"), this.parentElement.getAttribute("data-lon")]]);
-//    });
+    $("body").on("click", ".mapOpen", function () {
+        criarLightBox("map");
+        $("#popup").append(this.getAttribute("data-nomeAntena"));
+        carregarmapa([["<h4>" + this.getAttribute("data-nomeAntena") + "</h4>", this.getAttribute("data-lat"), this.getAttribute("data-lon")]]);
+    });
 
     $("body").on('click', '#selectDisp > .bootstrap-select > .dropdown-menu li a, #antenasAtivas > .bootstrap-select > .dropdown-menu li a', function () {
         var disp = $("#selectDisp > .bootstrap-select > .dropdown-menu li.selected a").text();
@@ -55,12 +55,6 @@ $(document).ready(function () {
         $("#hover, #popup").fadeOut(300, function () {
             $(this).remove();
         });
-    });
-
-    $("body").on("click", ".showDispDetail", function () {
-        criarLightBox("DispByAntena");
-        $("#popup").prepend(this.getAttribute("data-nomeAntena"));
-        carregarDispAtivos("DispByAntena", this.getAttribute("data-nomeAntena"));
     });
 
     $("body").on("click", "#verTodasAntenas", function () {
@@ -114,30 +108,37 @@ $(document).ready(function () {
             }
         });
     });
-    
+
     //body > div > div > div.demo-drawer.mdl-layout__drawer.mdl-color--blue-grey-900.mdl-color-text--blue-grey-50 > header > i
-       $("body").on("click", "span", function () {
-           var nome_antena = "ant-NelsonIPT";
-           var tipo = "Ap"
-           //criarLightBox("AntDetail");
-           $.ajax({
+    $("body").on("click", "span", function () {
+        var nome_antena = "ant-NelsonIPT";
+        var tipo = "Ap"
+        //criarLightBox("AntDetail");
+        $.ajax({
             type: "GET",
-            url: "/getAtives/" +tipo +"/"+  nome_antena,
+            url: "/getAtives/" + tipo + "/" + nome_antena,
             dataType: 'json',
             success: function (data) {
-           console.log(data);
+                console.log(data);
             },
             error: function (error) {
                 console.log(JSON.stringify(error));
             }
         });
     });
-    
 
-    $("body").on("click", "#btnBack", function () {
+
+    $("body").on("click", "#btnBackEstatistica", function () {
         arrayGraph = null;
         carregarDivEstatistica();
-        $("body").find("#btnBack").css({
+        $("body").find("#btnBackEstatistica").css({
+            visibility: "hidden"
+        });
+    });
+
+    $("body").on("click", "#btnBackStus", function () {
+        carregarDivStatus();
+        $("body").find("#btnBackStus").css({
             visibility: "hidden"
         });
     });
@@ -266,7 +267,7 @@ function carregarDivEstatistica() {
 
     $.ajax({
         type: "GET",
-        url: "/getAallAnteasIDspAp",
+        url: "/getAllAntenasAndDisps",
         dataType: 'json',
         success: function (data) {
             arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
