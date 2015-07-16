@@ -86,7 +86,7 @@ $(document).ready(function () {
                         valor[0] = numAP;
                         valor[1] = numDIS;
                         graphOneCol = new ArrayToGraph(valor, "Quantidade de dispositipos ativos na Antena:", nomeAntena, local, "column");
-                        graphOneCol.clickToBarGraph(1);
+                        graphOneCol.clickToBarGraph(2);
                         graphOneCol.createArrayToStatusBarGraph();
                     },
                     error: function (error) {
@@ -100,7 +100,6 @@ $(document).ready(function () {
         });
     });
 
-    //body > div > div > div.demo-drawer.mdl-layout__drawer.mdl-color--blue-grey-900.mdl-color-text--blue-grey-50 > header > i
     $("body").on("click", "span", function () {
         var nome_antena = "ant-NelsonIPT";
         var tipo = "Ap"

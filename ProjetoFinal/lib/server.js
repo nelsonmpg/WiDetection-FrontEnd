@@ -163,6 +163,41 @@ Server.prototype.start = function () {
     });
 
     /**
+     * Retorna os Dispositivos detectados nos ultimos 5 minutos por antena
+     */
+    this.app.get("/getAtives/:tipo/:nomeAntena", function (req, res) {//req.params.nomeAntena
+        var table = (req.params.tipo.toUpperCase() == "AP") ? "AntAp" : "AntDisp";
+        r.connect(dbData).then(function (conn) { //dbConfig.db 
+            return r.db(dbConfig.db).table(table).filter({"nomeAntena": req.params.nomeAntena}).map(function (row) {
+                return row("host").map(function (row2) {
+                    return r.now().inTimezone("+01:00").do(function (time) {
+                        return {"l": row2,
+                            "estado": row2("data").gt(r.time(
+                                    time.year(),
+                                    time.month(),
+                                    time.day(),
+                                    time.hours(),
+                                    time.minutes().sub(5),
+                                    time.seconds(),
+                                    time.timezone()
+                                    ))};
+                    })
+                })
+            }).map(function (x) {
+                return x.filter({"estado": true})("l")
+            }).coerceTo('array').run(conn)
+                    .finally(function () {
+                        conn.close();
+                    });
+        }).then(function (output) {
+            res.json(output);
+        }).error(function (err) {
+            res.status(500).json({err: err});
+        });
+    });
+
+
+    /**
      * retornar antenas ativas
      * Falta alterar a consulta para retornar apenas as activas
      */
