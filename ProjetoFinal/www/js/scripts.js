@@ -14,6 +14,18 @@ var timeEfect = 200;
 $(document).ready(function () {
     var socket = io.connect(window.location.href);
 
+    io.on('connect', function () {
+        console.log("Socket Connected");
+    });
+
+    // socket detera quando a ligacao com o servidor e cortada
+    socket.on('disconnect', function () {
+        console.log('Socket disconnected');
+        if (arrayHosts != null) {
+            arrayHosts.stopIntervalGraph();
+        }
+    });
+
     $("body").find("#contentor-principal").css({
         height: $("body").height() * 0.876
     });
@@ -85,7 +97,7 @@ $(document).ready(function () {
 
     });
 
-    //Alteraçao
+    //Alteracao
     $("body").on("click", ".divAntena", function () {
         criarLightBox("AntDetail");
         var nomeAntena = this.lastChild.getAttribute("data-nomeAntena");
@@ -94,7 +106,7 @@ $(document).ready(function () {
             url: "/GetDeviceByAntena/" + nomeAntena,
             dataType: 'json',
             success: function (data) {
-                graphOneCol = new ArrayToGraph(data,"Quantidade de dispositipos encontrados na Antena:", nomeAntena, "AntDetail", "column");
+                graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos encontrados na Antena:", nomeAntena, "AntDetail", "column");
                 graphOneCol.createArrayToGraphOneBar();
             },
             error: function (error) {
