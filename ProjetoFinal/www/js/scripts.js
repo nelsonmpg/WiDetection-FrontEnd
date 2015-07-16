@@ -65,39 +65,67 @@ $(document).ready(function () {
 
     //Alteracao
     $("body").on("click", ".divAntena", function () {
-
         var nomeAntena = this.getAttribute("data-nomeAntena");
         var local = this.getAttribute("data-local");
         var numAP;
         var numDISP;
-        $.ajax({
-            type: "GET",
-            url: "/getAtives/AP/" + nomeAntena,
-            dataType: 'json',
-            success: function (data) {
-                numAP = data[0].length;
+        switch (this.getAttribute("data-tipo")) {
+            case "now":
                 $.ajax({
                     type: "GET",
-                    url: "/getAtives/DISP/" + nomeAntena,
+                    url: "/getAtives/AP/" + nomeAntena,
                     dataType: 'json',
                     success: function (data) {
-                        numDIS = data[0].length;
-                        var valor = [];
-                        valor[0] = numAP;
-                        valor[1] = numDIS;
-                        graphOneCol = new ArrayToGraph(valor, "Quantidade de dispositipos ativos na Antena:", nomeAntena, local, "column");
-                        graphOneCol.clickToBarGraph(2);
-                        graphOneCol.createArrayToStatusBarGraph();
+                        numAP = data[0].length;
+                        $.ajax({
+                            type: "GET",
+                            url: "/getAtives/DISP/" + nomeAntena,
+                            dataType: 'json',
+                            success: function (data) {
+                                $("body").find(".btnBack").css({
+                                    visibility: "visible"
+                                });
+                                numDIS = data[0].length;
+                                var valor = [];
+                                valor[0] = numAP;
+                                valor[1] = numDIS;
+                                console.log(valor);
+                                graphOneCol = new ArrayToGraph(valor, "Quantidade de dispositipos ativos na Antena:", nomeAntena, local, "column");
+                                graphOneCol.clickToBarGraph(2);
+                                graphOneCol.createArrayToStatusBarGraph();
+                            },
+                            error: function (error) {
+                                console.log(JSON.stringify(error));
+                            }
+                        });
                     },
                     error: function (error) {
                         console.log(JSON.stringify(error));
                     }
                 });
-            },
-            error: function (error) {
-                console.log(JSON.stringify(error));
-            }
-        });
+                break;
+            case "all":
+                $.ajax({
+                    type: "GET",
+                    url: "/GetDeviceByAntena/" + nomeAntena,
+                    dataType: 'json',
+                    success: function (data) {
+                        $("body").find(".btnBack").css({
+                            visibility: "visible"
+                        });
+                        console.log(data);
+                        graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos ativos na Antena:", nomeAntena, local, "column");
+                        graphOneCol.clickToBarGraph(2);
+                        graphOneCol.createArrayToGraphOneBar();
+                $("body").find('.selectpicker').selectpicker('refresh');
+                    },
+                    error: function (error) {
+                        console.log(JSON.stringify(error));
+                    }
+                });
+                break;
+        }
+
     });
 
     $("body").on("click", "span", function () {
@@ -254,8 +282,6 @@ function carregarDivDashboard() {
  */
 function carregarDivEstatistica() {
     console.log("Carrregar Estatistica!");
-
-
     $.ajax({
         type: "GET",
         url: "/getTodasAntenas",

@@ -4,10 +4,18 @@ var Host = function (local, nome, lat, long, image) {
     this.lat = lat;
     this.long = long;
     this.image = image;
+    switch (local) {
+        case "divAntenas":
+            this.typegraph = "now";
+            break;
+        case "chartContainer":
+            this.typegraph = "all";
+            break;
+    }
 };
 
 Host.prototype.createAndAddToDivHost = function () {
-    $("body").find("#" + this.local).append("<div class=' mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'><div class='divAntena' data-local='" + this.local + "' data-nomeAntena='" + this.nome +"'>" +
+    $("body").find("#" + this.local).append("<div class=' mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'><div class='divAntena' data-tipo='" + this.typegraph + "' data-local='" + this.local + "' data-nomeAntena='" + this.nome + "'>" +
             "<img src='" + this.image + "'>" +
             "<p class='text-center'>" + this.nome + "</p>" +
             "<div>" +

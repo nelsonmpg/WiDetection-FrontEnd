@@ -121,10 +121,10 @@ ArrayToGraph.prototype.clickToBarGraph = function (func) {
                     url: query,
                     dataType: 'json',
                     success: function (data) {
-                        $("#"+self.local).html("");
+                        $("#" + self.local).html("");
                         antenas = new HostArray("#divAntenas", data[0]);
                         antenas.listaAp();
-                                                
+
                     },
                     error: function (error) {
                         console.log(JSON.stringify(error));
