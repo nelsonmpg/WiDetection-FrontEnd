@@ -1,12 +1,21 @@
+/**
+ * @param {type} array
+ * @param {type} titulo
+ * @param {type} subtitulo
+ * @param {type} local
+ * @param {type} type
+ * @returns {ArrayToGraph}
+ */
 var ArrayToGraph = function (array, titulo, subtitulo, local, type) {
     this.array = array;
     this.titulo = titulo;
-    this.subtitulo= subtitulo;
+    this.subtitulo = subtitulo;
     this.local = local;
     this.type = type;
     this.valuesGraphToBars = [];
     this.chart = null;
     this.dataTograph = [];
+    this.click = null;
 };
 
 ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
@@ -21,7 +30,50 @@ ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
     this.dataTograph = [{
             type: this.type, //change type to bar, line, area, pie, etc
             click: function (e) {
-                self.clickToBarGraph(e.dataPoint.label);
+                self.click(e.dataPoint.label);
+            },
+            dataPoints: pointsGraph
+        }];
+    this.createAndShowGraphOneBar(this.dataTograph);
+};
+
+ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
+    var pointsGraph = [], array_elements = [];
+    var self = this;
+
+    for (var valor in this.array) {
+        array_elements.push(this.array[valor].nameVendor);
+    }
+
+    array_elements.sort();
+
+    var current = "nulll";
+    var cnt = 0;
+    for (var i = 0; i < array_elements.length; i++) {
+        if (array_elements[i].toString().toUpperCase() != current.toString().toUpperCase()) {
+            if (cnt > 0) {
+                pointsGraph.push({
+                    label: current,
+                    y: 1 * cnt
+                });
+            }
+            current = array_elements[i];
+            cnt = 1;
+        } else {
+            cnt++;
+        }
+    }
+    if (cnt > 0) {
+        pointsGraph.push({
+            label: current,
+            y: 1 * cnt
+        });
+    }
+    console.log(pointsGraph);
+    this.dataTograph = [{
+            type: this.type, //change type to bar, line, area, pie, etc
+            click: function (e) {
+                self.click(e.dataPoint.label);
             },
             dataPoints: pointsGraph
         }];
@@ -29,18 +81,24 @@ ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
 };
 
 ArrayToGraph.prototype.clickToBarGraph = function (bar) {
-    var query = "/getHostbyTipoNome/" + ((bar == "AP") ? "AP/" : "DISP/") + this.titulo;
-    $.ajax({
-        type: "GET",
-        url: query,
-        dataType: 'json',
-        success: function (data) {
-            console.log(data);
-        },
-        error: function (error) {
-            console.log(JSON.stringify(error));
-        }
-    });
+    var self = this;
+    this.click = function (bar) {
+        var query = "/getHostbyTipoNome/" + ((bar == "AP") ? "AP/" : "DISP/") + this.subtitulo;
+        $.ajax({
+            type: "GET",
+            url: query,
+            dataType: 'json',
+            success: function (data) {
+                self = new ArrayToGraph(data[0], "Quantidade de dispositipos encontrados na Antena:", self.subtitulo, "AntDetail", "column");
+                self.createArrayToGraphOneBar2();
+
+            },
+            error: function (error) {
+                console.log(JSON.stringify(error));
+            }
+        });
+    };
+
 };
 
 ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
@@ -85,7 +143,7 @@ ArrayToGraph.prototype.clickToDualBarGraph = function (event) {
         url: "/GetDeviceByAntena/" + event,
         dataType: 'json',
         success: function (data) {
-            graphOneCol = new ArrayToGraph(data,"Quantidade de dispositipos encontrados na Antena:",  event, "chartContainer", "column");
+            graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos encontrados na Antena:", event, "chartContainer", "column");
             graphOneCol.createArrayToGraphOneBar();
             $("body").find("#btnBack").css({
                 visibility: "visible"

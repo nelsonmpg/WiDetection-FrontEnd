@@ -106,7 +106,8 @@ $(document).ready(function () {
             url: "/GetDeviceByAntena/" + nomeAntena,
             dataType: 'json',
             success: function (data) {
-                graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos encontrados na Antena:", nomeAntena, "AntDetail", "column");
+                graphOneCol = new ArrayToGraph(data,"Quantidade de dispositipos encontrados na Antena:", nomeAntena, "AntDetail", "column");
+                graphOneCol.clickToBarGraph();
                 graphOneCol.createArrayToGraphOneBar();
             },
             error: function (error) {
