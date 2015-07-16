@@ -199,6 +199,10 @@ main {
     cursor: pointer;
 }
 
-#btnBackEstatistica, #btnBackStus {
+.btnBack {
     visibility: hidden;
+}
+
+.mapOpen {
+    width: 100%;
 }

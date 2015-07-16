@@ -207,7 +207,7 @@ ArrayToGraph.prototype.clickToDualBarGraph = function (event) {
             graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos encontrados na Antena:", event, "chartContainer", "column");
             graphOneCol.clickToBarGraph(0);
             graphOneCol.createArrayToGraphOneBar();
-            $("body").find("#btnBackEstatistica").css({
+            $("body").find(".btnBack").css({
                 visibility: "visible"
             });
         },
