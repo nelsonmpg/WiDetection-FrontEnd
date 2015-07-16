@@ -61,7 +61,7 @@ $(document).ready(function () {
     $("body").on("click", ".divAntena", function () {
 
         var nomeAntena = this.getAttribute("data-nomeAntena");
-        var local = this.getAttribute("data-local");
+        var local = this.getAttribute("data-local").substring(1,this.getAttribute("data-local").toString().length);
         var numAP;
         var numDISP;
         $.ajax({
