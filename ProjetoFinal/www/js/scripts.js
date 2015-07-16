@@ -14,10 +14,6 @@ var timeEfect = 200;
 $(document).ready(function () {
     var socket = io.connect(window.location.href);
 
-    io.on('connect', function () {
-        console.log("Socket Connected");
-    });
-
     // socket detera quando a ligacao com o servidor e cortada
     socket.on('disconnect', function () {
         console.log('Socket disconnected');

@@ -144,6 +144,7 @@ ArrayToGraph.prototype.clickToDualBarGraph = function (event) {
         dataType: 'json',
         success: function (data) {
             graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos encontrados na Antena:", event, "chartContainer", "column");
+            graphOneCol.clickToBarGraph();
             graphOneCol.createArrayToGraphOneBar();
             $("body").find("#btnBack").css({
                 visibility: "visible"

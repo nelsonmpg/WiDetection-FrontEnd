@@ -54,7 +54,15 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
             })(tbl);
         }
     });
+}).then(function (output) {
+    setTimeout(function () {
+        carregarPrefixos();
+    }, 2000);
+}).error(function (err) {
+    console.log(err);
 });
+
+function carregarPrefixos() {
 
 //r.connect(dbData).then(function (conn) {
 //    return r.db(dbConfig.db).table('ActiveAnt').delete().run(conn)
@@ -67,51 +75,51 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
 //    console.log(err);
 //});
 
-r.connect(dbData).then(function (conn) {
-    return r.db(dbConfig.db).table("tblPrefix").coerceTo("array").count().run(conn)
-            .finally(function () {
-                conn.close();
-            });
-}).then(function (resul) {
-    // teste se a tabela dos prefixos esta vazia
-    if (!(resul > 0) || typeof resul == "undefined") {
-        download(url, function (data) {
-            if (data) {
-                var lines = data.split("\n");
-                var docsInsert = [];
-                for (var i in lines) {
-                    var line = lines[i].trim();
-                    if (line[0] != "#" && line.length > 5) {
-                        var prefix = line.substring(0, 6);
-                        var vendor = line.substring(7, line.length);
-                        var keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
-                        docsInsert.push({
-                            "prefix": keyPrefix,
-                            "vendor": vendor
-                        });
-                    }
-                }
-                r.connect(dbData).then(function (conn) {
-                    return r.db(dbConfig.db).table("tblPrefix").insert(docsInsert).run(conn)
-                            .finally(function () {
-                                conn.close();
-                            });
-                }).then(function (output) {
-                    console.log("Query output:", output);
-                }).error(function (err) {
-                    console.log("Failed:", err);
+    r.connect(dbData).then(function (conn) {
+        return r.db(dbConfig.db).table("tblPrefix").coerceTo("array").count().run(conn)
+                .finally(function () {
+                    conn.close();
                 });
-                startServers();
-            } else {
-                console.log("error");
-            }
-        });
-    } else {
+    }).then(function (resul) {
+        // teste se a tabela dos prefixos esta vazia
+        if (!(resul > 0) || typeof resul == "undefined") {
+            download(url, function (data) {
+                if (data) {
+                    var lines = data.split("\n");
+                    var docsInsert = [];
+                    for (var i in lines) {
+                        var line = lines[i].trim();
+                        if (line[0] != "#" && line.length > 5) {
+                            var prefix = line.substring(0, 6);
+                            var vendor = line.substring(7, line.length);
+                            var keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
+                            docsInsert.push({
+                                "prefix": keyPrefix,
+                                "vendor": vendor
+                            });
+                        }
+                    }
+                    r.connect(dbData).then(function (conn) {
+                        return r.db(dbConfig.db).table("tblPrefix").insert(docsInsert).run(conn)
+                                .finally(function () {
+                                    conn.close();
+                                });
+                    }).then(function (output) {
+                        console.log("Query output:", output);
+                    }).error(function (err) {
+                        console.log("Failed:", err);
+                    });
+//                    startServers();
+                } else {
+                    console.log("error");
+                }
+            });
+        }
         startServers();
-    }
-}).error(function (err) {
-    console.log(err);
-});
+    }).error(function (err) {
+        console.log(err);
+    });
+}
 
 
 function download(url, callback) {
