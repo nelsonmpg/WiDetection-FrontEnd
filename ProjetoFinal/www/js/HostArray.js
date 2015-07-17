@@ -1,7 +1,7 @@
 var HostArray = function (local, arrayHosts) {
     this.local = "#" + local;
     this.arrayHosts = arrayHosts;
-    this.image = this.setImage(0);
+    this.image = this.setImage(1);
     this.arrayElements = [];
 };
 
@@ -10,16 +10,17 @@ HostArray.prototype.setImage = function (img) {
         case 0:
             this.image = "./images/antena.png";
             break;
-        case 0:
-            this.image = "";
+        case 1:
+            this.image = "./images/wifi.gif";
             break;
-        case 0:
+        case 2:
             this.image = "";
             break;
     }
 };
 
 HostArray.prototype.listaHost = function () {
+    this.setImage(1);
     $("body").find(this.local).html("");
     var self = this;
     for (var i = 0; i < this.arrayHosts.length; i++) {
