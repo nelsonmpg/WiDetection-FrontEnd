@@ -332,6 +332,24 @@ Server.prototype.start = function () {
 
         }
     });
+    
+     /**
+     * Retorna o numero de AP's e Disp da antena passada
+     */
+    this.app.get("/getAllDisp/", function (req, res) {
+            r.connect(dbData).then(function (conn) {
+                r.db(dbConfig.db).table('DispMoveis').coerceTo("ARRAY")
+                return r.db(dbConfig.db).table('DispMoveis').coerceTo("ARRAY").run(conn)
+                        .finally(function () {
+                            conn.close();
+                        });
+            }).then(function (output) {
+                res.json(output);
+            }).error(function (err) {
+                res.status(500).json({err: err});
+            });
+        }
+    );
 
     var self = this;
     this.io.on('connection', function (socket) {

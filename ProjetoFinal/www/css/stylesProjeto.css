@@ -68,6 +68,7 @@ main {
     position: relative;
     float: left;
     max-height: 200px;
+    min-height:195px;
     min-width: 200px;
     padding: 8px;
     cursor: pointer;

@@ -8,14 +8,12 @@ var laspOptionGraph = "";
 var geocoder;
 var address;
 var temp;
-
+var teste = [];
 // blind, bounce, clip, drop, explode, fold, highlight, puff, pulsate, shake, slide
 var efectDiv = "drop";
 var timeEfect = 200;
-
 $(document).ready(function () {
     var socket = io.connect(window.location.href);
-
     // socket detera quando a ligacao com o servidor e cortada
     socket.on('disconnect', function () {
         console.log('Socket disconnected');
@@ -23,38 +21,31 @@ $(document).ready(function () {
             arrayHosts.stopIntervalGraph();
         }
     });
-
     $("body").find("#contentor-principal").css({
         height: $("body").height() * 0.876
     });
-
     showPageToDiv("status.html", "Status");
-
     $("body").on("click", ".addNewPAge", function () {
         if ($("body").find(".mdl-layout__obfuscator").css("visibility") == "visible") {
             $("body").find(".mdl-layout__obfuscator").click();
         }
         showPageToDiv($(this).data("page"), $(this).data("name"));
     });
-
     socket.on('updateArrayDisp', function (disp, data) {
         if (arrayHosts != null) {
             arrayHosts.updateArrayTransform(disp, data);
         }
     });
-
     $("body").on("click", ".mapOpen", function () {
         criarLightBox("map");
-        $("#popup").append(this.getAttribute("data-nomeAntena"));
+        $("#popup").append("<span class='nome'>" + this.getAttribute("data-nomeAntena") + "</span>");
         carregarmapa([["<h4>" + this.getAttribute("data-nomeAntena") + "</h4>", this.getAttribute("data-lat"), this.getAttribute("data-lon")]]);
     });
-
     $("body").on('click', '#selectDisp > .bootstrap-select > .dropdown-menu li a, #antenasAtivas > .bootstrap-select > .dropdown-menu li a', function () {
         var disp = $("#selectDisp > .bootstrap-select > .dropdown-menu li.selected a").text();
         var antena = $("#antenasAtivas > .bootstrap-select > .dropdown-menu li.selected a").text();
         startAndShowGraph(disp, antena);
     });
-
     $("body").on('click', '#selectEstatistica > .bootstrap-select > .dropdown-menu li a', function () {
         var chart = $("#selectEstatistica > .bootstrap-select > .dropdown-menu li.selected a").text();
         $("body").find('#selectEstatistica > select.selectpicker').selectpicker('refresh');
@@ -78,7 +69,6 @@ $(document).ready(function () {
                             // para aparecer a div com os resultados
                             $("#contentor-principal").show(efectDiv, timeEfect);
                             arrayGraph.createArrayToGraphTwoBar();
-
                         },
                         error: function (error) {
                             console.log(JSON.stringify(error));
@@ -92,13 +82,11 @@ $(document).ready(function () {
 
 
     });
-
     $("body").on("click", "#close", function () {
         $("#hover, #popup").fadeOut(300, function () {
             $(this).remove();
         });
     });
-
     //Alteracao
     $("body").on("click", ".divAntena", function () {
         var nomeAntena = this.getAttribute("data-nomeAntena");
@@ -165,18 +153,14 @@ $(document).ready(function () {
         }
 
     });
-
     $("body").on("click", "#btnBackEstatistica", function () {
         $("#contentor-principal").hide(efectDiv, timeEfect);
         arrayGraph = null;
         laspOptionGraph = "";
-
         // Extract the value of the first option.
         var sVal = $('select[name=selectGraph] option:first').val();
-
         // Set the "selected" value of the <select>.
         $('select[name=selectGraph]').val(sVal);
-
         // Force a refresh.
         $('select[name=selectGraph]').selectpicker('refresh');
         carregarDivEstatistica();
@@ -184,7 +168,6 @@ $(document).ready(function () {
             visibility: "hidden"
         });
     });
-
     $("body").on("click", "#btnBackStatus", function () {
         $("#contentor-principal").hide(efectDiv, timeEfect);
         carregarDivStatus();
@@ -192,15 +175,38 @@ $(document).ready(function () {
             visibility: "hidden"
         });
     });
-
     /**
      * Mostrar os detalhes do AP
      */
     $("body").on("click", ".showApDetail", function () {
         alert(this.getAttribute("data-macaddress"));
     });
-
-});//Fim Document Ready
+    /**
+     * Mostrar os detalhes do AP
+     */
+    $("body").on("click", "div.mdl-layout__header-row > span", function () {
+        $.ajax({
+            type: "GET",
+            url: "/getAllDisp",
+            dataType: 'json',
+            success: function (data) {
+                for (var a in data) {
+                    teste[data[a].macAddress] = {
+                        macAddress: data[a].macAddress,
+                        nameVendor: data[a].nameVendor,
+                    };
+                    teste[data[a].macAddress].sensores = [];
+                    for (var b  in data[a].disp) {
+                        teste[data[a].macAddress].sensores.push({name: data[a].disp[b].name, values: data[a].disp[b].values});
+                    }
+                }
+            },
+            error: function (error) {
+                console.log(JSON.stringify(error));
+            }
+        });
+    });
+}); //Fim Document Ready
 
 /**
  * Chama a funcao de acordo com o botao do menu carregado e atualiza o nome do 
@@ -297,7 +303,6 @@ function carregarDivDashboard() {
                 $('#selectDisp > select.selectpicker').prop('disabled', true).selectpicker('refresh');
                 $('#antenasAtivas > select.selectpicker').prop('disabled', true).selectpicker('refresh');
                 $("body").find("#chartContainer").append("<div class='jumbotron'><h2>N&atilde;o existem antenas ativas de momento</h2></div>");
-
             } else {
                 $("body").find('#antenasAtivas > select').html(listOpt).selectpicker('refresh');
                 var disp = $("#selectDisp > .bootstrap-select > .dropdown-menu li.selected a").text();
@@ -345,8 +350,6 @@ function carregarDivEstatistica() {
  */
 function carregarDivAbout() {
     console.log("Carrregar About!");
-
-
 // para aparecer a div com os resultados
     $("#contentor-principal").show(efectDiv, timeEfect);
 }
@@ -390,10 +393,8 @@ function carregarmapa(local) {
     //var locations = [['<h4>Bondi Beach</h4>', -33.890542, 151.274856],['<h4>Coogee Beach</h4>', -33.923036, 151.259052],['<h4>Cronulla Beach</h4>', -34.028249, 151.157507],['<h4>Manly Beach</h4>', -33.80010128657071, 151.28747820854187],['<h4>Maroubra Beach</h4>', -33.950198, 151.259302]];
     var locations = local;
     var markers = new Array();
-
     // Setup the different icons and shadows
     var iconURLPrefix = 'http://maps.google.com/mapfiles/ms/icons/';
-
     var icons = [
         iconURLPrefix + 'red-dot.png',
         iconURLPrefix + 'green-dot.png',
@@ -415,13 +416,10 @@ function carregarmapa(local) {
             position: google.maps.ControlPosition.LEFT_BOTTOM
         }
     });
-
     var infowindow = new google.maps.InfoWindow({
         maxWidth: 160
     });
-
     var iconCounter = 0;
-
     // Add the markers and infowindows to the map
     for (var i = 0; i < locations.length; i++) {
         var marker = new google.maps.Marker({
@@ -429,16 +427,13 @@ function carregarmapa(local) {
             map: map,
             icon: icons[iconCounter]
         });
-
         markers.push(marker);
-
         google.maps.event.addListener(marker, 'click', (function (marker, i) {
             return function () {
                 infowindow.setContent(locations[i][0]);
                 infowindow.open(map, marker);
             };
         })(marker, i));
-
         iconCounter++;
         // We only have a limited number of possible icon colors, so we may have to restart the counter
         if (iconCounter >= iconsLength) {
@@ -480,7 +475,6 @@ function codeLatLng(lat, lon) {
     });
 }
 ;
-
 function criarLightBox(divNome) {
     $("body").append("<div id='hover'></div>");
     $("body").append("<div id='popup'><div id='" + divNome + "' class='esticar-vertical'></div><div id='close'>X</div></div>");
@@ -505,7 +499,6 @@ function carregarDispAtivos(div, nomeAntena) {
                             console.log(JSON.stringify(error));
                         }
                     });
-
                 }
                 $("body").find("#" + div).append("<div class='DispDescript mdl-color--white mdl-shadow--2dp'>Mac.Address: " + data[0][cli].macAddress + " Data: " + data[0][cli].data + " Fabricante: " + data[0][cli].nameVendor + "  </div>");
             }
@@ -514,5 +507,33 @@ function carregarDispAtivos(div, nomeAntena) {
             console.log(JSON.stringify(error));
         }
     });
+}
 
+
+function verificaDisp(array,mac){
+    if (typeof array[mac] != "undefined") {
+        return true;
+    }
+    return false;
+}
+
+function getSensores(array,mac){
+    if (typeof array[mac] != "undefined") {
+        return array[mac].sensores;
+    }
+    return null;
+}
+
+/** Receber os values e devolver um array com o tempo[nome_antena,[time1,time2]]
+ * @param {type} obj
+ * @returns {Object}
+ */
+function getTimeValue(obj){
+    var temp = []
+    if (typeof obj[0] != "undefined") {
+        for (var q in obj) {
+            temp[obj[q].name]=obj[q].values;
+        }
+        return temp;
+    }else return null;
 }
