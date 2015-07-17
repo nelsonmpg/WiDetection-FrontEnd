@@ -193,6 +193,12 @@ $(document).ready(function () {
         });
     });
 
+    /**
+     * Mostrar os detalhes do AP
+     */
+    $("body").on("click", ".showApDetail", function () {
+        alert(this.getAttribute("data-macaddress"));
+    });
 
 });//Fim Document Ready
 

@@ -43,13 +43,19 @@ var Ap = function (local, Authentication, Cipher, ESSID, Power, Privacy, macAddr
 };
 
 Ap.prototype.createAndAddToDivAp = function () {
-    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-xs-4 col-sm-3' data-macAddress='" + this.macAddress + "'>" +
+    $("body").find(this.local).append("<div class='divBoxItem showApDetail mdl-color--white mdl-shadow--2dp  col-xs-4 col-sm-3' style='opacity: 0' data-macAddress='" + this.macAddress + "'>" +
             "<img src='" + this.image + "'>" +
-            "<p class='text-center'>" + this.ESSID + "</p>" +
+            "<p class='text-center nome'>" + this.ESSID + "</p>" +
             "<div>" +
             "<p class='text-center'>Mac.Address: " + this.macAddress + "</p>" +
             "<p class='text-center'>Aut: " + this.Authentication + "</p>" +
             "</div>");
+    
+    $("body").find(this.local + "> div:last-of-type ").animate({
+    opacity: 1,
+  }, 1000, function() {
+    // Animation complete.
+  });
 };
 
 var Disp = function (local, BSSID, Power, Probed_ESSIDs, macAddress, nameVendor) {
