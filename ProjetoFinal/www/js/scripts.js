@@ -51,6 +51,33 @@ $(document).ready(function () {
         startAndShowGraph(disp, antena);
     });
 
+    $("body").on('click', '#selectEstatistica > .bootstrap-select > .dropdown-menu li a', function () {
+        var chart = $("#selectEstatistica > .bootstrap-select > .dropdown-menu li.selected a").text();
+        console.log(chart.replace(/ /g, ""));
+        switch (chart.replace(/ /g, "")) {
+            case "GraficoApeDisp/Antena":
+                $.ajax({
+                    type: "GET",
+                    url: "/getAllAntenasAndDisps",
+                    dataType: 'json',
+                    success: function (data) {
+                        arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
+
+                        // para aparecer a div com os resultados
+                        $("#contentor-principal").show(efectDiv, timeEfect);
+                        arrayGraph.createArrayToGraphTwoBar();
+
+                    },
+                    error: function (error) {
+                        console.log(JSON.stringify(error));
+                    }
+                });
+                break;
+            case "":
+                break;
+        }
+    });
+
     $("body").on("click", "#close", function () {
         $("#hover, #popup").fadeOut(300, function () {
             $(this).remove();
@@ -60,7 +87,7 @@ $(document).ready(function () {
     //Alteracao
     $("body").on("click", ".divAntena", function () {
         var nomeAntena = this.getAttribute("data-nomeAntena");
-        var local = this.getAttribute("data-local").substring(1,this.getAttribute("data-local").toString().length);
+        var local = this.getAttribute("data-local").substring(1, this.getAttribute("data-local").toString().length);
         var numAP;
         var numDISP;
         switch (this.getAttribute("data-tipo")) {
@@ -111,7 +138,6 @@ $(document).ready(function () {
                         graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos ativos na Antena:", nomeAntena, local, "column");
                         graphOneCol.clickToBarGraph(2);
                         graphOneCol.createArrayToGraphOneBar();
-                $("body").find('.selectpicker').selectpicker('refresh');
                     },
                     error: function (error) {
                         console.log(JSON.stringify(error));
@@ -141,6 +167,7 @@ $(document).ready(function () {
 
 
     $("body").on("click", "#btnBackEstatistica", function () {
+        $("#contentor-principal").hide(efectDiv, timeEfect);
         arrayGraph = null;
         carregarDivEstatistica();
         $("body").find(".btnBack").css({
@@ -149,6 +176,7 @@ $(document).ready(function () {
     });
 
     $("body").on("click", "#btnBackStus", function () {
+        $("#contentor-principal").hide(efectDiv, timeEfect);
         carregarDivStatus();
         $("body").find(".btnBack").css({
             visibility: "hidden"
@@ -281,6 +309,7 @@ function carregarDivEstatistica() {
         url: "/getTodasAntenas",
         dataType: 'json',
         success: function (data) {
+            $("body").find('.selectpicker').selectpicker('refresh');
             antenas = new HostArray("chartContainer", data);
             antenas.setImage(0);
             antenas.listaHost();
@@ -290,24 +319,6 @@ function carregarDivEstatistica() {
             console.log(JSON.stringify(error));
         }
     });
-
-
-//    $.ajax({
-//        type: "GET",
-//        url: "/getAllAntenasAndDisps",
-//        dataType: 'json',
-//        success: function (data) {
-//            arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
-//
-//            // para aparecer a div com os resultados
-//            $("#contentor-principal").show(efectDiv, timeEfect);
-//            arrayGraph.createArrayToGraphTwoBar();
-//
-//        },
-//        error: function (error) {
-//            console.log(JSON.stringify(error));
-//        }
-//    });
 }
 
 /**
