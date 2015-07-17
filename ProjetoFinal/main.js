@@ -40,7 +40,7 @@ function startServers() {
 }
 
 r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection) {
-    r.dbCreate(dbConfig.db).run(connection, function (err, result) {
+    return r.dbCreate(dbConfig.db).run(connection, function (err, result) {
         if (err) {
             console.log(JSON.stringify(err));
         }
@@ -55,9 +55,19 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
         }
     });
 }).then(function (output) {
-    setTimeout(function () {
+    r.connect(dbData).then(function (conn) {
+        return r.db(dbConfig.db)
+                .table('tblPrefix')
+                .wait()("status_changes")("new_val")("status")("ready_for_writes").run(conn)
+                .finally(function () {
+                    conn.close();
+                });
+    }).then(function (resul) {
+        console.log("Tabela 'tblPrefix' Ok - " + resul);
         carregarPrefixos();
-    }, 2000);
+    }).error(function (err) {
+        console.log(err);
+    });
 }).error(function (err) {
     console.log(err);
 });

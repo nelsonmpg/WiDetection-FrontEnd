@@ -56,7 +56,7 @@ ServerSocket.prototype.start = function () {
                                                             "Last_time": r.now().inTimezone("+01:00"), //(typeof valsHost[2] == "undefined") ? "" : valsHost[2],
                                                             "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
                                                             "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
-                                                            "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
+                                                            "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5].replace(/,| /g,""),
                                                             "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : valsHost[6]
                                                         }]
                                                 }]
@@ -74,7 +74,7 @@ ServerSocket.prototype.start = function () {
                                                                 "Last_time": r.now().inTimezone("+01:00"),
                                                                 "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
                                                                 "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
-                                                                "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
+                                                                "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5].replace(/,| /g,""),
                                                                 "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : valsHost[6]
                                                             })}),
                                                         d);
@@ -89,7 +89,7 @@ ServerSocket.prototype.start = function () {
                                                         "Last_time": r.now().inTimezone("+01:00"), //(typeof valsHost[2] == "undefined") ? "" : valsHost[2],
                                                         "Power": (typeof valsHost[3] == "undefined") ? "" : valsHost[3],
                                                         "packets": (typeof valsHost[4] == "undefined") ? "" : valsHost[4],
-                                                        "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5],
+                                                        "BSSID": (typeof valsHost[5] == "undefined") ? "" : valsHost[5].replace(/,| /g,""),
                                                         "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : valsHost[6]
                                                     }]
                                             })
@@ -110,7 +110,7 @@ ServerSocket.prototype.start = function () {
                                                     "macAddress": valuesHst[0],
                                                     "data": r.now().inTimezone("+01:00"),
                                                     "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
-                                                    "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                    "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5].replace(/,| /g,""),
                                                     "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
                                                     "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                                 }]
@@ -125,7 +125,7 @@ ServerSocket.prototype.start = function () {
                                                             "macAddress": valuesHst[0],
                                                             "data": r.now().inTimezone("+01:00"),
                                                             "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
-                                                            "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                            "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5].replace(/,| /g,""),
                                                             "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
                                                             "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                                         }, d)
@@ -137,7 +137,7 @@ ServerSocket.prototype.start = function () {
                                                 "macAddress": valuesHst[0],
                                                 "data": r.now().inTimezone("+01:00"),
                                                 "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
-                                                "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5],
+                                                "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5].replace(/,| /g,""),
                                                 "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6],
                                                 "nameVendor": r.db(dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                                             })

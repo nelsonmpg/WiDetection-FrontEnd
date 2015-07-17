@@ -4,6 +4,7 @@ var graphOneCol = null;
 var antenas = null;
 var lastDisp = "";
 var lastAntena = "";
+var laspOptionGraph = "";
 var geocoder;
 var address;
 var temp;
@@ -53,29 +54,38 @@ $(document).ready(function () {
 
     $("body").on('click', '#selectEstatistica > .bootstrap-select > .dropdown-menu li a', function () {
         var chart = $("#selectEstatistica > .bootstrap-select > .dropdown-menu li.selected a").text();
-        console.log(chart.replace(/ /g, ""));
-        switch (chart.replace(/ /g, "")) {
-            case "GraficoApeDisp/Antena":
-                $.ajax({
-                    type: "GET",
-                    url: "/getAllAntenasAndDisps",
-                    dataType: 'json',
-                    success: function (data) {
-                        arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
+        $("body").find('#selectEstatistica > select.selectpicker').selectpicker('refresh');
+        $("body").find(".btnBack").css({
+            visibility: "visible"
+        });
+        var place = chart.replace(/ /g, "");
+        if (place != laspOptionGraph) {
+            laspOptionGraph = place;
+            switch (place) {
+                case "GraficoApeDisp/Antena":
+                    $.ajax({
+                        type: "GET",
+                        url: "/getAllAntenasAndDisps",
+                        dataType: 'json',
+                        success: function (data) {
+                            arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
 
-                        // para aparecer a div com os resultados
-                        $("#contentor-principal").show(efectDiv, timeEfect);
-                        arrayGraph.createArrayToGraphTwoBar();
+                            // para aparecer a div com os resultados
+                            $("#contentor-principal").show(efectDiv, timeEfect);
+                            arrayGraph.createArrayToGraphTwoBar();
 
-                    },
-                    error: function (error) {
-                        console.log(JSON.stringify(error));
-                    }
-                });
-                break;
-            case "":
-                break;
+                        },
+                        error: function (error) {
+                            console.log(JSON.stringify(error));
+                        }
+                    });
+                    break;
+                case "":
+                    break;
+            }
         }
+
+
     });
 
     $("body").on("click", "#close", function () {
@@ -148,24 +158,6 @@ $(document).ready(function () {
 
     });
 
-    $("body").on("click", "span", function () {
-        var nome_antena = "ant-NelsonIPT";
-        var tipo = "Ap"
-        //criarLightBox("AntDetail");
-        $.ajax({
-            type: "GET",
-            url: "/getAtives/" + tipo + "/" + nome_antena,
-            dataType: 'json',
-            success: function (data) {
-                console.log(data);
-            },
-            error: function (error) {
-                console.log(JSON.stringify(error));
-            }
-        });
-    });
-
-
     $("body").on("click", "#btnBackEstatistica", function () {
         $("#contentor-principal").hide(efectDiv, timeEfect);
         arrayGraph = null;
@@ -197,6 +189,7 @@ function showPageToDiv(page, name) {
     if (arrayHosts != null) {
         arrayHosts.stopIntervalGraph();
     }
+    laspOptionGraph = "";
     $(".mdl-layout-title").html(name);
     lastDisp = "";
     lastAntena = "";
@@ -250,7 +243,6 @@ function carregarDivStatus() {
 //        async: false,
         success: function (data) {
             antenas = new HostArray("divAntenas", data);
-            antenas.setImage(0);
             antenas.listaHost();
             $("#contentor-principal").show(efectDiv, timeEfect);
             // para aparecer a div com os resultados
@@ -309,9 +301,10 @@ function carregarDivEstatistica() {
         url: "/getTodasAntenas",
         dataType: 'json',
         success: function (data) {
-            $("body").find('.selectpicker').selectpicker('refresh');
+//            $("body").find('#selectEstatistica > select.selectpicker').selectpicker('refresh');
+//            $("body").find('#selectEstatistica > select.selectpicker').find('[value=vazio]').show();
+            $("body").find('#selectEstatistica > select.selectpicker').selectpicker('refresh');
             antenas = new HostArray("chartContainer", data);
-            antenas.setImage(0);
             antenas.listaHost();
             $("#contentor-principal").show(efectDiv, timeEfect);
         },

@@ -1,9 +1,9 @@
-var Host = function (local, nome, lat, long, image) {
+var Host = function (local, nome, lat, long) {
     this.local = local;
     this.nome = nome;
     this.lat = lat;
     this.long = long;
-    this.image = image;
+    this.image = "./images/tower_animated.gif";
     switch (local) {
         case "#divAntenas":
             this.typegraph = "now";

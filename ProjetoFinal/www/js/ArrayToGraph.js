@@ -58,7 +58,7 @@ ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
         if (array_elements[i].toString().toUpperCase() != current.toString().toUpperCase()) {
             if (cnt > 0) {
                 pointsGraph.push({
-                    label: current,
+                    label: (current == 0) ? "Outros" : current,
                     y: 1 * cnt
                 });
             }

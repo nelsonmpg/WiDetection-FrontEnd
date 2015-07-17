@@ -181,8 +181,8 @@ Server.prototype.start = function () {
                                     time.seconds(),
                                     time.timezone()
                                     ))};
-                    })
-                })
+                    });
+                });
             }).map(function (x) {
                 return x.filter({"estado": true})("l")
             }).coerceTo('array').run(conn)
@@ -286,8 +286,8 @@ Server.prototype.start = function () {
                                     time.seconds(),
                                     time.timezone()
                                     ))};
-                    })
-                })
+                    });
+                });
             }).map(function (x) {
                 return x.filter({"estado": true})("l")
             }).coerceTo('array').run(conn)
