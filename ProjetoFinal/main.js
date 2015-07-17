@@ -57,7 +57,6 @@ r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection)
 }).then(function (output) {
     r.connect(dbData).then(function (conn) {
         return r.db(dbConfig.db)
-                .table('tblPrefix')
                 .wait()("status_changes")("new_val")("status")("ready_for_writes").run(conn)
                 .finally(function () {
                     conn.close();

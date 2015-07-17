@@ -31,6 +31,9 @@ $(document).ready(function () {
     showPageToDiv("status.html", "Status");
 
     $("body").on("click", ".addNewPAge", function () {
+        if ($("body").find(".mdl-layout__obfuscator").css("visibility") == "visible") {
+            $("body").find(".mdl-layout__obfuscator").click();
+        }
         showPageToDiv($(this).data("page"), $(this).data("name"));
     });
 
@@ -69,7 +72,9 @@ $(document).ready(function () {
                         dataType: 'json',
                         success: function (data) {
                             arrayGraph = new ArrayToGraph(data, "Quantidade de Dispositivos / Antena", "", "chartContainer", "column");
-
+                            $("#selectEstatistica").css({
+                                visibility: "hidden"
+                            });
                             // para aparecer a div com os resultados
                             $("#contentor-principal").show(efectDiv, timeEfect);
                             arrayGraph.createArrayToGraphTwoBar();
@@ -144,8 +149,11 @@ $(document).ready(function () {
                         $("body").find(".btnBack").css({
                             visibility: "visible"
                         });
+                        $("#selectEstatistica").css({
+                            visibility: "hidden"
+                        });
                         console.log(data);
-                        graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos ativos na Antena:", nomeAntena, local, "column");
+                        graphOneCol = new ArrayToGraph(data, "Quantidade total de dispositipos na Antena:", nomeAntena, local, "column");
                         graphOneCol.clickToBarGraph(2);
                         graphOneCol.createArrayToGraphOneBar();
                     },
@@ -161,13 +169,23 @@ $(document).ready(function () {
     $("body").on("click", "#btnBackEstatistica", function () {
         $("#contentor-principal").hide(efectDiv, timeEfect);
         arrayGraph = null;
+        laspOptionGraph = "";
+
+        // Extract the value of the first option.
+        var sVal = $('select[name=selectGraph] option:first').val();
+
+        // Set the "selected" value of the <select>.
+        $('select[name=selectGraph]').val(sVal);
+
+        // Force a refresh.
+        $('select[name=selectGraph]').selectpicker('refresh');
         carregarDivEstatistica();
         $("body").find(".btnBack").css({
             visibility: "hidden"
         });
     });
 
-    $("body").on("click", "#btnBackStus", function () {
+    $("body").on("click", "#btnBackStatus", function () {
         $("#contentor-principal").hide(efectDiv, timeEfect);
         carregarDivStatus();
         $("body").find(".btnBack").css({
@@ -301,11 +319,12 @@ function carregarDivEstatistica() {
         url: "/getTodasAntenas",
         dataType: 'json',
         success: function (data) {
-//            $("body").find('#selectEstatistica > select.selectpicker').selectpicker('refresh');
-//            $("body").find('#selectEstatistica > select.selectpicker').find('[value=vazio]').show();
             $("body").find('#selectEstatistica > select.selectpicker').selectpicker('refresh');
             antenas = new HostArray("chartContainer", data);
             antenas.listaHost();
+            $("#selectEstatistica").css({
+                visibility: "visible"
+            });
             $("#contentor-principal").show(efectDiv, timeEfect);
         },
         error: function (error) {
