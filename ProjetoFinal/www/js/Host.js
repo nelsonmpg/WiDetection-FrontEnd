@@ -3,7 +3,7 @@ var Host = function (local, nome, lat, long) {
     this.nome = nome;
     this.lat = lat;
     this.long = long;
-    this.image = "./images/tower_animated.gif";
+    this.image = "./images/wifi2.gif";
     switch (local) {
         case "#divAntenas":
             this.typegraph = "now";
@@ -15,7 +15,7 @@ var Host = function (local, nome, lat, long) {
 };
 
 Host.prototype.createAndAddToDivHost = function () {
-    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2'><div class='divAntena' data-tipo='" + this.typegraph + "' data-local='" + this.local + "' data-nomeAntena='" + this.nome + "'>" +
+    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-xs-4 col-sm-3'><div class='divAntena' data-tipo='" + this.typegraph + "' data-local='" + this.local + "' data-nomeAntena='" + this.nome + "'>" +
             "<img src='" + this.image + "'>" +
             "<p class='text-center'>" + this.nome + "</p>" +
             "<div>" +
@@ -39,11 +39,11 @@ var Ap = function (local, Authentication, Cipher, ESSID, Power, Privacy, macAddr
     this.Privacy = Privacy;
     this.macAddress = macAddress;
     this.nameVendor = nameVendor;
-    this.image = "./images/acesspoint.png";
+    this.image = "./images/acesspoint2.gif";
 };
 
 Ap.prototype.createAndAddToDivAp = function () {
-    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2' data-macAddress='" + this.macAddress + "'>" +
+    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-xs-4 col-sm-3' data-macAddress='" + this.macAddress + "'>" +
             "<img src='" + this.image + "'>" +
             "<p class='text-center'>" + this.ESSID + "</p>" +
             "<div>" +
@@ -63,7 +63,7 @@ var Disp = function (local, BSSID, Power, Probed_ESSIDs, macAddress, nameVendor)
 };
 
 Disp.prototype.createAndAddToDivDisp = function () {
-    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-sm-2 col-md-2 col-lg-2' data-macAddress='" + this.macAddress + "'>" +
+    $("body").find(this.local).append("<div class='divBoxItem mdl-color--white mdl-shadow--2dp  col-xs-4 col-sm-3' data-macAddress='" + this.macAddress + "'>" +
             "<img src='" + this.image + "'>" +
             "<p class='text-center'>" + this.nameVendor + "</p>" +
             "<div>" +
