@@ -1,0 +1,131 @@
+<!doctype html>
+<!--
+  Material Design Lite
+  Copyright 2015 Google Inc. All rights reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Projeto Final</title>
+
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="./css/jquery-ui.min.css">
+        <link rel="stylesheet" href="./css/jquery-ui.structure.min.css">
+
+        <script type="text/javascript" src="libs/jquery-1.11.2.js"></script>
+        <script type="text/javascript" src="libs/jquery-ui.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js"></script>
+
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="./bower_components/bootstrap-3.0.3/css/bootstrap.min.css">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="./bower_components/bootstrap-3.0.3/css/bootstrap-theme.min.css">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="./bower_components//bootstrap-3.0.3/js/bootstrap.min.js"></script>
+
+        <link rel="stylesheet" href="./bower_components/bootstrap-select/dist/css/bootstrap-select.min.css" type="text/css" media="screen" />
+        <script type="text/javascript" src="./bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+        <!-- Add to homescreen for Chrome on Android -->
+        <meta name="mobile-web-app-capable" content="yes">
+        <link rel="icon" sizes="192x192" href="./images/touch/chrome-touch-icon-192x192.png">
+
+        <!-- Add to homescreen for Safari on iOS -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="Material Design Lite">
+        <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png">
+
+        <!-- Tile icon for Win8 (144x144 + tile color) -->
+        <meta name="msapplication-TileImage" content="./images/touch/ms-touch-icon-144x144-precomposed.png">
+        <meta name="msapplication-TileColor" content="#3372DF">
+
+
+        <link href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="./css/material.css">
+        <link rel="stylesheet" href="./css/styles.css">
+        <link rel="stylesheet" href="./css/loading.css">
+        <link rel="stylesheet" href="./css/stylesProjeto.css">
+        <script type="text/javascript" src="./libs/material.min.js"></script>
+
+        <script type="text/javascript" src="libs/jquery.canvasjs.min.js"></script>
+        <script type="text/javascript" src="js/TransformArray.js"></script> 
+        <script type="text/javascript" src="js/HostArray.js"></script> 
+        <script type="text/javascript" src="js/Host.js"></script>                 
+        <script type="text/javascript" src="js/ArrayToGraph.js"></script> 
+        <script type="text/javascript" src="libs/d3.min.js"></script>
+        <script type="text/javascript" src="js/scripts.js"></script>   
+
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+        <!-- Google Maps API -->
+        <script src="https://maps.googleapis.com/maps/api/js"></script>  
+
+    </head>
+    <body>
+        <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+            <header class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
+                <div class="mdl-layout__header-row">
+                    <span class="mdl-layout-title">Status</span>
+                    <!--<div class="mdl-layout-spacer"></div>
+                    
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+                        <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+                            <i class="material-icons">search</i>
+                        </label>
+                        <div class="mdl-textfield__expandable-holder">
+                            <input class="mdl-textfield__input" type="text" id="search" />
+                            <label class="mdl-textfield__label" for="search">Enter your query...</label>
+                        </div>
+                    </div>
+                    <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
+                        <i class="material-icons">more_vert</i>
+                    </button>
+                    <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right">
+                        <li class="mdl-menu__item">About</li>
+                        <li class="mdl-menu__item">Contact</li>
+                        <li class="mdl-menu__item">Legal information</li>
+                    </ul>
+                    -->
+                </div>
+            </header>
+            <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
+                <header class="demo-drawer-header">
+                    <i class="material-icons">leak_add wifi speaker_phone router tap_and_play</i>
+                </header>
+                <nav class="demo-navigation mdl-navigation">
+                    <div class="mdl-navigation__link addNewPAge" data-page="status.html" data-name="Status"><i class=" material-icons">settings_input_antenna</i>Satus</div>
+                    <div class="mdl-navigation__link addNewPAge" data-page="Dashboard.html" data-name="Dashboard"><i class=" material-icons">dashboard</i>Dashboard</div>
+                    <div class="mdl-navigation__link addNewPAge" data-page="Estatistica.html" data-name="Estatistica"><i class=" material-icons">insert_chart</i>Estatistica</div>
+                    <div class="mdl-navigation__link addNewPAge" data-page="Acerca_De.html" data-name="Acerca De ..."><i class=" material-icons">report</i>Acerca De ...</div>
+                </nav>
+            </div>
+            <main class="mdl-layout__content mdl-color--grey-100">
+                <div class="mdl-grid demo-content">
+                    <div id="contentor-principal" data-page="" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col">
+
+                    </div>  
+                </div>
+            </main>
+        </div>        
+    </body>
+</html>
