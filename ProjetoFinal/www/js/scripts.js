@@ -22,6 +22,7 @@ $(document).ready(function () {
     if (e.which != 1 || $(this).parent().hasClass('active')) {
       return;
     }
+    
     var $clink = $(this);
     showPageToDiv("section.content", $clink.attr('href'), $clink.data("nome"), $clink.children("i").attr("class"));
     $('ul.sidebar-menu li.active').removeClass('active');
@@ -114,4 +115,9 @@ function carregarDashBoard() {
       console.log(JSON.stringify(error));
     }
   });
+}
+
+function criarLightBox(divNome) {
+    $("body").append("<div id='hover'></div>");
+    $("body").append("<div id='popup'><div id='" + divNome + "' class='esticar-vertical'></div><div id='close'>X</div></div>");
 }

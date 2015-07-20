@@ -97,7 +97,6 @@ Server.prototype.start = function () {
     });
   });
 
-
 //    this.app.get("/getDispsActive/:disp/:ant", function (req, res) {
 //        var tabela = "";
 //        if (req.params.disp.trim() == "Dispositivos Moveis") {
