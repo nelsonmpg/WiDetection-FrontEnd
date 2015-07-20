@@ -190,6 +190,7 @@ $(document).ready(function () {
             url: "/getAllDisp",
             dataType: 'json',
             success: function (data) {
+                teste = [];
                 for (var a in data) {
                     teste[data[a].macAddress] = {
                         macAddress: data[a].macAddress,

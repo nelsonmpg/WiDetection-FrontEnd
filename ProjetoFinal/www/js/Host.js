@@ -34,7 +34,7 @@ var Ap = function (local, Authentication, Cipher, ESSID, Power, Privacy, macAddr
     this.local = local;
     this.Authentication = Authentication;
     this.Cipher = Cipher;
-    this.ESSID = ESSID;
+    this.ESSID = ((ESSID != "") ? ESSID : "Rede Oculta");
     this.Power = Power;
     this.Privacy = Privacy;
     this.macAddress = macAddress;
@@ -50,12 +50,12 @@ Ap.prototype.createAndAddToDivAp = function () {
             "<p class='text-center'>Mac.Address: " + this.macAddress + "</p>" +
             "<p class='text-center'>Aut: " + this.Authentication + "</p>" +
             "</div>");
-    
+
     $("body").find(this.local + "> div:last-of-type ").animate({
-    opacity: 1,
-  }, 1000, function() {
-    // Animation complete.
-  });
+        opacity: 1,
+    }, 1000, function () {
+        // Animation complete.
+    });
 };
 
 var Disp = function (local, BSSID, Power, Probed_ESSIDs, macAddress, nameVendor) {
