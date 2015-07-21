@@ -25,3 +25,12 @@
 #chart2bars {
   height: 400px;
 }
+
+#chart1LineActives {
+  height: 400px;
+}
+
+@media (min-width: 500px) {
+    /* STYLES HERE */
+    height: 500px;
+}

@@ -1,23 +1,19 @@
 var graph2Bar;
-
 $(document).ready(function () {
-  var socket = io.connect(window.location.href);
 
+  var socket = io.connect(window.location.href);
 
   // carrega o conteudo do login
   showPageToDiv("section.content", "login.html");
-
   $("body").one("click", "#logout-btn", function (e) {
     e.preventDefault();
     $('ul.sidebar-menu li.active').removeClass('active');
     showPageToDiv("section.content", "login.html");
   });
-
   //prevent # links from moving to top
   $("body").on("click", 'a[href="#"][data-top!=true]', function (e) {
     e.preventDefault();
   });
-
   $(".select-item-menu").click(function (e) {
     e.preventDefault();
     if (e.which != 1 || $(this).parent().hasClass('active')) {
@@ -29,18 +25,13 @@ $(document).ready(function () {
     $('ul.sidebar-menu li.active').removeClass('active');
     $clink.parent('li').addClass('active');
   });
-
   // formdo login
   $("body").on("submit", "#login-form", function (e) {
     e.preventDefault();
     $("section.content").html("");
-
-
     // simula o clik no dashboard e carrega o conteudo
     $('a.select-item-menu:first')[0].click();
-
   });
-
   $("body").on("submit", "#register-form", function (e) {
     e.preventDefault();
     alert("ok");
@@ -51,7 +42,7 @@ $(document).ready(function () {
   });
 
   socket.on("newDisp", function (data, local) {
-    
+
     switch (local) {
       case "moveis":
         $("body").find("#disp-num-div").html(data);
@@ -71,9 +62,7 @@ $(document).ready(function () {
     }
   });
 
-
 });
-
 function showPageToDiv(local, page, nome, icon) {
   $.ajax({
     method: 'GET',
@@ -85,7 +74,6 @@ function showPageToDiv(local, page, nome, icon) {
       var i_elem = $("section.content-header > ol.breadcrumb > li > a > i:first");
       i_elem.removeClass(i_elem.attr("class")).addClass(icon);
       $.AdminLTE.boxWidget.activate();
-
       switch (page) {
         case "dashboard.html":
           carregarDashBoard();
@@ -117,14 +105,12 @@ function carregarDashBoard() {
       console.log(JSON.stringify(error));
     }
   });
-
   $.ajax({
     type: "GET",
     url: "/getAllAntenasAndDisps",
     dataType: 'json',
     success: function (data) {
       graph2Bar = new ArrayToGraph(data, "Quantidade de Dispositivos / Sensor", "", "chart2bars", "column");
-
       // para aparecer a div com os resultados
       graph2Bar.createArrayToGraphTwoBar();
     },
@@ -132,6 +118,93 @@ function carregarDashBoard() {
       console.log(JSON.stringify(error));
     }
   });
+
+  //------------------------------------------------------------------------------
+  var chart, result;
+
+  $.ajax({
+    type: "GET",
+    url: "/getAllDisp",
+    dataType: 'json',
+    success: function (data) {
+      teste = [];
+      for (var a in data) {
+        teste[data[a].macAddress] = {
+          macAddress: data[a].macAddress,
+          nameVendor: data[a].nameVendor,
+        };
+        teste[data[a].macAddress].sensores = [];
+        for (var b  in data[a].disp) {
+          teste[data[a].macAddress].sensores.push({name: data[a].disp[b].name, values: data[a].disp[b].values});
+        }
+      }
+
+      var worker = new Worker("js/workerGraph.js");
+
+      worker.postMessage(teste);
+      worker.onmessage = function (e) {
+        result = e.data;
+        chart = new CanvasJS.Chart("chart1LineActives", {
+                  theme: "theme2",
+                  title: {
+                    text: "Dispositivos Ativos"
+                  },
+                  animationEnabled: true,
+                  axisX: {
+                    valueFormatString: "HH:mm:ss",
+                  },
+                  axisY: {includeZero: false},
+                  data: [
+                    {
+                      type: "spline",
+                      lineThickness: 3,
+                      dataPoints: result
+                    }
+
+
+                  ]
+                });
+        chart.render();
+      };
+    },
+    error: function (error) {
+      console.log(JSON.stringify(error));
+    }
+  });
+
+
+  setInterval(function () {
+    $.ajax({
+      type: "GET",
+      url: "/getAllDisp",
+      dataType: 'json',
+      success: function (data) {
+        teste = [];
+        for (var a in data) {
+          teste[data[a].macAddress] = {
+            macAddress: data[a].macAddress,
+            nameVendor: data[a].nameVendor,
+          };
+          teste[data[a].macAddress].sensores = [];
+          for (var b  in data[a].disp) {
+            teste[data[a].macAddress].sensores.push({name: data[a].disp[b].name, values: data[a].disp[b].values});
+          }
+        }
+        var worker = new Worker("js/workerGraph.js");
+
+        worker.postMessage(teste);
+
+        worker.onmessage = function (e) {
+          result = e.data;
+          chart.options.data[0].dataPoints = result;
+          chart.render();
+        };
+      },
+      error: function (error) {
+        console.log(JSON.stringify(error));
+      }
+    });
+  }, 1000 * 60);
 }
 
 function criarLightBox(divNome) {
@@ -159,77 +232,10 @@ function getMACAfterDate(date) {
   return entrou;
 }
 
-
-
-/**
- * Passar uma data new Date("15/07/2015") e devolvolve um array com os MacAddress Ativos nessa data
- * @param {type} date
- * @returns {Array|getMACAfterDate.entrou}
- */
-function getMACInDate(date) {
-  var entrou = [];
-  for (var i in teste) {
-    for (var e in teste[i].sensores) {
-      for (var r in teste[i].sensores[e].values) {
-        var find = new Date(teste[i].sensores[e].values[r].Last_time);
-        if (find.getDate() == date.getDate() && find.getFullYear() == date.getFullYear() && find.getHours() == date.getHours() && find.getMonth() == date.getMonth() && find.getMinutes() == date.getMinutes()) {
-          entrou.push(teste[i].macAddress);
-          break;
-        }
-      }
-    }
-  }
-  return entrou;
-}
-
-
-/**
- * Faz uma contagem dos MAC no min da hora passada até ao atual
- * @param {type} date
- * @returns {Array|makeCountFrom.result}
- */
-function makeCountFrom(date) {
-  var result = [];
-  while (date < new Date().addMinutes(-1)) {
-    result.push({x: new Date(date), y: (getMACInDate(date)).length});
-    date.addMinutes(1);
-  }
-
-  criarLightBox("ativos");
-
-
-  var chart = new CanvasJS.Chart("ativos",
-          {
-            theme: "theme2",
-            title: {
-              text: "Dispositivos Ativos"
-            },
-            animationEnabled: true,
-            axisX: {
-              valueFormatString: "H:mm:ss",
-            },
-            axisY: {includeZero: false},
-            data: [
-              {
-                type: "line",
-                //lineThickness: 3,        
-                dataPoints: result
-              }
-
-
-            ]
-          });
-
-  chart.render();
-
-  return result;
-}
-
 Date.prototype.addHours = function (h) {
   this.setHours(this.getHours() + h);
   return this;
 };
-
 Date.prototype.addMinutes = function (h) {
   this.setMinutes(this.getMinutes() + h);
   return this;
