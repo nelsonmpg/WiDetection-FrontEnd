@@ -216,6 +216,16 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
   this.createAndShowGraph(this.dataTograph);
 };
 
+ArrayToGraph.prototype.updateNumDisp = function (data) {
+  this.dataTograph[1].dataPoints[0].y = data;
+  this.chart.render();
+};
+
+ArrayToGraph.prototype.updateNumAp = function (data) {
+  this.dataTograph[0].dataPoints[0].y = data;
+  this.chart.render();
+};
+
 ArrayToGraph.prototype.clickToDualBarGraph = function (event) {
   $.ajax({
     type: "GET",

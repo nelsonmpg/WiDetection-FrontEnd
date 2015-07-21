@@ -1,7 +1,8 @@
 var graph2Bar;
 
 $(document).ready(function () {
-  var socket = null;
+  var socket = io.connect(window.location.href);
+
 
   // carrega o conteudo do login
   showPageToDiv("section.content", "login.html");
@@ -22,7 +23,7 @@ $(document).ready(function () {
     if (e.which != 1 || $(this).parent().hasClass('active')) {
       return;
     }
-    
+
     var $clink = $(this);
     showPageToDiv("section.content", $clink.attr('href'), $clink.data("nome"), $clink.children("i").attr("class"));
     $('ul.sidebar-menu li.active').removeClass('active');
@@ -34,8 +35,6 @@ $(document).ready(function () {
     e.preventDefault();
     $("section.content").html("");
 
-    // inicia a ligacao do web-socket
-    socket = io.connect(window.location.href);
 
     // simula o clik no dashboard e carrega o conteudo
     $('a.select-item-menu:first')[0].click();
@@ -47,12 +46,30 @@ $(document).ready(function () {
     alert("ok");
   });
 
+  socket.on('disconnect', function () {
+    console.log('Socket disconnected');
+  });
 
-  // verifica se o web-spcket e valido
-  if (socket) {
-
-    alert("asd");
-  }
+  socket.on("newDisp", function (data, local) {
+    
+    switch (local) {
+      case "moveis":
+        $("body").find("#disp-num-div").html(data);
+        if (graph2Bar) {
+          graph2Bar.updateNumDisp(data);
+        }
+        break;
+      case "ap":
+        $("body").find("#ap-num-div").html(data);
+        if (graph2Bar) {
+          graph2Bar.updateNumAp(data);
+        }
+        break;
+      case "sensor":
+        $("body").find("#sensores-num-div").html(data);
+        break;
+    }
+  });
 
 
 });
@@ -118,8 +135,8 @@ function carregarDashBoard() {
 }
 
 function criarLightBox(divNome) {
-    $("body").append("<div id='hover'></div>");
-    $("body").append("<div id='popup'><div id='" + divNome + "' class='esticar-vertical'></div><div id='close'>X</div></div>");
+  $("body").append("<div id='hover'></div>");
+  $("body").append("<div id='popup'><div id='" + divNome + "' class='esticar-vertical'></div><div id='close'>X</div></div>");
 }
 
 /**
@@ -128,18 +145,18 @@ function criarLightBox(divNome) {
  * @returns {Array|getMACAfterDate.entrou}
  */
 function getMACAfterDate(date) {
-    var entrou = [];
-    for (var i in teste) {
-        for (var e in teste[i].sensores) {
-            for (var r in teste[i].sensores[e].values) {
-                if (new Date(teste[i].sensores[e].values[r].Last_time > date)) {
-                    entrou.push(teste[i].macAddress);
-                    break;
-                }
-            }
+  var entrou = [];
+  for (var i in teste) {
+    for (var e in teste[i].sensores) {
+      for (var r in teste[i].sensores[e].values) {
+        if (new Date(teste[i].sensores[e].values[r].Last_time > date)) {
+          entrou.push(teste[i].macAddress);
+          break;
         }
+      }
     }
-    return entrou;
+  }
+  return entrou;
 }
 
 
@@ -150,19 +167,19 @@ function getMACAfterDate(date) {
  * @returns {Array|getMACAfterDate.entrou}
  */
 function getMACInDate(date) {
-    var entrou = [];
-    for (var i in teste) {
-        for (var e in teste[i].sensores) {
-            for (var r in teste[i].sensores[e].values) {
-                var find = new Date(teste[i].sensores[e].values[r].Last_time);
-                if (find.getDate() == date.getDate() && find.getFullYear() == date.getFullYear() && find.getHours() == date.getHours() && find.getMonth() == date.getMonth() && find.getMinutes() == date.getMinutes()) {
-                    entrou.push(teste[i].macAddress);
-                    break;
-                }
-            }
+  var entrou = [];
+  for (var i in teste) {
+    for (var e in teste[i].sensores) {
+      for (var r in teste[i].sensores[e].values) {
+        var find = new Date(teste[i].sensores[e].values[r].Last_time);
+        if (find.getDate() == date.getDate() && find.getFullYear() == date.getFullYear() && find.getHours() == date.getHours() && find.getMonth() == date.getMonth() && find.getMinutes() == date.getMinutes()) {
+          entrou.push(teste[i].macAddress);
+          break;
         }
+      }
     }
-    return entrou;
+  }
+  return entrou;
 }
 
 
@@ -172,48 +189,48 @@ function getMACInDate(date) {
  * @returns {Array|makeCountFrom.result}
  */
 function makeCountFrom(date) {
-    var result = [];
-    while (date < new Date().addMinutes(-1)) {
-        result.push({x: new Date(date), y: (getMACInDate(date)).length});
-        date.addMinutes(1);
-    }
+  var result = [];
+  while (date < new Date().addMinutes(-1)) {
+    result.push({x: new Date(date), y: (getMACInDate(date)).length});
+    date.addMinutes(1);
+  }
 
-    criarLightBox("ativos");
-
-
-    var chart = new CanvasJS.Chart("ativos",
-            {
-                theme: "theme2",
-                title: {
-                    text: "Dispositivos Ativos"
-                },
-                animationEnabled: true,
-                axisX: {
-                    valueFormatString: "H:mm:ss",
-                },
-                axisY: {includeZero: false},
-                data: [
-                    {
-                        type: "line",
-                        //lineThickness: 3,        
-                        dataPoints: result
-                    }
+  criarLightBox("ativos");
 
 
-                ]
-            });
+  var chart = new CanvasJS.Chart("ativos",
+          {
+            theme: "theme2",
+            title: {
+              text: "Dispositivos Ativos"
+            },
+            animationEnabled: true,
+            axisX: {
+              valueFormatString: "H:mm:ss",
+            },
+            axisY: {includeZero: false},
+            data: [
+              {
+                type: "line",
+                //lineThickness: 3,        
+                dataPoints: result
+              }
 
-    chart.render();
 
-    return result;
+            ]
+          });
+
+  chart.render();
+
+  return result;
 }
 
 Date.prototype.addHours = function (h) {
-    this.setHours(this.getHours() + h);
-    return this;
+  this.setHours(this.getHours() + h);
+  return this;
 };
 
 Date.prototype.addMinutes = function (h) {
-    this.setMinutes(this.getMinutes() + h);
-    return this;
+  this.setMinutes(this.getMinutes() + h);
+  return this;
 };

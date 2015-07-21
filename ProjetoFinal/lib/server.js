@@ -52,9 +52,9 @@ Server.prototype.start = function () {
 
   this.app.get("/getNumDispositivos", function (req, res) {
     r.connect(dbData).then(function (conn) {
-      return r.db(dbConfig.db).table("ActiveAnt").count().do(function (val) {
-        return {"sensor": val, 
-          "moveis": r.db(dbConfig.db).table("DispMoveis").count(), 
+      return r.db(dbConfig.db).table("AntDisp").count().do(function (val) {
+        return {"sensor": val,
+          "moveis": r.db(dbConfig.db).table("DispMoveis").count(),
           "ap": r.db(dbConfig.db).table("DispAp").count()};
       }).run(conn).finally(function () {
         conn.close();
@@ -66,7 +66,7 @@ Server.prototype.start = function () {
       res.status(500).json({err: err});
     });
   });
-  
+
   /**
    * Devolve o sensor com o numero dos varios dispositivos encontrados
    */
@@ -74,14 +74,14 @@ Server.prototype.start = function () {
     r.connect(dbData).then(function (conn) {
       return r.db(dbConfig.db).table('AntAp').map(function (row) {
         return [{
-            "nome": row("nomeAntena"), 
+            "nome": row("nomeAntena"),
             "count": row("host").count()
           }];
       }).map(function (row2) {
         return {
-          "AP": row2.nth(0), 
+          "AP": row2.nth(0),
           "DISP": {
-            "nome": row2("nome").nth(0), 
+            "nome": row2("nome").nth(0),
             "count": r.db(dbConfig.db).table('AntDisp').filter({
               "nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)
           }
@@ -96,6 +96,7 @@ Server.prototype.start = function () {
       res.status(500).json({err: err});
     });
   });
+
 
 //    this.app.get("/getDispsActive/:disp/:ant", function (req, res) {
 //        var tabela = "";
@@ -338,6 +339,50 @@ Server.prototype.start = function () {
     console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
 
+    r.connect(dbData).then(function (c) {
+      return r.db(dbConfig.db).table("DispMoveis").changes().filter(function (row) {
+        return row('old_val').eq(null);
+      }).run(c);
+    }).then(function (cursor) {
+      cursor.each(function (err, item) {
+        r.connect(dbData).then(function (c) {
+          return r.db(dbConfig.db).table("DispMoveis").count().run(c);
+        }).then(function (output) {
+          socket.emit("newDisp", output, "moveis");
+        });
+      });
+    });
+    
+    r.connect(dbData).then(function (c) {
+      return r.db(dbConfig.db).table("DispAp").changes().filter(function (row) {
+        return row('old_val').eq(null);
+      }).run(c);
+    }).then(function (cursor) {
+      cursor.each(function (err, item) {
+        r.connect(dbData).then(function (c) {
+          return r.db(dbConfig.db).table("DispAp").count().run(c);
+        }).then(function (output) {
+          socket.emit("newDisp", output, "ap");
+        });
+      });
+    });
+
+r.connect(dbData).then(function (c) {
+      return r.db(dbConfig.db).table("AntDisp").changes().filter(function (row) {
+        return row('old_val').eq(null);
+      }).run(c);
+    }).then(function (cursor) {
+      cursor.each(function (err, item) {
+        r.connect(dbData).then(function (c) {
+          return r.db(dbConfig.db).table("AntDisp").count().run(c);
+        }).then(function (output) {
+          socket.emit("newDisp", output, "sensor");
+        });
+      });
+    });
+    
+    
+    
 //        r.connect(dbData).then(function (c) {
 //            return r.db(dbConfig.db).table("DispMoveis").changes().run(c);
 //        }).then(function (cursor) {
