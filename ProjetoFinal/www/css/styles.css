@@ -34,3 +34,7 @@
     /* STYLES HERE */
     height: 500px;
 }
+
+.box-loading {
+  height: 100%;
+}

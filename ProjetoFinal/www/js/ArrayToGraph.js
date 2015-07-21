@@ -222,6 +222,7 @@ ArrayToGraph.prototype.updateNumDisp = function (data) {
 };
 
 ArrayToGraph.prototype.updateNumAp = function (data) {
+  console.log(data);
   this.dataTograph[0].dataPoints[0].y = data;
   this.chart.render();
 };
