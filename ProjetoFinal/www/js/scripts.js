@@ -86,28 +86,45 @@ $(document).ready(function () {
     console.log('Socket disconnected');
   });
 
-  // socket a escuta de incremento de dispositivos na base de dados
-  socket.on("newDisp", function (data, local) {
-    switch (local) {
-      case "moveis":
-        $("body").find("#disp-num-div").html(data);
-        if (graph2Bar) {
-          graph2Bar.updateNumDisp(data);
-        }
-        break;
-      case "ap":
-        $("body").find("#ap-num-div").html(data);
-        if (graph2Bar) {
-          graph2Bar.updateNumAp(data);
-        }
-        break;
-      case "sensor":
-        $("body").find("#sensores-num-div").html(data);
-        break;
+  socket.on("updateDisp", function (data, disp, database) {
+    if (database == "ProjetoFinal") {
+      switch (disp) {
+        case "ap":
+          if (graph2Bar) {
+            graph2Bar.updateNumAp(data);
+          }
+          break;
+        case "disp":
+          if (graph2Bar) {
+            graph2Bar.updateNumDisp(data);
+          }
+          break;
+      }
     }
   });
 
-});
+  // socket a escuta de incremento de dispositivos na base de dados
+  socket.on("newDisp", function (data, local, database) {
+    if (database == "ProjetoFinal") {
+      switch (local) {
+        case "moveis":
+          $("body").find("#disp-num-div").html((($("body").find("#disp-num-div").text() * 1) + 1));
+          break;
+        case "ap":
+          $("body").find("#ap-num-div").html((($("body").find("#ap-num-div").text() * 1) + 1));
+          break;
+        case "sensor":
+          $("body").find("#sensores-num-div").html((($("body").find("#sensores-num-div").text() * 1) + 1));
+          if (graph2Bar) {
+            graph2Bar.updateSensor(data);
+          }
+          break;
+      }
+    }
+  });
+
+}); // fim document ready
+
 function showPageToDiv(local, page, nome, icon) {
   $(local).html("");
   $.ajax({
@@ -176,7 +193,6 @@ function carregarDashBoard() {
     url: "/getAllDisp/" + socket.id,
     dataType: 'json',
     success: function (data) {
-      console.log(data);
       for (var i in data) {
         data[i].x = new Date(data[i].x);
       }
@@ -198,13 +214,11 @@ function carregarDashBoard() {
           }]
       });
       chart.render();
-//      };
     },
     error: function (error) {
       console.log(JSON.stringify(error));
     }
   });
-  console.log("ddddddddddddddddddddddddd");
 
 //  setInterval(function () {
 //    $.ajax({

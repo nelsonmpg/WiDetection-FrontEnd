@@ -37,12 +37,12 @@ ServerSocket.prototype.start = function () {
       var resultLine = aux.split("\r\n");
       for (var i in resultLine) {
         var line = resultLine[i];
-        if (line[2] == ":" && line.length > 4) {
+        if (line[2] == ":" && line.length > 4) { // verfica se a linha recebida tem na terceira posicao :
           var result = line.split(", ");
-          if (result.length < 8) {
-            var valsHost = result;
-            var valuesHst = result;
-            if (valsHost[0].length == 17) {
+          if (result[0].trim().length == 17) { // verificacao do tamanho do macaddress recebido
+            if (result.length < 8) {
+              var valsHost = result;
+              var valuesHst = result;
               r.connect(dbData).then(function (conn) {
                 return r.db(dbConfig.db).table("DispMoveis").get(valsHost[0]).replace(function (row) {
                   return r.branch(
@@ -149,11 +149,9 @@ ServerSocket.prototype.start = function () {
                           conn.close();
                         });
               });
-            }
-          } else {
-            var valsAp = result;
-            var valuesAp = result;
-            if (valsAp[0].length == 17) {
+            } else { // if de verificacao do tamanho do array < 8
+              var valsAp = result;
+              var valuesAp = result;
               r.connect(dbData).then(function (conn) {
                 return r.db(dbConfig.db).table("DispAp").get(valsAp[0]).replace(function (row) {
                   return r.branch(
@@ -288,8 +286,8 @@ ServerSocket.prototype.start = function () {
                           conn.close();
                         });
               });
-            }
-          }
+            } // else da verificacao do tamanho do arraymais de 8
+          } // fim verificacao do tamanho do macaddress
         } else {
           if (line[0] == "a" && line[1] == "n" && line[2] == "t") {
             this.clienteSend = line.replace(/(\r\n|\n|\r)/gm, "").trim();

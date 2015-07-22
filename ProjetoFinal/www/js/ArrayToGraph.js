@@ -33,10 +33,7 @@ ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
     });
   }
   this.dataTograph = [{
-      type: this.type, //change type to bar, line, area, pie, etc
-      click: function (e) {
-        self.click(e.dataPoint.label);
-      },
+      type: this.type, //change type to bar, line, area, pie, etc      
       dataPoints: pointsGraph
     }];
   this.createAndShowGraphOneBar(this.dataTograph);
@@ -85,84 +82,6 @@ ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
   this.createAndShowGraphOneBar(this.dataTograph);
 };
 
-ArrayToGraph.prototype.clickToBarGraph = function (func) {
-  var self = this;
-  switch (func) {
-    case 0:
-      this.click = function (bar) {
-        var query = "/getHostbyTipoNome/" + ((bar == "AP") ? "AP/" : "DISP/") + this.subtitulo;
-        $.ajax({
-          type: "GET",
-          url: query,
-          dataType: 'json',
-          success: function (data) {
-            self = new ArrayToGraph(data[0], "Fabricantes por Dispositivo na Antena:", self.subtitulo, "chartContainer", "column");
-            self.changeAnguloX(-50);
-            self.createArrayToGraphOneBar2();
-          },
-          error: function (error) {
-            console.log(JSON.stringify(error));
-          }
-        });
-      };
-      break;
-    case 1:
-      self = this;
-      this.click = function (bar) {
-        var query = "/getHostbyTipoNome/" + ((bar == "AP") ? "AP/" : "DISP/") + this.subtitulo;
-        $.ajax({
-          type: "GET",
-          url: query,
-          dataType: 'json',
-          success: function (data) {
-            console.log(data);
-            $("#" + self.local).html("");
-            if (bar == "AP") {
-              antenas = new HostArray("chartContainer", data[0]);
-              antenas.listaAp();
-            } else {
-              antenas = new HostArray("chartContainer", data[0]);
-              antenas.listaDisp();
-            }
-          },
-          error: function (error) {
-            console.log(JSON.stringify(error));
-          }
-        });
-      };
-      break;
-    case 2:
-      self = this;
-      this.click = function (bar) {
-        var query = "/getAtives/" + ((bar == "AP") ? "AP/" : "DISP/") + this.subtitulo;
-        $.ajax({
-          type: "GET",
-          url: query,
-          dataType: 'json',
-          success: function (data) {
-            console.log(data);
-            $("#" + self.local).html("");
-            if (bar == "AP") {
-              antenas = new HostArray("divAntenas", data[0]);
-              antenas.listaAp();
-            } else {
-              antenas = new HostArray("divAntenas", data[0]);
-              antenas.listaDisp();
-            }
-          },
-          error: function (error) {
-            console.log(JSON.stringify(error));
-          }
-        });
-      };
-      break;
-    default :
-      alert(this);
-      break;
-  }
-
-
-};
 
 ArrayToGraph.prototype.createArrayToStatusBarGraph = function () {
   var pointsGraph = [];
@@ -187,63 +106,68 @@ ArrayToGraph.prototype.createArrayToStatusBarGraph = function () {
 };
 
 ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
-  var pointsAp = [];
   var pointsDisp = [];
+  var pointsAp = [];
   var self = this;
   for (var i in this.array) {
+    pointsDisp.push({
+      label: this.array[i].DISP.nome,
+      y: 1 * this.array[i].DISP.count
+    });
     pointsAp.push({
       label: this.array[i].AP.nome,
       y: 1 * this.array[i].AP.count
     });
-    pointsDisp.push({label: this.array[i].DISP.nome,
-      y: 1 * this.array[i].DISP.count
-    });
   }
+
   this.dataTograph = [{
-      type: this.type,
-      name: "Access Points",
-      legendText: "Access Points",
-      showInLegend: true,
-      dataPoints: pointsAp
-    }, {
       type: this.type,
       name: "Dispositivos Moveis",
       legendText: "Dispositivos Moveis",
-      axisYType: "secondary",
       showInLegend: true,
       dataPoints: pointsDisp
+    }, {
+      type: this.type,
+      name: "Access Points",
+      legendText: "Access Points",
+      axisYType: "secondary",
+      showInLegend: true,
+      dataPoints: pointsAp
     }];
   this.createAndShowGraph(this.dataTograph);
 };
 
 ArrayToGraph.prototype.updateNumDisp = function (data) {
-  this.dataTograph[1].dataPoints[0].y = data;
-  this.chart.render();
+  for (var j in this.dataTograph[0].dataPoints) {
+    if (data.nomeAntena == this.dataTograph[0].dataPoints[j].label) {
+      this.dataTograph[0].dataPoints[j].y = data.host.length;
+      this.chart.render();
+    }
+  }
 };
 
 ArrayToGraph.prototype.updateNumAp = function (data) {
-  console.log(data);
-  this.dataTograph[0].dataPoints[0].y = data;
-  this.chart.render();
+  for (var j in this.dataTograph[0].dataPoints) {
+    if (data.nomeAntena == this.dataTograph[1].dataPoints[j].label) {
+      this.dataTograph[1].dataPoints[j].y = data.host.length;
+      this.chart.render();
+    }
+  }
 };
 
-ArrayToGraph.prototype.clickToDualBarGraph = function (event) {
-  $.ajax({
-    type: "GET",
-    url: "/GetDeviceByAntena/" + event,
-    dataType: 'json',
-    success: function (data) {
-      graphOneCol = new ArrayToGraph(data, "Quantidade de dispositipos encontrados na Antena:", event, "chartContainer", "column");
-      graphOneCol.clickToBarGraph(0);
-      graphOneCol.createArrayToGraphOneBar();
-      $("body").find(".btnBack").css({
-        visibility: "visible"
-      });
-    },
-    error: function (error) {
-      console.log(JSON.stringify(error));
-    }
+ArrayToGraph.prototype.updateSensor = function (data) {
+  console.log(this.dataTograph);
+  this.dataTograph[0].dataPoints.push({
+    label: data.new_val.nomeAntena,
+    y: 0
   });
+
+  this.dataTograph[1].dataPoints.push({
+    label: data.new_val.nomeAntena,
+    y: 0
+  });
+
+  this.chart.render();
 };
 
 ArrayToGraph.prototype.createAndShowGraph = function (dataVelues) {
@@ -254,7 +178,7 @@ ArrayToGraph.prototype.createAndShowGraph = function (dataVelues) {
   this.chart = new CanvasJS.Chart(this.local, {
     zoomEnabled: true,
     exportEnabled: true,
-    theme: "theme3",
+    theme: "theme2",
     animationEnabled: true,
     title: {
       text: self.titulo,
@@ -264,17 +188,17 @@ ArrayToGraph.prototype.createAndShowGraph = function (dataVelues) {
       shared: true
     },
     axisY: {
-      title: "Access Points",
-      titleFontSize: 20,
-      titleFontColor: "black"
-    },
-    axisY2: {
       title: "Dispositivos Moveis",
       titleFontSize: 20,
       titleFontColor: "black"
     },
+    axisY2: {
+      title: "Access Points",
+      titleFontSize: 20,
+      titleFontColor: "black"
+    },
     axisX: {
-      title: "Antenas",
+      title: "Sensores",
       labelAngle: this.anguloX,
       labelFontSize: 14,
       titleFontSize: 20,

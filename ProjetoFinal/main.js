@@ -1,7 +1,7 @@
 var cp = require('child_process');
 var http = require('http');
 var r = require('rethinkdb');
-var dbData;
+var fs = require('fs');
 var url = "http://web.stanford.edu/dept/its/projects/desktop/snsr/nmap-mac-prefixes.txt";
 
 var dbConfig = {
@@ -18,16 +18,19 @@ var dbConfig = {
   }
 };
 
-dbData = {
+var dbData = {
   host: dbConfig.host,
-  port: dbConfig.port}, function (err, conn) {
-  if (err) {
-    throw err;
-  }
-  console.log("Connected to ReThinkdb DataBase.");
-};
+  port: dbConfig.port};
 
 function startServers() {
+  fs.readFile('./Config.ini', 'utf8', function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(data);
+  });
+
+
   var args1 = {port: 8080, configdb: dbConfig};
   var child1 = cp.fork('./lib/server');
   child1.send(args1);
@@ -144,3 +147,6 @@ function download(url, callback) {
     callback(null);
   });
 }
+
+
+//module.exports = Main;

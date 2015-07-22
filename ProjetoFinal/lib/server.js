@@ -55,104 +55,94 @@ Server.prototype.start = function () {
 
   // fornece ao cliente a pagina index.html
   this.app.use(express.static(__dirname + './../www/'));
+
   var self = this;
 
-  this.io.on('connection', function (socket) {
-    var c = socket.request.connection._peername;
-    console.log("+++++++++++++++++++++ ADD +++++++++++++++++++++++++");
-    console.log("Connected - " + c.address + " : " + c.port);
-    console.log("User - " + socket.id);
-    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-    self.setUserServer(socket.id);
-    self.app.get("/getNumDispositivos/:sock", function (req, res) {
-      r.connect(dbData).then(function (conn) {
-        return r.db(self.getDataBase(req.params.sock)).table("AntDisp").count().do(function (val) {
-          return {"sensor": val,
-            "moveis": r.db(self.getDataBase(req.params.sock)).table("DispMoveis").count(),
-            "ap": r.db(self.getDataBase(req.params.sock)).table("DispAp").count()};
-        }).run(conn).finally(function () {
-          conn.close();
-        });
-      }).then(function (output) {
-        res.json(output);
-      }).error(function (err) {
-        console.log(err);
-        res.status(500).json({err: err});
+  this.app.get("/getNumDispositivos/:sock", function (req, res) {
+    r.connect(dbData).then(function (conn) {
+      return r.db(self.getDataBase(req.params.sock)).table("ActiveAnt").count().do(function (val) {
+        return {"sensor": val,
+          "moveis": r.db(self.getDataBase(req.params.sock)).table("DispMoveis").count(),
+          "ap": r.db(self.getDataBase(req.params.sock)).table("DispAp").count()};
+      }).run(conn).finally(function () {
+        conn.close();
       });
+    }).then(function (output) {
+      res.json(output);
+    }).error(function (err) {
+      console.log(err);
+      res.status(500).json({err: err});
     });
+  });
 
-    /**
-     * Devolve o sensor com o numero dos varios dispositivos encontrados
-     */
-    self.app.get("/getAllAntenasAndDisps/:sock", function (req, res) {
-      r.connect(dbData).then(function (conn) {
-        return r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
-          return [{
-              "nome": row("nomeAntena"),
-              "count": row("host").count()
-            }];
-        }).map(function (row2) {
-          return {
-            "AP": row2.nth(0),
-            "DISP": {
-              "nome": row2("nome").nth(0),
-              "count": r.db(self.getDataBase(req.params.sock)).table('AntDisp').filter({
-                "nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)
-            }
-          };
-        }).coerceTo('array').run(conn)
-                .finally(function () {
-                  conn.close();
-                });
-      }).then(function (output) {
-        res.json(output);
-      }).error(function (err) {
-        res.status(500).json({err: err});
-      });
-    });
-    /**
-     * Retorna o numero de AP's e Disp da antena passada
-     */
-    self.app.get("/getAllDisp/:sock", function (req, res) {
-      r.connect(dbData).then(function (conn) {
-        return r.db(self.getDataBase(req.params.sock)).table('DispMoveis').coerceTo("ARRAY").run(conn)
-                .finally(function () {
-                  conn.close();
-                });
-      }).then(function (output) {
-        console.log("->" + output.length);
-        
-        work.postMessage(output);
-        work.onmessage = function (msg) {
-          res.json(msg.data);
+  /**
+   * Devolve o sensor com o numero dos varios dispositivos encontrados
+   */
+  this.app.get("/getAllAntenasAndDisps/:sock", function (req, res) {
+    r.connect(dbData).then(function (conn) {
+      return r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
+        return [{
+            "nome": row("nomeAntena"),
+            "count": row("host").count()
+          }];
+      }).map(function (row2) {
+        return {
+          "AP": row2.nth(0),
+          "DISP": {
+            "nome": row2("nome").nth(0),
+            "count": r.db(self.getDataBase(req.params.sock)).table('AntDisp').filter({
+              "nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)
+          }
         };
-      }).error(function (err) {
-        res.status(500).json({err: err});
-      });
-    }
-    );
+      }).coerceTo('array').run(conn)
+              .finally(function () {
+                conn.close();
+              });
+    }).then(function (output) {
+      res.json(output);
+    }).error(function (err) {
+      res.status(500).json({err: err});
+    });
+  });
+  /**
+   * Retorna o numero de AP's e Disp da antena passada
+   */
+  this.app.get("/getAllDisp/:sock", function (req, res) {
+    r.connect(dbData).then(function (conn) {
+      return r.db(self.getDataBase(req.params.sock)).table('DispMoveis').coerceTo("ARRAY").run(conn)
+              .finally(function () {
+                conn.close();
+              });
+    }).then(function (output) {
+      work.postMessage(output);
+      work.onmessage = function (msg) {
+        res.json(msg.data);
+      };
+    }).error(function (err) {
+      res.status(500).json({err: err});
+    });
+  }
+  );
 
-    /**
-     * Retorna as bases de dados dos varios sites
-     */
-    self.app.get("/getAllDataBase", function (req, res) {
-      r.connect(dbData).then(function (conn) {
-        return r.dbList().map({"db": r.row})
-                .filter(r.row("db").ne("rethinkdb"))
-                .filter(r.row("db").ne("user")).run(conn)
-                .finally(function () {
-                  conn.close();
-                });
-      }).then(function (output) {
-        res.json(output);
-      }).error(function (err) {
-        res.status(500).json({err: err});
-      });
-    }
-    );
+  /**
+   * Retorna as bases de dados dos varios sites
+   */
+  this.app.get("/getAllDataBase", function (req, res) {
+    r.connect(dbData).then(function (conn) {
+      return r.dbList().map({"db": r.row})
+              .filter(r.row("db").ne("rethinkdb"))
+              .filter(r.row("db").ne("user")).run(conn)
+              .finally(function () {
+                conn.close();
+              });
+    }).then(function (output) {
+      res.json(output);
+    }).error(function (err) {
+      res.status(500).json({err: err});
+    });
+  });
 
-//    self.app.get("/getDispsActive/:disp/:ant", function (req, res) {
+//    this.app.get("/getDispsActive/:disp/:ant", function (req, res) {
 //        var tabela = "";
 //        if (req.params.disp.trim() == "Dispositivos Moveis") {
 //            tabela = "AntDisp";
@@ -189,7 +179,7 @@ Server.prototype.start = function () {
 //        });
 //    });
 //
-//    self.app.get("/getAllClientes/:disp", function (req, res) {
+//    this.app.get("/getAllClientes/:disp", function (req, res) {
 //        var tabela = "";
 //        if (req.params.disp.trim() == "Dispositivos Moveis") {
 //            tabela = "DispMoveis";
@@ -222,7 +212,7 @@ Server.prototype.start = function () {
 //        });
 //    });
 //
-//    self.app.get("/getAntenasAtivas", function (req, res) {
+//    this.app.get("/getAntenasAtivas", function (req, res) {
 //        r.connect(dbData).then(function (conn) {
 //            return r.db(self.getDataBase(socket.id)).table('ActiveAnt').filter(function (row) {
 //                return r.now().inTimezone("+01:00").do(function (time) {
@@ -250,7 +240,7 @@ Server.prototype.start = function () {
 //     * retornar antenas ativas
 //     * Falta alterar a consulta para retornar apenas as activas
 //     */
-//    self.app.get("/getTodasAntenas/", function (req, res) {
+//    this.app.get("/getTodasAntenas/", function (req, res) {
 //        r.connect(dbData).then(function (conn) {
 //            return r.db(self.getDataBase(socket.id)).table('ActiveAnt').coerceTo('array')
 //                    .run(conn)
@@ -267,7 +257,7 @@ Server.prototype.start = function () {
 //    /**
 //     * Retorna os Dispositivos detectados nos ultimos 5 minutos por antena
 //     */
-//    self.app.get("/getAtives/:tipo/:nomeAntena", function (req, res) {//req.params.nomeAntena
+//    this.app.get("/getAtives/:tipo/:nomeAntena", function (req, res) {//req.params.nomeAntena
 //        var table = (req.params.tipo.toUpperCase() == "AP") ? "AntAp" : "AntDisp";
 //        r.connect(dbData).then(function (conn) { //self.getDataBase(socket.id) 
 //            return r.db(self.getDataBase(socket.id)).table(table).filter({"nomeAntena": req.params.nomeAntena}).map(function (row) {
@@ -303,7 +293,7 @@ Server.prototype.start = function () {
 //     * retornar antenas ativas
 //     * Falta alterar a consulta para retornar apenas as activas
 //     */
-//    self.app.get("/getHostByAntena", function (req, res) {
+//    this.app.get("/getHostByAntena", function (req, res) {
 //        r.connect(dbData).then(function (conn) {
 //            r.db(self.getDataBase(socket.id)).table('AntDisp').coerceTo('array')
 //                    .run(conn)
@@ -320,7 +310,7 @@ Server.prototype.start = function () {
 //    /**
 //     * 
 //     */
-//    self.app.get("/getFabLogo/:fab", function (req, res) {
+//    this.app.get("/getFabLogo/:fab", function (req, res) {
 //        clientIMG.search(req.params.fab + " wikipedia official logo .png", function (err, images) {
 //            if (err) {
 //                res.json(err);
@@ -333,7 +323,7 @@ Server.prototype.start = function () {
 //    /**
 //     * Retorna o numero de AP's e Disp da antena passada
 //     */
-//    self.app.get("/GetDeviceByAntena/:nomeAntena", function (req, res) {//req.params.nomeAntena
+//    this.app.get("/GetDeviceByAntena/:nomeAntena", function (req, res) {//req.params.nomeAntena
 //        r.connect(dbData).then(function (conn) {
 //            return r.db(self.getDataBase(socket.id)).table('AntAp').filter({"nomeAntena": req.params.nomeAntena}).map(function (row) {
 //                return [{"nome": row("nomeAntena"), "count": row("host").count()}]
@@ -356,7 +346,7 @@ Server.prototype.start = function () {
 //       /**
 //     * Retorna o numero de AP's e Disp da antena passada
 //     */
-//    self.app.get("/getHostbyTipoNome/:tipo/:nomeAntena", function (req, res) {//req.params.nomeAntena
+//    this.app.get("/getHostbyTipoNome/:tipo/:nomeAntena", function (req, res) {//req.params.nomeAntena
 //        if (req.params.tipo == "AP") {
 //            r.connect(dbData).then(function (conn) {
 //                return r.db(self.getDataBase(socket.id)).table('AntAp').filter({"nomeAntena": req.params.nomeAntena})("host").coerceTo('array')
@@ -385,6 +375,17 @@ Server.prototype.start = function () {
 //        }
 //    });
 
+
+
+  this.io.on('connection', function (socket) {
+    var c = socket.request.connection._peername;
+    console.log("+++++++++++++++++++++ ADD +++++++++++++++++++++++++");
+    console.log("Connected - " + c.address + " : " + c.port);
+    console.log("User - " + socket.id);
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+    self.setUserServer(socket.id);
+
     socket.on("changedatabase", function (data) {
       self.setDataBase(socket.id, data);
     });
@@ -395,7 +396,7 @@ Server.prototype.start = function () {
       }).run(c);
     }).then(function (cursor) {
       cursor.each(function (err, item) {
-        socket.emit("newDisp", item, "moveis");
+        socket.emit("newDisp", item, "moveis", self.getDataBase(socket.id));
       });
     });
 
@@ -405,24 +406,19 @@ Server.prototype.start = function () {
       }).run(c);
     }).then(function (cursor) {
       cursor.each(function (err, item) {
-        socket.emit("newDisp", item, "ap");
+        self.io.sockets.emit("newDisp", item, "ap", self.getDataBase(socket.id));
       });
     });
 
     r.connect(dbData).then(function (c) {
-      return r.db(self.getDataBase(socket.id)).table("AntDisp").changes().filter(function (row) {
+      return r.db(self.getDataBase(socket.id)).table("ActiveAnt").changes().filter(function (row) {
         return row('old_val').eq(null);
       }).run(c);
     }).then(function (cursor) {
       cursor.each(function (err, item) {
-        r.connect(dbData).then(function (c) {
-          return r.db(self.getDataBase(socket.id)).table("AntDisp").count().run(c);
-        }).then(function (output) {
-          socket.emit("newDisp", output, "sensor");
-        });
+        self.io.sockets.emit("newDisp", item, "sensor", self.getDataBase(socket.id));
       });
     });
-
 
 //        r.connect(dbData).then(function (c) {
 //            return r.db(self.getDataBase(socket.id)).table("DispMoveis").changes().run(c);
@@ -441,21 +437,21 @@ Server.prototype.start = function () {
 //        });
 
 
-//        r.connect(dbData).then(function (c) {
-//            return r.db(self.getDataBase(socket.id)).table("AntAp").changes().run(c);
-//        }).then(function (cursor) {
-//            cursor.each(function (err, item) {
-//                socket.emit("updateArrayDisp", "Access Points", item);
-//            });
-//        });
-//
-//        r.connect(dbData).then(function (c) {
-//            return r.db(self.getDataBase(socket.id)).table("AntDisp").changes().run(c);
-//        }).then(function (cursor) {
-//            cursor.each(function (err, item) {
-//                socket.emit("updateArrayDisp", "Dispositivos Moveis", item);
-//            });
-//        });
+    r.connect(dbData).then(function (c) {
+      return r.db(self.getDataBase(socket.id)).table("AntAp").changes()('new_val').run(c);
+    }).then(function (cursor) {
+      cursor.each(function (err, item) {
+        self.io.sockets.emit("updateDisp", item, "ap", self.getDataBase(socket.id));
+      });
+    });
+
+    r.connect(dbData).then(function (c) {
+      return r.db(self.getDataBase(socket.id)).table("AntDisp").changes()('new_val').run(c);
+    }).then(function (cursor) {
+      cursor.each(function (err, item) {
+        self.io.sockets.emit("updateDisp", item, "disp", self.getDataBase(socket.id));
+      });
+    });
 
     socket.on('disconnect', function () {
       socket.broadcast.emit('diconnected', socket.id);
@@ -489,6 +485,9 @@ Server.prototype.setUserServer = function (socketid) {
 };
 
 Server.prototype.getDataBase = function (socketid) {
+  if (typeof this.clientArray[socketid] == "undefined") {
+    this.setUserServer(socketid);
+  }
   return this.clientArray[socketid].db;
 };
 
