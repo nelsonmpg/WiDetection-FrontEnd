@@ -1,4 +1,4 @@
-var graph2Bar;
+var graph2Bar, chart, result, mySite;
 var loading = '<div class="box box-solid box-loading">' +
         '<div class="box-body">' +
         '</div><!-- /.box-body -->' +
@@ -31,7 +31,7 @@ $(document).ready(function () {
   // evento de selecionar no menu lateral
   $(".select-item-menu").click(function (e) {
     e.preventDefault();
-    if (e.which != 1 || $(this).parent().hasClass('active')) {
+    if (/*e.which != 1 ||*/ $(this).parent().hasClass('active')) {
       return;
     }
 
@@ -79,6 +79,8 @@ $(document).ready(function () {
     $('ul.sidebar-menu ul.site-title li.active').removeClass("active");
     $(this).parent().addClass("active");
     socket.emit("changedatabase", $(this).text().trim());
+    mySite = $(this).text().trim();
+    $("body > div > aside.main-sidebar > section > ul > li:nth-child(3) > a[href='dashboard.html']").click();
   });
 
   // ento da perda do servidor
@@ -107,7 +109,20 @@ $(document).ready(function () {
     }
   });
 
+  socket.on('updateChart', function (site, data) {
+    console.log(data, site);
+    if (mySite == site) {
+      data.x = new Date(data.x);
+      data.y = data.y * 1;
+
+      chart.options.data[0].dataPoints.push(data);
+      chart.options.data[0].dataPoints.shift();
+      chart.render();
+    }
+  });
+
 });
+
 function showPageToDiv(local, page, nome, icon) {
   $(local).html("");
   $.ajax({
@@ -170,13 +185,11 @@ function carregarDashBoard() {
   });
 
   //------------------------------------------------------------------------------
-  var chart, result;
   $.ajax({
     type: "GET",
     url: "/getAllDisp/" + socket.id,
     dataType: 'json',
     success: function (data) {
-      console.log(data);
       for (var i in data) {
         data[i].x = new Date(data[i].x);
       }
@@ -188,13 +201,29 @@ function carregarDashBoard() {
         },
         animationEnabled: true,
         axisX: {
-          valueFormatString: "HH:mm:ss"
+          valueFormatString: "HH:mm"
         },
         axisY: {includeZero: false},
         data: [{
-            type: "spline",
+            type: "line",
             lineThickness: 3,
-            dataPoints: data
+            dataPoints: result
+//            //Mostrar Fabricantes no click
+//            click: function (e) {
+//              $.ajax({
+//                type: "GET",
+//                url: "/getFabricantesinMin/" + Date(e.dataPoint.x) + "/" + socket.id,
+//                dataType: 'json',
+//                success: function (data) {
+//
+//                  console.log(data);
+//                },
+//                error: function (error) {
+//                  console.log(JSON.stringify(error));
+//                }
+//              });
+//              alert(e.dataPoint.x);
+//            }
           }]
       });
       chart.render();
@@ -204,40 +233,6 @@ function carregarDashBoard() {
       console.log(JSON.stringify(error));
     }
   });
-  console.log("ddddddddddddddddddddddddd");
-
-//  setInterval(function () {
-//    $.ajax({
-//      type: "GET",
-//      url: "/getAllDisp/" + socket.id,
-//      dataType: 'json',
-//      success: function (data) {
-//        teste = [];
-//        for (var a in data) {
-//          teste[data[a].macAddress] = {
-//            macAddress: data[a].macAddress,
-//            nameVendor: data[a].nameVendor,
-//          };
-//          teste[data[a].macAddress].sensores = [];
-//          for (var b  in data[a].disp) {
-//            teste[data[a].macAddress].sensores.push({name: data[a].disp[b].name, values: data[a].disp[b].values});
-//          }
-//        }
-//        var worker = new Worker("js/workerGraph.js");
-//
-//        worker.postMessage(teste);
-//
-//        worker.onmessage = function (e) {
-//          result = e.data;
-//          chart.options.data[0].dataPoints = result;
-//          chart.render();
-//        };
-//      },
-//      error: function (error) {
-//        console.log(JSON.stringify(error));
-//      }
-//    });
-//  }, 1000 * 60);
 }
 
 function criarLightBox(divNome) {

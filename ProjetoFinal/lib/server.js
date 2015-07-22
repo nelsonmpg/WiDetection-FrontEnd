@@ -10,7 +10,9 @@ var r = require('rethinkdb');
 var Worker = require('workerjs');
 var work = new Worker('./lib/workerGraph.js');
 
-var clientIMG = require('google-images2');
+var liveActives = [];
+var intervalChart;
+
 var dbData = "";
 /**
  * 
@@ -112,26 +114,100 @@ Server.prototype.start = function () {
       });
     });
     /**
-     * Retorna o numero de AP's e Disp da antena passada
+     * Retorna o numero de Disp nas antenasna ultima hora
      */
     self.app.get("/getAllDisp/:sock", function (req, res) {
+      if (liveActives[self.getDataBase(req.params.sock)] != undefined) {
+        res.json(liveActives[self.getDataBase(req.params.sock)]);
+      } else {
+        r.connect(dbData).then(function (conn) {
+          return r.db(self.getDataBase(req.params.sock)).table('DispMoveis').coerceTo("ARRAY").run(conn)
+                  .finally(function () {
+                    conn.close();
+                  });
+        }).then(function (output) {
+          work.postMessage(output);
+          work.onmessage = function (msg) {
+            liveActives[self.getDataBase(req.params.sock)] = msg.data;
+            res.json(msg.data);
+          };
+
+          //Interval de update do grafico nos clientes
+          intervalChart = setInterval(function () {
+            r.connect(dbData).then(function (conn) {
+              return r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (row) {
+                return  row("disp").do(function (ro) {
+                  return {"macAddress": row("macAddress"), "nameVendor": row("nameVendor"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(100).orderBy(r.asc("Last_time"))}
+                })
+              }).map(function (a) {
+                return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
+                    return r.now().do(function (time) {
+                      return value('Last_time').gt(r.time(
+                              time.year(),
+                              time.month(),
+                              time.day(),
+                              time.hours(),
+                              time.minutes().sub(1),
+                              time.seconds().mul(0),
+                              time.timezone()
+                              ));
+                    });
+                  })}
+              }).filter({"state": true}).count().run(conn)
+                      .finally(function () {
+                        conn.close();
+                      });
+            }).then(function (output) {
+
+              //Atualiza o array do servidor       
+              var novaData = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
+              novaData.addMinutes(1);
+              liveActives[self.getDataBase(req.params.sock)].shift();
+              var x = {x: novaData, y: output * 1};
+              liveActives[self.getDataBase(req.params.sock)].push(x);
+
+              //Envia para os clientes
+              self.io.sockets.emit("updateChart", self.getDataBase(req.params.sock), x);
+
+            }).error(function (err) {
+              res.status(500).json({err: err});
+            });
+
+          }, 1000 * 60); //De segundo a segundo
+
+
+        }).error(function (err) {
+          res.status(500).json({err: err});
+        });
+      }
+    }
+    );
+
+    /**
+     * Retorna o numero de Disp nas antenas
+     */
+    self.app.get("/getFabricantesinMin/:min/:sock", function (req, res) {
       r.connect(dbData).then(function (conn) {
         return r.db(self.getDataBase(req.params.sock)).table('DispMoveis').coerceTo("ARRAY").run(conn)
                 .finally(function () {
                   conn.close();
                 });
       }).then(function (output) {
-        console.log("->" + output.length);
-        
-        work.postMessage(output);
-        work.onmessage = function (msg) {
-          res.json(msg.data);
-        };
+
+        res.json(getMACInDate(req.params.min, output));
       }).error(function (err) {
         res.status(500).json({err: err});
       });
     }
     );
+
+    /**
+     * Retorna o numero de Disp nas antenas
+     */
+    self.app.get("/getUpdatedChart/:sock", function (req, res) {
+      res.json(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1]);
+    });
+
 
     /**
      * Retorna as bases de dados dos varios sites
@@ -464,7 +540,7 @@ Server.prototype.start = function () {
         console.log('------------------- REMOVE --------------------');
         console.log("User - " + usr.socket + " - " + usr.db);
         console.log('-----------------------------------------------');
-        self.clientArray[socket.id] = null;
+        //self.clientArray[socket.id] = null;
         console.log("Socket id removido - " + socket.id);
       } else {
         console.log('------------ O Cliente ja nao existe ----------');
@@ -498,6 +574,32 @@ Server.prototype.setDataBase = function (socketid, database) {
 
 Server.prototype.getUserServer = function (socketid) {
   return this.clientArray[socketid];
+};
+
+/**
+ * Passar uma data new Date("15/07/2015") e devolvolve um array com os MacAddress Ativos nessa data
+ * @param {type} date
+ * @returns {Array|getMACAfterDate.entrou}
+ */
+function getMACInDate(date, teste) {
+  var entrou = [];
+  for (var i in teste) {
+    for (var e in teste[i].sensores) {
+      for (var r in teste[i].sensores[e].values) {
+        var find = new Date(teste[i].sensores[e].values[r].Last_time);
+        if (find.getDate() == date.getDate() && find.getFullYear() == date.getFullYear() && find.getHours() == date.getHours() && find.getMonth() == date.getMonth() && find.getMinutes() == date.getMinutes()) {
+          entrou.push({mac: teste[i].macAddress, vendor: teste[i].nameVendor});
+          break;
+        }
+      }
+    }
+  }
+  return entrou;
+}
+
+Date.prototype.addMinutes = function (h) {
+  this.setMinutes(this.getMinutes() + h);
+  return this;
 };
 
 /**
