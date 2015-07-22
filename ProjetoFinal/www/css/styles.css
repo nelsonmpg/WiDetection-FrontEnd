@@ -31,10 +31,11 @@
 }
 
 @media (min-width: 500px) {
-    /* STYLES HERE */
+  /* STYLES HERE */
+  #chart1LineActives {
     height: 500px;
+  }
 }
-
 .box-loading {
   height: 100%;
 }
