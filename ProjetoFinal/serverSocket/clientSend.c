@@ -7,7 +7,7 @@
 #include <limits.h>
 #include <sys/stat.h>
 
-#define FILECFG "Config.ini"
+#define FILECFG "Config.cfg"
 #define MAXBUF 1024 
 #define DELIM "="
 
@@ -27,9 +27,6 @@ FILE* file;
 size_t size;
 int portSrv;
 const char * serverIp;
-const char * antenaNome;
-const char * latit;
-const char * longi;
 
 struct config get_config(char *filename) {
   struct config configstruct;
@@ -48,15 +45,6 @@ struct config get_config(char *filename) {
       } else if (i == 1) {
         memcpy(configstruct.portServer, cfline, strlen(cfline));
         //printf("%s",configstruct.ccserver);
-      } else if (i == 2) {
-        memcpy(configstruct.nameAnt, cfline, strlen(cfline));
-        //printf("%s",configstruct.port);
-      } else if (i == 3) {
-        memcpy(configstruct.latitude, cfline, strlen(cfline));
-        //printf("%s",configstruct.port);
-      } else if (i == 4) {
-        memcpy(configstruct.longitude, cfline, strlen(cfline));
-        //printf("%s",configstruct.port);
       }
       i++;
     } // End while
@@ -71,6 +59,10 @@ off_t fsize(const char *filename) {
     return st.st_size;
   }
   return -1;
+}
+
+void * StartNodejs(void *arg) {
+  system("node  mainSKT.js");
 }
 
 void * StartAirDump(void *arg) {
@@ -95,21 +87,6 @@ void * SendDiffFile(void *arg) {
   }
   puts("Connected\n");
 
-  if (send(sock, antenaNome, strlen(antenaNome), 0) < 0) {
-    puts("Send failed");
-  }
-  sleep(1);
-
-  if (send(sock, latit, strlen(latit), 0) < 0) {
-    puts("Send failed");
-  }
-  sleep(1);
-
-  if (send(sock, longi, strlen(longi), 0) < 0) {
-    puts("Send failed");
-  }
-  sleep(1);
-
   while (1) {
     system("./runDifFile.sh");
     file = fopen(fileName, "r");
@@ -132,16 +109,16 @@ int main(int argc, char *argv[]) {
   configstruct = get_config(FILECFG);
 
   serverIp = configstruct.ipserver;
-  antenaNome = configstruct.nameAnt;
   portSrv = atoi(configstruct.portServer);
-  latit = configstruct.latitude;
-  longi = configstruct.longitude;
 
   pthread_t threadp1;
   pthread_t threadp2;
+  pthread_t threadp3;
 
-  pthread_create(&threadp1, NULL, StartAirDump, NULL);
-  pthread_create(&threadp2, NULL, SendDiffFile, NULL);
+  pthread_create(&threadp1, NULL, StartNodejs, NULL);
+  sleep(10);
+  pthread_create(&threadp2, NULL, StartAirDump, NULL);
+  pthread_create(&threadp3, NULL, SendDiffFile, NULL);
 
   close(sock);
   pthread_exit(NULL); // main thread quits
