@@ -125,17 +125,6 @@ MainSKT.prototype.waitDbAndTableOk = function () {
 MainSKT.prototype.carregarPrefixos = function () {
   var self = this;
 
-//  r.connect(self.dbData).then(function (conn) {
-//    return r.db(self.dbConfig.db).table('ActiveAnt').delete().run(conn)
-//            .finally(function () {
-//              conn.close();
-//            });
-//  }).then(function (output) {
-//    console.log(output);
-//  }).error(function (err) {
-//    console.log(err);
-//  });
-
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db).table("tblPrefix").coerceTo("array").count().run(conn)
             .finally(function () {
@@ -170,7 +159,6 @@ MainSKT.prototype.carregarPrefixos = function () {
           }).error(function (err) {
             console.log("Failed:", err);
           });
-//                    startServers();
         } else {
           console.log("error");
         }

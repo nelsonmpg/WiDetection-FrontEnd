@@ -24,8 +24,7 @@ Main.prototype.start = function () {
   this.config = ini.parse(fs.readFileSync('./ConfigHTTP.ini', 'utf-8'));
   this.dbConfig = {
     host: this.config.database.host,
-    port: this.config.database.port,
-    db: this.config.database.sitename
+    port: this.config.database.port
   };
 
   this.dbData = {
