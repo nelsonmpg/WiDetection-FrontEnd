@@ -23,12 +23,13 @@ var dbData = {
   port: dbConfig.port};
 
 function startServers() {
-  fs.readFile('./Config.ini', 'utf8', function (err, data) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log(data);
-  });
+//  fs.readFile('./Config.ini', 'utf8', function (err, data) {
+//    if (err) {
+//      return console.log(err);
+//    }
+//    console.log(data);
+//  }
+//          );
 
 
   var args1 = {port: 8080, configdb: dbConfig};

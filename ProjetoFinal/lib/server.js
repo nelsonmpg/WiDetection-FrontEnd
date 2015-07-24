@@ -6,9 +6,9 @@ var socketio = require('socket.io');
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var r = require('rethinkdb');
+var pedidos = require('./pedidos');
 
 var Worker = require('workerjs');
-var work = new Worker('./lib/workerGraph.js');
 
 var liveActives = [];
 var intervalChart;
@@ -34,7 +34,9 @@ var Server = function (port, configdb) {
     host: this.dbConfig.host,
     port: this.dbConfig.port
   };
-
+  
+ 
+  
   this.app.use(bodyParser.urlencoded({
     extended: true
   }));
@@ -57,6 +59,11 @@ Server.prototype.start = function () {
 
   // fornece ao cliente a pagina index.html
   this.app.use(express.static(__dirname + './../www/'));
+  pedidos.dbData = dbData;
+  pedidos.getDataBase = this.getDataBase;
+  pedidos.clientArray = this.clientArray;
+  pedidos.setUserServer = this.setUserServer;
+  pedidos.dbConfig = this.dbConfig;
 
   var self = this;
 
@@ -107,92 +114,184 @@ Server.prototype.start = function () {
       res.status(500).json({err: err});
     });
   });
-  
-    /**
-     * Retorna o numero de Disp nas antenasna ultima hora
-     */
-    self.app.get("/getAllDisp/:sock", function (req, res) {
-      if (liveActives[self.getDataBase(req.params.sock)] != undefined) {
-        res.json(liveActives[self.getDataBase(req.params.sock)]);
-      } else {
-        r.connect(dbData).then(function (conn) {
-          return r.db(self.getDataBase(req.params.sock)).table('DispMoveis').coerceTo("ARRAY").run(conn)
-                  .finally(function () {
-                    conn.close();
-                  });
-        }).then(function (output) {
-          work.postMessage(output);
-          work.onmessage = function (msg) {
-            liveActives[self.getDataBase(req.params.sock)] = msg.data;
-            res.json(msg.data);
-          };
 
-          //Interval de update do grafico nos clientes
-          intervalChart = setInterval(function () {
-            r.connect(dbData).then(function (conn) {
-              return r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (row) {
-                return  row("disp").do(function (ro) {
-                  return {"macAddress": row("macAddress"), "nameVendor": row("nameVendor"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(100).orderBy(r.asc("Last_time"))}
-                })
-              }).map(function (a) {
-                return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
-                    return r.now().do(function (time) {
-                      return value('Last_time').gt(r.time(
-                              time.year(),
-                              time.month(),
-                              time.day(),
-                              time.hours(),
-                              time.minutes().sub(1),
-                              time.seconds().mul(0),
-                              time.timezone()
-                              ));
-                    });
-                  })}
-              }).filter({"state": true}).count().run(conn)
-                      .finally(function () {
-                        conn.close();
-                      });
-            }).then(function (output) {
-
-              //Atualiza o array do servidor       
-              var novaData = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
-              novaData.addMinutes(1);
-              liveActives[self.getDataBase(req.params.sock)].shift();
-              var x = {x: novaData, y: output * 1};
-              liveActives[self.getDataBase(req.params.sock)].push(x);
-
-              //Envia para os clientes
-              self.io.sockets.emit("updateChart", self.getDataBase(req.params.sock), x);
-
-            }).error(function (err) {
-              res.status(500).json({err: err});
-            });
-
-          }, 1000 * 60); //De segundo a segundo
-
-
-        }).error(function (err) {
-          res.status(500).json({err: err});
-        });
-      }
-    }
-    );
-
-    /**
-     * Retorna o numero de Disp nas antenas
-     */
-    self.app.get("/getFabricantesinMin/:min/:sock", function (req, res) {
+  /**
+   * Retorna o numero de Disp nas antenasna ultima hora
+   */
+  self.app.get("/getAllDisp/:sock", function (req, res) {
+    if (liveActives[self.getDataBase(req.params.sock)] != undefined) {
+      res.json(liveActives[self.getDataBase(req.params.sock)]);
+    } else {
       r.connect(dbData).then(function (conn) {
         return r.db(self.getDataBase(req.params.sock)).table('DispMoveis').coerceTo("ARRAY").run(conn)
                 .finally(function () {
                   conn.close();
                 });
       }).then(function (output) {
-        res.json(getMACInDate(req.params.min, output));
+        var work = new Worker('./lib/workerGraph.js');
+        work.postMessage(output);
+        work.onmessage = function (msg) {
+          liveActives[self.getDataBase(req.params.sock)] = msg.data;
+          work.terminate();
+          res.json(msg.data);
+        };
+
+        //Interval de update do grafico nos clientes
+        intervalChart = setInterval(function () {
+           var nextDate = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
+            nextDate.addMinutes(1);
+          if (nextDate.getMinutes() != 59) {
+          r.connect(dbData).then(function (conn) {
+            return r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (row) {
+              return  row("disp").do(function (ro) {
+                return {"macAddress": row("macAddress"), "nameVendor": row("nameVendor"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))}
+              })
+            }).map(function (a) {
+              return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
+                  return r.now().inTimezone("+01:00").do(function (time) {
+                    return value('Last_time').ge(r.time(
+                            time.year(),
+                            time.month(),
+                            time.day(),
+                            time.hours(),
+                            time.minutes().sub(1),
+                            time.seconds(),
+                            time.timezone()
+                            ));
+                  });
+                })}
+            }).filter({"state": true}).count().run(conn)
+                    .finally(function () {
+                      conn.close();
+                    });
+          }).then(function (output) {
+
+            //Atualiza o array do servidor       
+            var novaData = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
+            novaData.addMinutes(1);
+            liveActives[self.getDataBase(req.params.sock)].shift();
+            var x = {x: novaData, y: output * 1};
+            liveActives[self.getDataBase(req.params.sock)].push(x);
+
+            //Envia para os clientes
+            self.io.sockets.emit("updateChart", self.getDataBase(req.params.sock), x);
+
+          }).error(function (err) {
+            res.status(500).json({err: err});
+          });
+          } else {//fim if
+            ////////////////////////////////////// Teste
+            r.connect(dbData).then(function (conn) {
+            return r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (row) {
+              return  row("disp").do(function (ro) {
+                return {"macAddress": row("macAddress"), "nameVendor": row("nameVendor"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))}
+              })
+            }).map(function (a) {
+              return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
+                  return r.now().inTimezone("+01:00").do(function (time) {
+                    return value('Last_time').ge(r.time(
+                            time.year(),
+                            time.month(),
+                            time.day(),
+                            time.hours().sub(1),
+                            59,
+                            time.seconds(),
+                            time.timezone()
+                            ));
+                  });
+                })}
+            }).filter({"state": true}).count().run(conn)
+                    .finally(function () {
+                      conn.close();
+                    });
+          }).then(function (output) {
+
+            //Atualiza o array do servidor       
+            var novaData = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
+            novaData.addMinutes(1);
+            liveActives[self.getDataBase(req.params.sock)].shift();
+            var x = {x: novaData, y: output * 1};
+            liveActives[self.getDataBase(req.params.sock)].push(x);
+
+            //Envia para os clientes
+            self.io.sockets.emit("updateChart", self.getDataBase(req.params.sock), x);
+
+          }).error(function (err) {
+            res.status(500).json({err: err});
+          });
+          ////////////////////////////////////// Teste
+            
+          } 
+        }, 1000 * 60); //De minuto a minuto
+
+
       }).error(function (err) {
         res.status(500).json({err: err});
       });
+    }
+  }
+  );
+
+
+  /**
+   * Retorna os tempos das visitas dos DispMoveis
+   */
+  self.app.get("/getAllTimes/:sock", function (req, res) {
+    r.connect(dbData).then(function (conn) {
+      return r.db(self.getDataBase(req.params.sock)).table('DispMoveis').coerceTo("ARRAY").run(conn)
+              .finally(function () {
+                conn.close();
+              });
+    }).then(function (output) {
+
+      var tempo = new Worker('./lib/TempoMedio.js');
+      var result = [];
+
+      //Na resposta do webworker
+      tempo.onmessage = function (msg) {
+        // se a mensagem for "stop" e' para parar
+        if (msg.data == "stop") {
+          //termina o webworker
+          tempo.terminate();
+          //array para construir a resposta
+          var resposta = {};
+          //[macAddress] = numero de visitas
+          for (var i in result) {
+            resposta[i.toString()] = result[i];
+          }
+          //devolve a resposta ao cliente
+          res.json(resposta);
+        } else {
+          //verifica se a posição do array esta' indefinida e inicializa-a
+          if (typeof result[msg.data.macAddress] == "undefined") {
+            result[msg.data.macAddress] = [];
+          }
+          //guarda no array das visitas [macAddress] = [{visita},{visita}]
+          result[msg.data.macAddress].push(msg.data.visita);
+        }
+      };
+      tempo.postMessage(output);
+    }).error(function (err) {
+      res.status(500).json({err: err});
     });
+  });
+
+
+  /**
+   * Retorna o numero de Disp nas antenas
+   */
+  self.app.get("/getFabricantesinMin/:min/:sock", function (req, res) {
+    r.connect(dbData).then(function (conn) {
+      return r.db(self.getDataBase(req.params.sock)).table('DispMoveis').coerceTo("ARRAY").run(conn)
+              .finally(function () {
+                conn.close();
+              });
+    }).then(function (output) {
+      res.json(getMACInDate(req.params.min, output));
+    }).error(function (err) {
+      res.status(500).json({err: err});
+    });
+  });
 
 
   /**
@@ -212,6 +311,8 @@ Server.prototype.start = function () {
       res.status(500).json({err: err});
     });
   });
+  
+  self.app.get("/getNameVendor/:mac/:sock",pedidos.getNameVendorByMac);
 
 //    this.app.get("/getDispsActive/:disp/:ant", function (req, res) {
 //        var tabela = "";

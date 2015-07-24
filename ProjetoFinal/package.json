@@ -1,19 +1,20 @@
 {
-  "name": "NelsonGomes",
-  "version": "1.0.0",
+  "name": "ProjetoFinal",
+  "version": "0.0.1",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
   },
-  "author": "",
+   "authors": ["Nelson Gomes <nelsonmpg@hotmail.com>",
+              "Rui Dias <ruifgdias@sapo.pt>"],
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.12.4",
     "express": "*",
-    "google-images2": "*",
-    "nan": "^1.8.4",
     "rethinkdb": "^2.0.0-1",
     "socket.io": "*",
-    "workerjs": "^0.1.1"
+    "workerjs": "^0.1.1",
+    "colors": "*"
   }
 }

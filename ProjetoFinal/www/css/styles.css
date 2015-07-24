@@ -26,14 +26,14 @@
   height: 400px;
 }
 
-#chart1LineActives {
+#chart1LineActives, #chartDispVisit {
   height: 400px;
 }
 
 @media (min-width: 500px) {
   /* STYLES HERE */
   #chart1LineActives {
-    height: 500px;
+    height: 300px;
   }
 }
 .box-loading {

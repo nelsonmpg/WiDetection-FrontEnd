@@ -59,6 +59,7 @@ Date.prototype.addSeconds = function (s) {
           find.setSeconds(0);
           if (find.getDate() == date.getDate() && find.getFullYear() == date.getFullYear() && find.getHours() == date.getHours() && find.getMonth() == date.getMonth() && find.getMinutes() == date.getMinutes()) {
             entrou.push({mac: teste[i].macAddress, vendor: teste[i].nameVendor});
+            teste[i].sensores[e].values.splice(r,1);
             s = true;
             break;
           }

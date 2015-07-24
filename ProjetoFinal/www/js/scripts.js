@@ -12,22 +12,34 @@ var socket = null;
 $(document).ready(function () {
 
   socket = io.connect(window.location.href);
-
   // carrega o conteudo do login
   showPageToDiv("section.content", "login.html");
-
   // evento do click no botao de lkogout
   $("body").on("click", "#logout-btn", function (e) {
     e.preventDefault();
     $('ul.sidebar-menu li.active').removeClass('active');
     showPageToDiv("section.content", "login.html");
   });
-
   //prevent # links from moving to top
   $("body").on("click", 'a[href="#"][data-top!=true]', function (e) {
     e.preventDefault();
   });
-
+  //para teste,click no bt testar
+  $("body").on("click", '#testar', function (e) {
+    console.log(this);
+    $.ajax({
+      type: "GET",
+      url: "/getAllTimes/" + socket.id,
+      dataType: 'json',
+      success: function (data) {
+        console.log(data);
+        alert(data);
+      },
+      error: function (error) {
+        console.log(JSON.stringify(error));
+      }
+    });
+  });
   // evento de selecionar no menu lateral
   $(".select-item-menu").click(function (e) {
     e.preventDefault();
@@ -40,7 +52,6 @@ $(document).ready(function () {
     $('ul.sidebar-menu li.active').removeClass('active');
     $clink.parent('li').addClass('active');
   });
-
   // form login
   $("body").on("submit", "#login-form", function (e) {
     e.preventDefault();
@@ -63,13 +74,11 @@ $(document).ready(function () {
       }
     });
   });
-
   // form register
   $("body").on("submit", "#register-form", function (e) {
     e.preventDefault();
     alert("ok");
   });
-
   // selecao do site pretendido
   $("body").on("click", ".site-option > a", function (e) {
     e.preventDefault();
@@ -82,12 +91,10 @@ $(document).ready(function () {
     mySite = $(this).text().trim();
     $("body > div > aside.main-sidebar > section > ul > li:nth-child(3) > a[href='dashboard.html']").click();
   });
-
   // ento da perda do servidor
   socket.on('disconnect', function () {
     console.log('Socket disconnected');
   });
-
   socket.on("updateDisp", function (data, disp, database) {
     if (database == "ProjetoFinal") {
       switch (disp) {
@@ -104,7 +111,6 @@ $(document).ready(function () {
       }
     }
   });
-
   // socket a escuta de incremento de dispositivos na base de dados
   socket.on("newDisp", function (data, local, database) {
     if (database == "ProjetoFinal") {
@@ -125,18 +131,16 @@ $(document).ready(function () {
     }
   });
   socket.on('updateChart', function (site, data) {
-    console.log(data, site);
+    console.log("meu:" + mySite + "\t vem:" + site);
     if (mySite == site) {
       data.x = new Date(data.x);
       data.y = data.y * 1;
-
       chart.options.data[0].dataPoints.push(data);
       chart.options.data[0].dataPoints.shift();
       chart.render();
     }
   });
-
-});// fim document ready
+}); // fim document ready
 
 function showPageToDiv(local, page, nome, icon) {
   $(local).html("");
@@ -170,7 +174,7 @@ function showPageToDiv(local, page, nome, icon) {
 function carregarDashBoard() {
   $("body").find("#chart2bars").html(loading);
   $("body").find("#chart1LineActives").html(loading);
-
+  $("body").find("#chartDispVisit").html(loading);
   $.ajax({
     type: "GET",
     url: "/getNumDispositivos/" + socket.id,
@@ -184,7 +188,6 @@ function carregarDashBoard() {
       console.log(JSON.stringify(error));
     }
   });
-
   $.ajax({
     type: "GET",
     url: "/getAllAntenasAndDisps/" + socket.id,
@@ -198,7 +201,6 @@ function carregarDashBoard() {
       console.log(JSON.stringify(error));
     }
   });
-
   //------------------------------------------------------------------------------
   $.ajax({
     type: "GET",
@@ -211,9 +213,9 @@ function carregarDashBoard() {
       result = data;
       chart = new CanvasJS.Chart("chart1LineActives", {
         theme: "theme2",
-        title: {
-          text: "Dispositivos Ativos"
-        },
+//        title: {
+//          text: "Dispositivos Ativos"
+//        },
         animationEnabled: true,
         axisX: {
           valueFormatString: "HH:mm"
@@ -242,6 +244,52 @@ function carregarDashBoard() {
           }]
       });
       chart.render();
+    },
+    error: function (error) {
+      console.log(JSON.stringify(error));
+    }
+  });
+  //---------------------------------------------------------------------------
+  //---------------- Gra'fico dos visitas
+  //---------------------------------------------------------------------------
+  $.ajax({
+    type: "GET",
+    url: "/getAllTimes/" + socket.id,
+    dataType: 'json',
+    success: function (data) {
+      var arrayToChart = [];
+      for (var i in data) {
+        arrayToChart.push({label: i, y: data[i].length * 1});
+      }
+      console.log(arrayToChart);
+      var options = {
+//		title: {
+//			text: "Column Chart using jQuery Plugin"
+//		},
+        animationEnabled: true,
+        data: [{
+            type: "bar", //change it to line, area, bar, pie, etc
+            click: function (e) { //no click mostrar o fabricante do dispositivo
+              $.ajax({
+                type: "GET",
+                url: "/getNameVendor/"+e.dataPoint.label+"/" + socket.id,
+                dataType: 'json',
+                success: function (data) {
+                  alert(data);
+                },
+                error: function (error) {
+                  console.log(JSON.stringify(error));
+                }
+              });
+              ;
+            },
+            dataPoints: arrayToChart
+          }
+        ]
+      };
+      var countChart = new CanvasJS.Chart("chartDispVisit", options);
+      countChart.render()
+//	$("body").find("#chartDispVisit").CanvasJSChart(options);
     },
     error: function (error) {
       console.log(JSON.stringify(error));
