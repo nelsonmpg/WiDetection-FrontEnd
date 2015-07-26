@@ -1,0 +1,82 @@
+<div class="container">
+	<div class="page-header text-center">
+		<h1><span class="fa fa-anchor"></span> Dashboard</h1>
+
+		<a href="/signout" class="btn btn-default btn-sm">Logout</a>
+
+		<div class="row">
+		
+			<!--Local information-->	
+			<div class="col-sm-6">
+				<div class="well">
+					<h3><span class="fa fa-user"></span> Local</h3>
+					{{#if user.auth.local.email}}
+						<p>
+							<strong>id</strong>: {{user._id}}<br/>
+							<strong>email</strong>: {{user.auth.local.email}}<br/>
+							<strong>password</strong>: {{user.auth.local.password}}<br/> 
+						</p>
+						<a href="/local/unlink" class="btn btn-default">Desassociar conta</a>
+					{{else}}
+						<a href="/local/link" class="btn btn-default">Conectar a uma conta local</a>					
+					{{/if}}
+				</div>
+			</div>
+
+			<!--Twitter Information-->
+			<div class="col-sm-6">
+				<div class="well">
+					<h3 class="text-info"><span class="fa fa-twitter"></span> Twitter</h3>
+					{{#if user.auth.twitter.id}}
+						<p>
+							<strong>id</strong>: {{user.auth.twitter.id}}<br/>
+							<strong>token</strong>: {{user.auth.twitter.token}}<br/>
+							<strong>username</strong>: {{user.auth.twitter.username}}<br/>
+							<strong>displayName</strong>: {{user.auth.twitter.displayName}}<br/>
+						</p>
+						<a href="/twitter/unlink" class="btn btn-info">Desassociar conta</a>
+					{{else}}
+						<a href="/twitter/link" class="btn btn-info">Conectar ao Twitter</a>
+					{{/if}}
+				</div>
+			</div>
+			
+			<!--Google Information-->
+			<div class="col-sm-6">
+				<div class="well">
+					<h3 class="text-danger"><span class="fa fa-google-plus"></span> Google</h3>
+					{{#if user.auth.google.id}}
+						<p>
+							<strong>id</strong>: {{user.auth.google.id}}<br/>
+							<strong>token</strong>: {{user.auth.google.token}}<br/>
+							<strong>email</strong>: {{user.auth.google.email}}<br/>
+							<strong>name</strong>: {{user.auth.google.name}}<br/>
+						</p>
+						<a href="/google/unlink" class="btn btn-danger">Desassociar conta</a>
+					{{else}}
+						<a href="/google/link" class="btn btn-danger">Conectar ao Google</a>
+					{{/if}}
+				</div>
+			</div>
+			
+			<!--Facebook Information-->
+			<div class="col-sm-6">
+				<div class="well">
+					<h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+					{{#if user.auth.facebook.id}}
+						<p>
+							<strong>id</strong>: {{user.auth.facebook.id}}<br/>
+							<strong>token</strong>: {{user.auth.facebook.token}}<br/>
+							<strong>email</strong>: {{user.auth.facebook.email}}<br/>
+							<strong>name</strong>: {{user.auth.facebook.name}}<br/>
+						</p>
+						<a href="/facebook/unlink" class="btn btn-primary">Desassociar conta</a>
+					{{else}}
+						<a href="/facebook/link" class="btn btn-primary">Conectar ao Facebook</a>
+					{{/if}}
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>

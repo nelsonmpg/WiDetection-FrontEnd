@@ -1,0 +1,19 @@
+{
+  "name": "awesome_chat2k",
+  "version": "0.0.2",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    "express": "*",
+    "jade": "*",
+    "rethinkdb": "*",
+    "passport": "*",
+    "passport-local": "*",
+    "bcrypt": "*",
+    "socket.io": "*",
+    "connect-flash": "*",
+    "debug": "*"
+  }
+}

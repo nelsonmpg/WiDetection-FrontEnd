@@ -16,8 +16,10 @@
     "colors": "*",
     "debug": "^2.2.0",
     "express": "*",
+    "passport": "^0.2.2",
+    "passport-local": "^1.0.0",
     "rethinkdb": "^2.0.0-1",
     "socket.io": "*",
-    "workerjs": "^0.1.1"
+    "workerjs": "^0.1.1",
   }
 }
