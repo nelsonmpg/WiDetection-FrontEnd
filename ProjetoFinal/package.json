@@ -21,5 +21,6 @@
     "rethinkdb": "^2.0.0-1",
     "socket.io": "*",
     "workerjs": "^0.1.1",
+    "ini":"*"
   }
 }

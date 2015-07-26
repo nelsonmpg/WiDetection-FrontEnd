@@ -201,6 +201,7 @@ function carregarDashBoard() {
       console.log(JSON.stringify(error));
     }
   });
+  
   //------------------------------------------------------------------------------
   $.ajax({
     type: "GET",
