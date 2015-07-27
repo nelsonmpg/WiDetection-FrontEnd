@@ -13,5 +13,5 @@ module.exports.onConnect = function (callback) {
       callback(err, conn);
     }
   });
-}
+};
 

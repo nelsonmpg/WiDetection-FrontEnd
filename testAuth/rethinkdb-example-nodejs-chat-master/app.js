@@ -169,6 +169,7 @@ app.post('/register', function (req, res) {
 });
 
 app.get('/chat', ensureAuthenticated, function (req, res) {
+  console.log("chat");
   res.render('chat', {user: req.user, title: 'Chat'});
 });
 
@@ -197,7 +198,7 @@ io.sockets.on('connection', function (socket) {
 
   // send updates with online users
   var i = setInterval(function () {
-    socket.emit('whoshere', { 'users': usersonline});
+    socket.emit('whoshere', {'users': usersonline});
   }, 3000);
 
   console.info("[DEBUG][io.sockets][connection]");
