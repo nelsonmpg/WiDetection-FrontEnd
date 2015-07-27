@@ -1,6 +1,7 @@
 /* global module, require, process, connection */
 
 var express = require('express');
+var path = require('path');
 var http = require('http');
 var socketio = require('socket.io');
 var fs = require('fs');
@@ -31,11 +32,6 @@ var Server = function (port, configdb) {
     host: this.dbConfig.host,
     port: this.dbConfig.port
   };
-
-  this.app.use(bodyParser.urlencoded({
-    extended: true
-  }));
-  this.app.use(bodyParser.json());
 };
 /**
  *
@@ -53,9 +49,14 @@ Server.prototype.start = function () {
     next();
   };
 
+  this.app.use(bodyParser.urlencoded({
+    extended: true
+  }));
+  this.app.use(bodyParser.json());
   this.app.use(allowCrossDomain);
 
   // fornece ao cliente a pagina index.html
+//    app.use(express.static(path.join(__dirname, 'public')));
   this.app.use(express.static(__dirname + './../www'));
 
   pedidos.dbData = this.dbData;
