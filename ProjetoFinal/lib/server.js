@@ -10,7 +10,7 @@ var pedidos = require('./pedidos');
 var connectdb = require("./ConnectDb");
 var Worker = require('workerjs');
 
-var liveActives = [];
+var liveActives;
 var intervalChart;
 var conn;
 
@@ -63,6 +63,7 @@ Server.prototype.start = function () {
   pedidos.clientArray = this.clientArray;
   pedidos.setUserServer = this.setUserServer;
   pedidos.dbConfig = this.dbConfig;
+  self.liveActives = pedidos.getliveActives;
 
   connectdb.dbData = this.dbData;
 
@@ -119,13 +120,13 @@ Server.prototype.start = function () {
         socket.emit("newDisp", changed, "ap", self.getDataBase(socket.id));
       }
     });
-        
+
     pedidos.changeDispAp(self.getDataBase(socket.id), function (err, changed) {
       if (!err && changed.length > 0) {
         socket.emit("newDisp", changed, "sensor", self.getDataBase(socket.id));
       }
     });
-    
+
     socket.on('disconnect', function () {
       socket.broadcast.emit('diconnected', socket.id);
       var usr = self.getUserServer(socket.id);
@@ -198,6 +199,61 @@ Date.prototype.addMinutes = function (h) {
   return this;
 };
 
+//Interval de update do grafico nos clientes
+intervalChart = setInterval(function (sock) {
+  //a ultima data do array
+  var nextDate = new Date(liveActives[pedidos.getDataBase(sock)][liveActives[pedidos.getDataBase(sock)].length - 1].x);
+  // + 1 minuto, ou seja, r.now()
+  nextDate.addMinutes(1);
+  // 
+  var min, hou;
+  if (nextDate.getMinutes() != 0) {
+    min = 1;
+    hou = 0;
+  } else {
+    min = 1;
+    hou = 1;
+  }
+  
+  r.connect(pedidos.dbData).then(function (conn) {
+    return r.db(pedidos.getDataBase(sock)).table("DispMoveis").map(function (row) {
+      return  row("disp").do(function (ro) {
+        return {"macAddress": row("macAddress"), "nameVendor": row("nameVendor"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))};
+      });
+    }).map(function (a) {
+      return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
+          return r.now().inTimezone("+01:00").do(function (time) {
+            return value('Last_time').ge(r.time(
+                    time.year(),
+                    time.month(),
+                    time.day(),
+                    time.hours().sub(hou),
+                    time.minutes().sub(min),
+                    time.seconds(),
+                    time.timezone()
+                    ));
+          });
+        })};
+    }).filter({"state": true}).count().run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (output) {
+
+    //Atualiza o array do servidor       
+    var novaData = new Date(liveActives[pedidos.getDataBase(sock)][liveActives[pedidos.getDataBase(sock)].length - 1].x);
+    novaData.addMinutes(1);
+    liveActives[pedidos.getDataBase(req.params.sock)].shift();
+    var x = {x: novaData, y: output * 1};
+    liveActives[pedidos.getDataBase(req.params.sock)].push(x);
+
+    //Envia para os clientes
+    self.io.sockets.emit("updateChart", self.getDataBase(req.params.sock), x);
+
+  }).error(function (err) {
+    res.status(500).json({err: err});
+  });
+});
 /**
  *
  * @param {type} port
