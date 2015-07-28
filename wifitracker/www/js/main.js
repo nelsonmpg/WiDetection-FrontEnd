@@ -89,7 +89,7 @@ var Router = Backbone.Router.extend({
 
     $('#content').html(new InicioView().render().el);
 
-    $('aside').html(new SideBarView().render().el);
+    $('aside.main-sidebar').html(new SideBarView().render().el);
 
     $('footer').html(new FooterView().render().el);
 
@@ -106,7 +106,7 @@ var Router = Backbone.Router.extend({
     templateLoader.load(["SideBarView"],
             function () {
               var v = new SideBarView({});
-              self.showView(v, $('aside'));
+              self.showView(v, $('aside.main-sidebar'));
             }
     );
   },
