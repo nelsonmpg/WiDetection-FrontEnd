@@ -106,7 +106,25 @@
       </header>
       <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
-        
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+          <!-- Sidebar user panel -->
+          <!-- sidebar menu: : style can be found in sidebar.less -->
+          <ul class="sidebar-menu">
+            <li class="active treeview">
+              <a href="#">
+                <i class="fa fa-sitemap"></i> <span>Selecione Um Site</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu site-title">                  
+              </ul>
+            </li>
+            
+            
+            <li class="header">Menu</li>
+            <li class=""><a class="select-item-menu" data-nome="Dashboard" href="dashboard.html"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+            <li class=""><a class="select-item-menu" data-nome="Registar Novo Utilizador" href="new-user.html"><i class="fa fa-user-plus"></i> <span>Novo Utilizador</span></a></li>
+          </ul>
+        </section>
         <!-- /.sidebar -->
       </aside>
 
@@ -114,7 +132,11 @@
       <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
-        
+          <h1 class="nome-separador"> Dashboard </h1>
+          <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Menu</a></li>
+            <li class="active nome-separador">Dashboard</li>
+          </ol>
         </section>
 
         <!-- Main content -->
@@ -124,7 +146,11 @@
       </div><!-- /.content-wrapper -->
 
       <footer class="main-footer">
-       </footer>
+        <div class="pull-right hidden-xs">
+          <b>Version</b> 2.2.0
+        </div>
+        <strong>Copyright &copy; 2014-2015 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights reserved.
+      </footer>
 
       <!-- Control Sidebar -->
       <aside class="control-sidebar control-sidebar-dark">
@@ -170,10 +196,5 @@
 
     <!-- javascript do socket -->
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-    
-    <script type="text/javascript" src="js/async.js"></script>
-    <script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
-    <script type="text/javascript" src="http://backbonejs.org/backbone.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
   </body>
 </html>
