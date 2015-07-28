@@ -1,5 +1,7 @@
 /* global module, require, process, connection */
 
+require('colors');
+
 var express = require('express');
 var path = require('path');
 var http = require('http');
@@ -56,7 +58,6 @@ Server.prototype.start = function () {
   this.app.use(allowCrossDomain);
 
   // fornece ao cliente a pagina index.html
-//    app.use(express.static(path.join(__dirname, 'public')));
   this.app.use(express.static(__dirname + './../www'));
 
   pedidos.dbData = this.dbData;
@@ -95,6 +96,8 @@ Server.prototype.start = function () {
 
 
   this.app.get("/getNameVendor/:mac/:sock", pedidos.getNameVendorByMac);
+
+  this.app.post("/login", pedidos.loginUser);
 
   this.io.on('connection', function (socket) {
     var c = socket.request.connection._peername;
@@ -144,7 +147,7 @@ Server.prototype.start = function () {
 
 
   });
-  console.log('Server HTTP Wait ' + this.port);
+  console.log('Server HTTP Wait %d'.green, this.port);
 };
 
 process.on("message", function (data) {

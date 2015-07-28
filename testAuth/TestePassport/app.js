@@ -9,7 +9,18 @@ var passportHttp = require("passport-http");
 
 var app = express();
 
-app.set("view engine", "ejs");
+//app.set("view engine", "ejs");
+
+// Using the .html extension instead of
+// having to name the views as *.ejs
+app.engine('.html', require('ejs').__express);
+
+// Set the folder where the pages are kept
+//app.set('views', __dirname + '/views');
+ 
+// This avoids having to provide the 
+// extension to res.render()
+app.set('view engine', 'html');
 
 app.use(bodyParser.urlencoded({
   extended: false
@@ -74,15 +85,15 @@ app.get("/logout", function (req, res) {
   res.redirect("/");
 });
 
-app.use("/api", passport.authenticate("basic"), { session: false });
-
-app.get("/api/data", ensureAuthenticated, function (req, res) {
-  res.json([
-    {values: "foo"},
-    {values: "bar"},
-    {values: "baz"}
-  ]);
-});
+//app.use("/api", passport.authenticate("basic"), { session: false });
+//
+//app.get("/api/data", ensureAuthenticated, function (req, res) {
+//  res.json([
+//    {values: "foo"},
+//    {values: "bar"},
+//    {values: "baz"}
+//  ]);
+//});
 
 var port = process.env.PORT || 1337;
 

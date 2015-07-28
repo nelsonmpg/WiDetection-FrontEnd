@@ -1,0 +1,25 @@
+{
+  "name": "wifitracker",
+  "version": "0.0.1",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
+  },
+  "authors": [
+    "Nelson Gomes <nelsonmpg@hotmail.com>",
+    "Rui Dias <ruifgdias@sapo.pt>"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "*",
+    "colors": "*",
+    "debug": "*",
+    "express": "*",
+    "ini": "*",
+    "rethinkdb": "*",
+    "socket.io": "*",
+    "workerjs": "*",
+      "underscore": "*"
+  }
+}
