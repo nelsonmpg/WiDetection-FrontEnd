@@ -5,14 +5,13 @@
 // for details of the complete stack, installation, and running the app.
 
 var r = require('rethinkdb');
+var connectdb = require('./ConnectDb.js');
 
 
 // #### Connection details
 
 // RethinkDB database settings. Defaults can be overridden using environment variables.
 var dbConfig = {
-  host: '185.15.22.55',
-  port: 28015,
   db: 'user',
   tables: {
     'cache': 'cid',
@@ -27,7 +26,7 @@ var dbConfig = {
  * - create tables `messages`, `cache`, `users` in this database
  */
 module.exports.setup = function () {
-  r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection) {
+  connectdb.onConnect(function (err, connection) {
     r.dbCreate(dbConfig.db).run(connection, function (err, result) {
       if (err) {
         console.log("[DEBUG] RethinkDB database '%s' already exists (%s:%s)\n%s", dbConfig.db, err.name, err.msg, err.message);
@@ -72,7 +71,7 @@ module.exports.setup = function () {
  * @returns {Object} the user if found, `null` otherwise 
  */
 module.exports.findUserByEmail = function (mail, callback) {
-  onConnect(function (err, connection) {
+  connectdb.onConnect(function (err, connection) {
     console.log("[INFO ][%s][findUserByEmail] Login {user: %s, pwd: 'you really thought I'd log it?'}", connection['_id'], mail);
 
     r.db(dbConfig.db).table('users').filter({'mail': mail}).limit(1).run(connection, function (err, cursor) {
@@ -113,7 +112,7 @@ module.exports.findUserByEmail = function (mail, callback) {
  * @returns {Object} the user if found, `null` otherwise
  */
 module.exports.findUserById = function (userId, callback) {
-  onConnect(function (err, connection) {
+  connectdb.onConnect(function (err, connection) {
     r.db(dbConfig['db']).table('users').get(userId).run(connection, function (err, result) {
       if (err) {
         logerror("[ERROR][%s][findUserById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
@@ -151,7 +150,7 @@ module.exports.findUserById = function (userId, callback) {
  * @returns {Array} an array of messages
  */
 module.exports.findMessages = function (max_results, callback) {
-  onConnect(function (err, connection) {
+  connectdb.onConnect(function (err, connection) {
     r.db(dbConfig['db']).table('messages').orderBy(r.desc('timestamp')).limit(max_results).run(connection, function (err, cursor) {
       if (err) {
         logerror("[ERROR][%s][findMessages] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
@@ -201,7 +200,7 @@ module.exports.findMessages = function (max_results, callback) {
  * @returns {Boolean} `true` if the user was created, `false` otherwise 
  */
 module.exports.saveMessage = function (msg, callback) {
-  onConnect(function (err, connection) {
+  connectdb.onConnect(function (err, connection) {
     r.db(dbConfig['db']).table('messages').insert(msg).run(connection, function (err, result) {
       if (err) {
         logerror("[ERROR][%s][saveMessage] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
@@ -235,7 +234,7 @@ module.exports.saveMessage = function (msg, callback) {
  * @returns {Boolean} `true` if the user was created, `false` otherwise
  */
 module.exports.saveUser = function (user, callback) {
-  onConnect(function (err, connection) {
+  connectdb.onConnect(function (err, connection) {
     r.db(dbConfig.db).table('users').insert(user).run(connection, function (err, result) {
       if (err) {
         logerror("[ERROR][%s][saveUser] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
@@ -253,34 +252,3 @@ module.exports.saveUser = function (user, callback) {
     });
   });
 };
-
-// #### Helper functions
-
-/**
- * A wrapper function for the RethinkDB API `r.connect`
- * to keep the configuration details in a single function
- * and fail fast in case of a connection error.
- */
-function onConnect(callback) {
-  r.connect({host: dbConfig.host, port: dbConfig.port}, function (err, connection) {
-    assert.ok(err === null, err);
-    connection['_id'] = Math.floor(Math.random() * 10001);
-    callback(err, connection);
-  });
-}
-
-// #### Connection management
-//
-// This application uses a new connection for each query needed to serve
-// a user request. In case generating the response would require multiple
-// queries, the same connection should be used for all queries.
-//
-// Example:
-//
-//     onConnect(function (err, connection)) {
-//         if(err) { return callback(err); }
-//
-//         query1.run(connection, callback);
-//         query2.run(connection, callback);
-//     }
-//
