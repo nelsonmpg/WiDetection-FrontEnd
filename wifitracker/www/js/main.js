@@ -55,6 +55,7 @@ var Router = Backbone.Router.extend({
   dashboard: undefined,
   appEventBus: undefined,
   novoutilizador: undefined,
+  loginform: undefined,
   socketclt: null,
   initialize: function () {
     var self = this;
@@ -78,9 +79,7 @@ var Router = Backbone.Router.extend({
     //Default Page
     "": "login",
     //Pagina Inicial
-    "InicioView": "inicio",
-    "Next": "next",
-    "LoginView": "login",
+    "Inicio": "inicio",
     "Dashboard": "dashboardSetup",
     "NovoUtilizador": "newUser"
   },
@@ -92,21 +91,26 @@ var Router = Backbone.Router.extend({
 
     window.sessionStorage.clear();
     var self = this;
-    templateLoader.load(["LoginView"],
-            function () {
-              var v = new LoginView({});
-              self.showView(v, $('#content'));
-            }
-    );
+    self.loginform = new LoginView({});
+    $('#content').html(self.loginform.render().el);
   },
   inicio: function () {
     var self = this;
 
     self.socketclt.connect();
+    
+    self.socketclt.setuserid(self.loginform.getiduser());
 
-    this.header = new HeaderView({name: "abc", logo: "./img/userImg.png"});
+    self.header = new HeaderView({
+      name: self.loginform.getnameuser(),
+      logo: (self.loginform.getlogoUser() == "") ? "./img/user.png" : self.loginform.getlogoUser()
+    });
+
     this.cintent = new InicioView();
-    this.sidebar = new SideBarView({socket: self.socketclt});
+    this.sidebar = new SideBarView({
+      socket: self.socketclt,
+      iduser: self.loginform.getiduser()
+    });
     this.footer = new FooterView();
 
     $('header').html(this.header.render().el);
@@ -122,7 +126,11 @@ var Router = Backbone.Router.extend({
   },
   dashboardSetup: function () {
     var self = this;
-    self.dashboard = new DashboardView({socket: self.socketclt});
+    self.dashboard = new DashboardView({
+      socket: self.socketclt, 
+      iduser: self.loginform.getiduser()
+    });
+    
     $('#content').html(self.dashboard.render().el);
     self.dashboard.init();
   },

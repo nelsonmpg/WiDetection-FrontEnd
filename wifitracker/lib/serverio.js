@@ -20,10 +20,13 @@ var ServerSktIo = function (options) {
       console.log("Connected - " + c.address + " : " + c.port);
       console.log("User - " + socket.id);
       console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
-      self.server.setUserServer(socket.id);
-      socket.on("changesite", function (data) {
-        console.log("site - " + data);
-        self.server.setDataBase(socket.id, data);
+
+      socket.on("userid", function (id) {
+        self.server.setUserServer(id);
+      });
+
+      socket.on("changesite", function (iduser, data) {
+        self.server.setDataBase(iduser, data);
       });
 
       pedidos.changeDispMoveis(self.server.getDataBase(socket.id), function (err, changed) {

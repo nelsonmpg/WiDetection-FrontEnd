@@ -9,9 +9,13 @@ var socketClient = function (options) {
     self.setResponseListeners(self.socket);
     
   };
+  
+  self.setuserid = function (idd){
+    self.socket.emit("userid", idd);
+  };
 
-  self.setSite = function (site) {
-    self.socket.emit("changesite", site);
+  self.setSite = function (id, site) {
+    self.socket.emit("changesite", id, site);
   };
 
   self.setResponseListeners = function (socket) {

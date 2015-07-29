@@ -9,10 +9,12 @@ window.DashboardView = Backbone.View.extend({
           '<!-- end loading -->' +
           '</div><!-- /.box -->',
   socketDashboard: null,
+  iduserative : undefined,
   events: {
   },
   initialize: function (opt) {
     this.socketDashboard = opt.socket;
+    this.iduserative = opt.iduser;
   },
   init: function () {
     var self = this;
@@ -22,7 +24,7 @@ window.DashboardView = Backbone.View.extend({
     console.log(self.socketDashboard.id);
     $.ajax({
       type: "GET",
-      url: "/getNumDispositivos/" + self.socketDashboard.id,
+      url: "/getNumDispositivos/" + self.iduserative,
       dataType: 'json',
       success: function (data) {
         $("body").find("#sensores-num-div").html(data.sensor);
@@ -35,7 +37,7 @@ window.DashboardView = Backbone.View.extend({
     });
     $.ajax({
       type: "GET",
-      url: "/getAllAntenasAndDisps/" + self.socketDashboard.id,
+      url: "/getAllAntenasAndDisps/" + self.iduserative,
       dataType: 'json',
       success: function (data) {
         graph2Bar = new ArrayToGraph(data, "Quantidade de Dispositivos / Sensor", "", "chart2bars", "column");

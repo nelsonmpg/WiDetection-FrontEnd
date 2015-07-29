@@ -115,26 +115,26 @@ process.on("message", function (data) {
   new Server(data.port, data.configdb).start();
 });
 
-Server.prototype.setUserServer = function (socketid) {
-  this.clientArray[socketid] = {
-    socket: socketid,
-    db: this.dbConfig.db
+Server.prototype.setUserServer = function (iduser) {
+  this.clientArray[iduser] = {
+    socket: iduser,
+    db: ""
   };
 };
 
-Server.prototype.getDataBase = function (socketid) {
-  if (typeof this.clientArray[socketid] == "undefined") {
-    this.setUserServer(socketid);
+Server.prototype.getDataBase = function (iduser) {
+  if (typeof this.clientArray[iduser] == "undefined") {
+    this.setUserServer(iduser);
   }
-  return this.clientArray[socketid].db;
+  return this.clientArray[iduser].db;
 };
 
-Server.prototype.setDataBase = function (socketid, database) {
-  this.clientArray[socketid].db = database;
+Server.prototype.setDataBase = function (iduser, database) {
+  this.clientArray[iduser].db = database;
 };
 
-Server.prototype.getUserServer = function (socketid) {
-  return this.clientArray[socketid];
+Server.prototype.getUserServer = function (iduser) {
+  return this.clientArray[iduser];
 };
 
 /**
