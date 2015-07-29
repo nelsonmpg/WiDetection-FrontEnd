@@ -50,6 +50,7 @@ var Router = Backbone.Router.extend({
   header: undefined,
   sidebar: undefined,
   contentheader: undefined,
+  contentnav: undefined,
   content: undefined,
   footer: undefined,
   dashboard: undefined,
@@ -88,6 +89,7 @@ var Router = Backbone.Router.extend({
     $('#content').html("");
     $('aside.main-sidebar').html("");
     $('footer').html("");
+    $('contentnav').html("");
 
     window.sessionStorage.clear();
     var self = this;
@@ -106,17 +108,21 @@ var Router = Backbone.Router.extend({
       logo: (self.loginform.getlogoUser() == "") ? "./img/user.png" : self.loginform.getlogoUser()
     });
 
-    this.cintent = new InicioView();
+    this.content = new InicioView();
     this.sidebar = new SideBarView({
       socket: self.socketclt,
       iduser: self.loginform.getiduser()
     });
     this.footer = new FooterView();
+    this.contentnav = new ContentNavView();
 
     $('header').html(this.header.render().el);
     this.header.init();
 
-    $('#content').html(this.cintent.render().el);
+    $('#contentnav').html(this.contentnav.render().el);
+    this.contentnav.setView("Inicio");
+
+    $('#content').html(this.content.render().el);
 
     $('aside.main-sidebar').html(this.sidebar.render().el);
     this.sidebar.addsitessidebar();
@@ -148,7 +154,8 @@ templateLoader.load([
   "SideBarView",
   "FooterView",
   "DashboardView",
-  "NewUserView"],
+  "NewUserView",
+  "ContentNavView"],
         function () {
           app = new Router();
           Backbone.history.start();
