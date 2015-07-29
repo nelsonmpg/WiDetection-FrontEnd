@@ -54,6 +54,7 @@ var Router = Backbone.Router.extend({
   header: undefined,
   sidebar: undefined,
   contentheader: undefined,
+  contentnav:undefined,
   content: undefined,
   footer: undefined,
   dashboard: undefined,
@@ -84,13 +85,14 @@ var Router = Backbone.Router.extend({
     "InicioView": "inicio",
     "Next": "next",
     "LoginView": "login",
-    "Dashboard": "dashboard"
+    "DashboardView": "dashboardSetup"
   },
   login: function () {
     $('header').html("");
     $('#content').html("");
     $('aside.main-sidebar').html("");
     $('footer').html("");
+    $('contentnav').html("");
 
     window.sessionStorage.clear();
     var self = this;
@@ -107,14 +109,18 @@ var Router = Backbone.Router.extend({
     self.socketclt.connect();
 
     this.header = new HeaderView({name: "abc", logo: "./img/userImg.png"});
-    this.cintent = new InicioView();
+    this.content = new InicioView();
     this.sidebar = new SideBarView({socket: self.socketclt});
     this.footer = new FooterView();
+    this.contentnav = new ContentNavView();
 
     $('header').html(this.header.render().el);
     this.header.init();
+    
+   $('#contentnav').html(this.contentnav.render().el);
+   this.contentnav.setView("Inicio");
 
-    $('#content').html(this.cintent.render().el);
+    $('#content').html(this.content.render().el);
 
     $('aside.main-sidebar').html(this.sidebar.render().el);
     this.sidebar.addsitessidebar();
@@ -122,13 +128,13 @@ var Router = Backbone.Router.extend({
     $('footer').html(this.footer.render().el);
 
   },
-  dashboard : function () {
+  dashboardSetup : function () {
     var self = this;
-
+    alert();
   }
 });
 
-templateLoader.load(["LoginView", "HeaderView", "InicioView", "SideBarView", "FooterView"],
+templateLoader.load(["LoginView", "HeaderView", "InicioView", "SideBarView", "FooterView","ContentNavView"],
         function () {
           app = new Router();
           Backbone.history.start();

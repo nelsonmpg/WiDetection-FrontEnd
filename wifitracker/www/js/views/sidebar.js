@@ -22,11 +22,11 @@ window.SideBarView = Backbone.View.extend({
     this.databaseselect = true;
     self.socketsidebar.setSite($(e.currentTarget).text().trim());
   },
-  navsidebar: function (e) {    
+  navsidebar: function (e) {
     var self = this;
     e.preventDefault();
     if (self.databaseselect) {
-      console.log($(e.currentTarget).data("nome"));      
+      console.log($(e.currentTarget).data("nome"));
     } else {
       alert("Selecione um Site.");
     }
@@ -45,15 +45,15 @@ window.SideBarView = Backbone.View.extend({
               $('ul.sidebar-menu ul.site-title').append(sitesAppend);
             },
             //Precisamos enviar para a Tabela escolas o id do professor.  
-                    
-                            function (xhr, ajaxOptions, thrownError) {
-                              var json = JSON.parse(xhr.responseText);
-                              error_launch(json.message);
-                            });
-                  },
-          render: function () {
-            var self = this;
-            $(this.el).html(this.template());
-            return this;
-          }
-        });
+
+                    function (xhr, ajaxOptions, thrownError) {
+                      var json = JSON.parse(xhr.responseText);
+                      error_launch(json.message);
+                    });
+          },
+  render: function () {
+    var self = this;
+    $(this.el).html(this.template());
+    return this;
+  }
+});
