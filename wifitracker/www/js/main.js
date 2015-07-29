@@ -146,7 +146,8 @@ templateLoader.load([
   "SideBarView",
   "FooterView",
   "DashboardView",
-  "NewUserView"],
+  "NewUserView",
+  "ContentNavView"],
         function () {
           app = new Router();
           Backbone.history.start();
