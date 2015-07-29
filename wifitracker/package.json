@@ -19,7 +19,7 @@
     "ini": "*",
     "rethinkdb": "*",
     "socket.io": "*",
-    "workerjs": "*",
-      "underscore": "*"
+    "underscore": "*",
+    "workerjs": "*"
   }
 }

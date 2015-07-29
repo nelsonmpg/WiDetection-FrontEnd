@@ -1,4 +1,4 @@
-/* global Backbone */
+/* global Backbone, app */
 
 window.SideBarView = Backbone.View.extend({
   databaseselect: false,
@@ -22,18 +22,26 @@ window.SideBarView = Backbone.View.extend({
     this.databaseselect = true;
     self.socketsidebar.setSite($(e.currentTarget).text().trim());
   },
-  navsidebar: function (e) {    
+  navsidebar: function (e) {
     var self = this;
     e.preventDefault();
     if (self.databaseselect) {
-      console.log($(e.currentTarget).data("nome"));      
+      app.navigate($(e.currentTarget).data("nome"), {
+        trigger: true
+      });
     } else {
       alert("Selecione um Site.");
     }
-
   },
   initialize: function (opt) {
     this.socketsidebar = opt.socket;
+//    console.log("-----------------------------------");
+//    console.log(this.socketsidebar);
+//    console.log();
+////    for (var i in this.socketsidebar.socket) {
+//      console.log(this.socketsidebar.socket.ids);
+////    }
+//    console.log("-----------------------------------");
   },
   addsitessidebar: function () {
     modem('GET', "/getAllDataBase",
@@ -44,16 +52,15 @@ window.SideBarView = Backbone.View.extend({
               }
               $('ul.sidebar-menu ul.site-title').append(sitesAppend);
             },
-            //Precisamos enviar para a Tabela escolas o id do professor.  
-                    
-                            function (xhr, ajaxOptions, thrownError) {
-                              var json = JSON.parse(xhr.responseText);
-                              error_launch(json.message);
-                            });
-                  },
-          render: function () {
-            var self = this;
-            $(this.el).html(this.template());
-            return this;
-          }
-        });
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
+            );
+  },
+  render: function () {
+    var self = this;
+    $(this.el).html(this.template());
+    return this;
+  }
+});
