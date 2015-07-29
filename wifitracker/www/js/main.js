@@ -6,15 +6,11 @@ Backbone.View.prototype.close = function () {
   this.undelegateEvents();
 };
 
-console.log("entrou no main.js Backbone");
-
 
 window.templateLoader = {
   load: function (views, callback) {
     async.mapSeries(views, function (view, callbacki) {
       if (window[view] === undefined) {
-        console.log('templates/' + view + '.html');
-        console.log('js/views/' + view.replace('View', '').toLowerCase() + '.js');
         $.getScript('js/views/' + view.replace('View', '').toLowerCase() + '.js', function () {
           if (window[view].prototype.template === undefined) {
             $.get('templates/' + view + '.html', function (data) {
@@ -54,11 +50,12 @@ var Router = Backbone.Router.extend({
   header: undefined,
   sidebar: undefined,
   contentheader: undefined,
-  contentnav:undefined,
+  contentnav: undefined,
   content: undefined,
   footer: undefined,
   dashboard: undefined,
   appEventBus: undefined,
+  novoutilizador: undefined,
   socketclt: null,
   initialize: function () {
     var self = this;
@@ -85,7 +82,8 @@ var Router = Backbone.Router.extend({
     "InicioView": "inicio",
     "Next": "next",
     "LoginView": "login",
-    "DashboardView": "dashboardSetup"
+    "Dashboard": "dashboardSetup",
+    "NovoUtilizador": "newUser"
   },
   login: function () {
     $('header').html("");
@@ -116,9 +114,9 @@ var Router = Backbone.Router.extend({
 
     $('header').html(this.header.render().el);
     this.header.init();
-    
-   $('#contentnav').html(this.contentnav.render().el);
-   this.contentnav.setView("Inicio");
+
+    $('#contentnav').html(this.contentnav.render().el);
+    this.contentnav.setView("Inicio");
 
     $('#content').html(this.content.render().el);
 
@@ -128,13 +126,27 @@ var Router = Backbone.Router.extend({
     $('footer').html(this.footer.render().el);
 
   },
-  dashboardSetup : function () {
+  dashboardSetup: function () {
     var self = this;
-    alert();
+    self.dashboard = new DashboardView({socket: self.socketclt});
+    $('#content').html(self.dashboard.render().el);
+    self.dashboard.init();
+  },
+  newUser: function () {
+    var self = this;
+    self.novoutilizador = new NewUserView({});
+    $('#content').html(self.novoutilizador.render().el);
   }
 });
 
-templateLoader.load(["LoginView", "HeaderView", "InicioView", "SideBarView", "FooterView","ContentNavView"],
+templateLoader.load([
+  "LoginView",
+  "HeaderView",
+  "InicioView",
+  "SideBarView",
+  "FooterView",
+  "DashboardView",
+  "NewUserView"],
         function () {
           app = new Router();
           Backbone.history.start();

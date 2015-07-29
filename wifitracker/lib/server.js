@@ -3,7 +3,6 @@
 require('colors');
 
 var express = require('express');
-var path = require('path');
 var http = require('http');
 var socketio = require('socket.io');
 var fs = require('fs');
@@ -60,13 +59,6 @@ Server.prototype.start = function () {
   this.app.use(bodyParser.json());
   this.app.use(allowCrossDomain);
 
-//  this.app.set('views', path.join(__dirname, './../www/views'));
-//
-//  this.app.use(express.Router());
-//  this.app.use(express.static(path.join(__dirname, './../www')));
-//
-//  this.app.use(routes.routesIndex);
-
   // fornece ao cliente a pagina index.html
   this.app.use(express.static(__dirname + './../www'));
 
@@ -110,6 +102,8 @@ Server.prototype.start = function () {
   this.app.get("/getNameVendor/:mac/:sock", pedidos.getNameVendorByMac);
 
   this.app.post("/login", pedidos.loginUser);
+  
+  this.app.post("/NovoUtilizador", pedidos.registeruser);
 
 //----------------------------------------------------------------------------------
 

@@ -107,6 +107,8 @@ module.exports.getAllTimes = function (req, res) {
 };
 
 module.exports.getAllSensorAndisp = function (req, res) {
+  console.log(req.params.sock);
+  console.log(self.getDataBase(req.params.sock));
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
       return [{
@@ -231,13 +233,17 @@ module.exports.changeActiveAnt = function (database, callback) {
   }
 };
 
-module.exports.loginUser = function (req, res){
+module.exports.loginUser = function (req, res) {
   console.log("post");
   res.json({
-    _id : "1",
-    username : "rui",
-    email : "rui@rui.pt"
+    _id: "1",
+    username: "rui",
+    email: "rui@rui.pt"
   });
+};
+
+module.exports.registeruser = function (req, res) {
+  
 };
 
 

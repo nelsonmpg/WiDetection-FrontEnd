@@ -14,7 +14,6 @@ var connectdb = require('./ConnectDb.js');
 var dbConfig = {
   db: 'user',
   tables: {
-    'cache': 'cid',
     'users': 'id'
   }
 };

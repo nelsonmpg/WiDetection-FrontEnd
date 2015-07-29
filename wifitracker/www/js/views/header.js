@@ -1,4 +1,4 @@
-/* global Backbone */
+/* global Backbone, app */
 
 window.HeaderView = Backbone.View.extend({
   nameuser: "",
@@ -10,7 +10,8 @@ window.HeaderView = Backbone.View.extend({
   events: {
     "click #logout-btn": "logout",
     "click .sidebar-toggle": "toogleSidebar",
-    "click #openopt": "openSidebarOption"
+    "click #openopt": "openSidebarOption",
+    "click #newuser-btn": "newUser"
   },
   init: function () {
     $(".nameuser").text(this.nameuser);
@@ -23,6 +24,12 @@ window.HeaderView = Backbone.View.extend({
   },
   openSidebarOption: function (e) {
     e.preventDefault();
+  },
+  newUser: function (e) {
+    e.preventDefault();
+    app.navigate("NovoUtilizador", {
+      trigger: true
+    });
   },
   logout: function () {
     window.localStorage.setItem("Logged", false);

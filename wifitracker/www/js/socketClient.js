@@ -2,11 +2,12 @@ var socketClient = function (options) {
   var self = this;
   self.vent = options.vent;
 
-  self.hostname = 'http://' + window.location.host.split("#")[0];
+  self.hostname = window.location.host.split("#")[0];
 
   self.connect = function () {
     self.socket = io.connect(self.hostname);
     self.setResponseListeners(self.socket);
+    
   };
 
   self.setSite = function (site) {
@@ -19,7 +20,7 @@ var socketClient = function (options) {
     socket.on('disconnect', function () {
       console.log('Socket disconnected');
     });
-    
+
     socket.on("updateDisp", function (data, disp, database) {
       console.log(data);
 //      if (database == "ProjetoFinal") {
