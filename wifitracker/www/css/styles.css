@@ -39,3 +39,12 @@
 .box-loading {
   height: 100%;
 }
+
+.navbar {
+  margin-bottom: 0;
+}
+
+.bg-status-user {
+  background-color: #d2d6de;
+  width: 100%;
+}

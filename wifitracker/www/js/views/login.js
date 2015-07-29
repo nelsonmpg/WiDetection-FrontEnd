@@ -7,14 +7,6 @@ window.LoginView = Backbone.View.extend({
     window.localStorage.setItem("Logged", true);
     window.localStorage.setItem("User", $("#login-form > div:nth-child(1) > input").val());
 
-//   app.navigate("/SideBarView", {
-//      trigger: true
-//    });
-//    
-//    app.navigate("/HeaderView", {
-//      trigger: true
-//    });
-//   
     app.navigate("/InicioView", {
       trigger: true
     });

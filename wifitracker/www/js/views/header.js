@@ -1,25 +1,34 @@
+/* global Backbone */
+
 window.HeaderView = Backbone.View.extend({
+  nameuser: "",
+  logotipo: "",
+  initialize: function (opt) {
+    this.nameuser = opt.name;
+    this.logotipo = opt.logo;
+  },
   events: {
     "click #logout-btn": "logout",
     "click .sidebar-toggle": "toogleSidebar",
     "click #openopt": "openSidebarOption"
   },
-  toogleSidebar: function (e) {
-    e.preventDefault();
+  init: function () {
+    $(".nameuser").text(this.nameuser);
+    $(".imageuser").attr("src", this.logotipo);
+    $.AdminLTE.controlSidebar.activate();
     $.AdminLTE.pushMenu.activate($(".sidebar-toggle"));
   },
+  toogleSidebar: function (e) {
+    e.preventDefault();
+  },
   openSidebarOption: function (e) {
-    e.preventDefault();    
-   $.AdminLTE.controlSidebar.activate();
+    e.preventDefault();
   },
   logout: function () {
     window.localStorage.setItem("Logged", false);
-    app.navigate("/Login", {
+    app.navigate("", {
       trigger: true
     });
-  },
-  initialize: function () {
-    this.render();
   },
   render: function () {
     var self = this;

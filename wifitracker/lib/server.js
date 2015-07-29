@@ -13,7 +13,6 @@ var pedidos = require('./pedidos');
 var connectdb = require("./ConnectDb");
 var Worker = require('workerjs');
 var serverIo = require('./serverio');
-var routes = require('./mainroutes.js');
 var dbUsers = require('./db.js');
 
 var liveActives = [];
@@ -61,15 +60,15 @@ Server.prototype.start = function () {
   this.app.use(bodyParser.json());
   this.app.use(allowCrossDomain);
 
-  this.app.set('views', path.join(__dirname, './../www/views'));
-
-  this.app.use(express.Router());
-  this.app.use(express.static(path.join(__dirname, './../www')));
-
-  this.app.use(routes.routesIndex);
+//  this.app.set('views', path.join(__dirname, './../www/views'));
+//
+//  this.app.use(express.Router());
+//  this.app.use(express.static(path.join(__dirname, './../www')));
+//
+//  this.app.use(routes.routesIndex);
 
   // fornece ao cliente a pagina index.html
-//  this.app.use(express.static(__dirname + './../www'));
+  this.app.use(express.static(__dirname + './../www'));
 
   pedidos.dbData = this.dbData;
   pedidos.getDataBase = this.getDataBase;

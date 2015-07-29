@@ -21,7 +21,8 @@ var ServerSktIo = function (options) {
       console.log("User - " + socket.id);
       console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
       self.server.setUserServer(socket.id);
-      socket.on("changedatabase", function (data) {
+      socket.on("changesite", function (data) {
+        console.log("site - " + data);
         self.server.setDataBase(socket.id, data);
       });
 
