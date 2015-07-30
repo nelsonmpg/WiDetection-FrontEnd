@@ -1,38 +1,28 @@
 /* global Backbone */
 
 window.LoginView = Backbone.View.extend({
-  iduser: undefined,
-  nomeuser: undefined,
-  emailuser: undefined,
-  logouser: undefined,
   events: {
     "click #btnLogIn": "login"
-  },
-  getnameuser: function () {
-    return this.nomeuser;
-  },
-  getiduser: function () {
-    return this.iduser;
-  },
-  getlogoUser: function () {
-    return this.logouser;
   },
   login: function (e) {
     e.preventDefault();
     var self = this;
+
+    var user = $("#login-form input[type='email']").val();
+    var password = $("#login-form input[type='password']").val();
+
+    var credential = user + ':' + password;
+
+    if ($("#rememberme").is(':checked')) {
+      localStorage.setItem('keyo', btoa(credential));
+    } else {
+      sessionStorage.setItem('keyo', btoa(credential));
+    }
+
     modem('POST', "/login",
             function (data) {
               if (data.length > 0) {
-                self.iduser = data[0].id;
-                self.nomeuser = data[0].fullname;
-                self.emailuser = data[0].email;
-                self.logouser = data[0].logo;
-                window.localStorage.setItem("Logged", true);
-                window.localStorage.setItem("User", $("#login-form > div:nth-child(1) > input").val());
-
-                app.navigate("/Inicio", {
-                  trigger: true
-                });
+                self.loginuser(data);
               } else {
                 app.navigate("", {
                   trigger: true
@@ -47,11 +37,20 @@ window.LoginView = Backbone.View.extend({
                 trigger: true
               });
             }, {
-      "email": $("#login-form input[type='email']").val(),
-      "pass": $("#login-form input[type='password']").val()
+      "email": user,
+      "pass": password
     });
-
-
+  },
+  loginuser: function (data) {
+    window.profile = new Profile();
+    window.profile.fetch(data, function () {
+      window.logged = true;
+      app.navigate("/Inicio", {
+        trigger: true
+      });
+    }, function () {
+      alert('Login failed');
+    });
   },
   initialize: function () {
   },

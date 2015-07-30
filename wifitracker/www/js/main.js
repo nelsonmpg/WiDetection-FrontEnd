@@ -1,49 +1,10 @@
-/* global Backbone, _, templateLoader */
+/* global Backbone, _, templateLoader, app */
 
 Backbone.View.prototype.close = function () {
   this.remove();
   this.unbind();
   this.undelegateEvents();
 };
-
-
-window.templateLoader = {
-  load: function (views, callback) {
-    async.mapSeries(views, function (view, callbacki) {
-      if (window[view] === undefined) {
-        $.getScript('js/views/' + view.replace('View', '').toLowerCase() + '.js', function () {
-          if (window[view].prototype.template === undefined) {
-            $.get('templates/' + view + '.html', function (data) {
-              window[view].prototype.template = _.template(data);
-              callbacki();
-            }, 'html');
-          } else {
-            callbacki();
-          }
-        });
-      } else {
-        callbacki();
-      }
-    }, function (error, data) {
-      callback();
-    });
-  }
-};
-
-window.modem = function (type, url, sucess, error, data) {
-  $.ajax({
-    async: true,
-    cache: false,
-    type: type || 'GET',
-    url: url,
-    dataType: 'json',
-    data: data,
-    success: sucess,
-    error: error
-  });
-};
-
-
 
 var Router = Backbone.Router.extend({
   currentView: undefined,
@@ -82,16 +43,32 @@ var Router = Backbone.Router.extend({
     //Pagina Inicial
     "Inicio": "inicio",
     "Dashboard": "dashboardSetup",
-    "NovoUtilizador": "newUser"
+    "NovoUtilizador": "newUser",
+    '*notFound': 'login'
   },
   login: function () {
+    this.currentView = undefined;
+    this.header = undefined;
+    this.sidebar = undefined;
+    this.contentheader = undefined;
+    this.contentnav = undefined;
+    this.content = undefined;
+    this.footer = undefined;
+    this.dashboard = undefined;
+    this.appEventBus = undefined;
+    this.novoutilizador = undefined;
+    this.loginform = undefined;
+
     $('header').html("");
     $('#content').html("");
     $('aside.main-sidebar').html("");
     $('footer').html("");
     $('contentnav').html("");
 
+    window.profile = null;
     window.sessionStorage.clear();
+    window.logged = false;
+    
     var self = this;
     self.loginform = new LoginView({});
     $('#content').html(self.loginform.render().el);
@@ -100,18 +77,16 @@ var Router = Backbone.Router.extend({
     var self = this;
 
     self.socketclt.connect();
-    
-    self.socketclt.setuserid(self.loginform.getiduser());
+
+    self.socketclt.setuserid(window.profile.id);
 
     self.header = new HeaderView({
-      name: self.loginform.getnameuser(),
-      logo: (self.loginform.getlogoUser() == "") ? "./img/user.png" : self.loginform.getlogoUser()
+      logo: (window.profile.logo == "") ? "./img/user.png" : window.profile.logo
     });
 
     this.content = new InicioView();
     this.sidebar = new SideBarView({
-      socket: self.socketclt,
-      iduser: self.loginform.getiduser()
+      socket: self.socketclt
     });
     this.footer = new FooterView();
     this.contentnav = new ContentNavView();
@@ -133,17 +108,31 @@ var Router = Backbone.Router.extend({
   dashboardSetup: function () {
     var self = this;
     self.dashboard = new DashboardView({
-      socket: self.socketclt, 
-      iduser: self.loginform.getiduser()
+      socket: self.socketclt
     });
-    
+
     $('#content').html(self.dashboard.render().el);
     self.dashboard.init();
+    this.contentnav.setView("Dashboard");
   },
   newUser: function () {
     var self = this;
-    self.novoutilizador = new NewUserView({});
-    $('#content').html(self.novoutilizador.render().el);
+    self.verificaLogin(function () {
+      self.novoutilizador = new NewUserView({});
+      $('#content').html(self.novoutilizador.render().el);
+      self.contentnav.setView("Novo Utilizador");
+    });
+  },
+  verificaLogin: function (loggedFunction) {
+    var self = this;
+    if (!getKeyo()) {
+      app.navigate('', {
+        trigger: true
+      });
+    } else {
+      window.logged = true;
+      loggedFunction();
+    }
   }
 });
 

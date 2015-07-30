@@ -3,7 +3,6 @@
 window.SideBarView = Backbone.View.extend({
   databaseselect: false,
   socketsidebar: null,
-  iduserative: undefined,
   events: {
     "click .site-option": "select_site",
     "click #site-ativo": "stopevent",
@@ -11,6 +10,8 @@ window.SideBarView = Backbone.View.extend({
   },
   stopevent: function (e) {
     e.preventDefault();
+    $('ul.sidebar-menu li.active').removeClass("active");
+    $(e.currentTarget).parent().addClass("active");
   },
   select_site: function (e) {
     var self = this;
@@ -21,10 +22,12 @@ window.SideBarView = Backbone.View.extend({
     $('ul.sidebar-menu ul.site-title li.active').removeClass("active");
     $(e.currentTarget).addClass("active");
     this.databaseselect = true;
-    self.socketsidebar.setSite(self.iduserative, $(e.currentTarget).text().trim());
+    self.socketsidebar.setSite(window.profile.id, $(e.currentTarget).text().trim());
   },
   navsidebar: function (e) {
     var self = this;
+    $('ul.sidebar-menu li.active').removeClass("active");
+    $(e.currentTarget).parent().addClass("active");
     e.preventDefault();
     if (self.databaseselect) {
       app.navigate($(e.currentTarget).data("nome"), {
@@ -36,7 +39,6 @@ window.SideBarView = Backbone.View.extend({
   },
   initialize: function (opt) {
     this.socketsidebar = opt.socket;
-    this.iduserative = opt.iduser;
   },
   addsitessidebar: function () {
     modem('GET', "/getAllDataBase",

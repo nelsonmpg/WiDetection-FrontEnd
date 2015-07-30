@@ -1,10 +1,8 @@
 /* global Backbone, app */
 
 window.HeaderView = Backbone.View.extend({
-  nameuser: "",
   logotipo: "",
   initialize: function (opt) {
-    this.nameuser = opt.name;
     this.logotipo = opt.logo;
   },
   events: {
@@ -14,8 +12,8 @@ window.HeaderView = Backbone.View.extend({
     "click #newuser-btn": "newUser"
   },
   init: function () {
-    $(".nameuser").text(this.nameuser);
-    $(".imageuser").attr("src", this.logotipo);
+    $(".nameuser").text(window.profile.get("name"));
+    $(".imageuser").attr("src", window.profile.get("logo"));
     $.AdminLTE.controlSidebar.activate();
     $.AdminLTE.pushMenu.activate($(".sidebar-toggle"));
   },
@@ -32,7 +30,9 @@ window.HeaderView = Backbone.View.extend({
     });
   },
   logout: function () {
+    window.logged = false;
     window.localStorage.setItem("Logged", false);
+    window.sessionStorage.clear();
     app.navigate("", {
       trigger: true
     });

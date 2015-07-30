@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SharedPen</title>
+    <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
+
+    <!-- Bootstrap js -->
+    <script type="text/javascript" src="./lib/jquery-1.11.2.js"></script>
+
+    <script>
+      var size = 70;
+      $(document).ready(function () {
+        $("body").on('change', 'input[type=file]', function (e) {
+          var file = e.originalEvent.target.files[0],
+                  reader = new FileReader(file);
+          reader.onload = function (evt) {
+            $("body").find('.converteFiles').attr('src', evt.target.result);
+            $("#base64result").html(evt.target.result);
+            $("#base64result2").text(thumbnail($("#base64result").text(), size, size));
+          };
+          reader.readAsDataURL(file);
+        });
+        $("body").on('dragenter', ".converteFiles", function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          $(this).css('border', '2px solid #0B85A1');
+        });
+        $("body").on('dragover', ".converteFiles", function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+        });
+        $("body").on('click', ".converteFiles", function (e) {
+          var obj = $(this);
+          obj.prev('input[type=file]').click();
+        });
+        $("body").on('drop', ".converteFiles", function (e) {
+          $(this).css('border', '2px dotted #0B85A1');
+          e.preventDefault();
+          var files = e.originalEvent.dataTransfer.files;
+          var errMessage = 0;
+          $.each(files, function (index, file) {
+            // Some error messaging
+            if (!files[index].type.match('image.*')) {
+              if (errMessage === 0) {
+                alert('Hey! Images only');
+                ++errMessage
+              }
+              else if (errMessage === 1) {
+                alert('Stop it! Images only!');
+                ++errMessage
+              }
+              else if (errMessage === 2) {
+                alert("Can't you read?! Images only!");
+                ++errMessage
+              }
+              else if (errMessage === 3) {
+                alert("Fine! Keep dropping non-images.");
+                errMessage = 0;
+              }
+              return false;
+            }
+
+            var reader = new FileReader(file);
+            reader.onload = function (evt) {
+              $("body").find('.converteFiles').attr('src', evt.target.result);
+              $("#base64result").html(evt.target.result);
+              $("#base64result2").text(thumbnail($("#base64result").text(), size, size));
+            };
+            reader.readAsDataURL(file);
+          });
+
+        });
+
+        $('#something').click(function () {
+          location.reload();
+        });
+
+        function thumbnail(base64, maxWidth, maxHeight) {
+
+          // Max size for thumbnail
+          if (typeof (maxWidth) === 'undefined')
+            var maxWidth = 500;
+          if (typeof (maxHeight) === 'undefined')
+            var maxHeight = 500;
+
+          // Create and initialize two canvas
+          var canvas = document.createElement("canvas");
+          var ctx = canvas.getContext("2d");
+          var canvasCopy = document.createElement("canvas");
+          var copyContext = canvasCopy.getContext("2d");
+
+          // Create original image
+          var img = new Image();
+          img.src = base64;
+
+          // Determine new ratio based on max size
+          var ratio = 1;
+          if (img.width > maxWidth)
+            ratio = maxWidth / img.width;
+          else if (img.height > maxHeight)
+            ratio = maxHeight / img.height;
+
+          // Draw original image in second canvas
+          canvasCopy.width = img.width;
+          canvasCopy.height = img.height;
+          copyContext.drawImage(img, 0, 0);
+
+          // Copy and resize second canvas to first canvas
+          canvas.width = img.width * ratio;
+          canvas.height = img.height * ratio;
+          ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, canvas.width, canvas.height);
+
+          return canvas.toDataURL();
+
+        }
+      });
+    </script>
+    <style>
+      .converteFiles {
+        border: 1px solid black;
+        width: 200px;
+        height: 200px;
+      }
+      #base64result, #base64result2 {
+        width: 100%;
+        height: 100%;
+      }
+      .divtext{          
+        float: left;
+        width: 46%;
+        height: 900px;
+        margin-right: 3%;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div>
+      <div>
+        <input id="inputFile" type="file" class="" accept="image/*" />
+        <img id="image" class="converteFiles" alt="" src=""><button id="something">Recarregar Pagina</button>
+      </div>
+      <div class="divtext">
+        <label>Imagem Original</label>
+        <textarea id="base64result"></textarea>
+      </div>
+      <div class="divtext">
+        <label>Imagem Reduzida</label>
+        <textarea id="base64result2"></textarea></div>
+    </div>
+  </body>
+</html>
