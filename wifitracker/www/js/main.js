@@ -116,6 +116,7 @@ var Router = Backbone.Router.extend({
     this.contentnav.setView("Dashboard");
   },
   newUser: function () {
+    this.contentnav.setView("Registar");
     var self = this;
     self.verificaLogin(function () {
       self.novoutilizador = new NewUserView({});
