@@ -6,6 +6,7 @@ var request = require("request");
 var r = require('rethinkdb');
 var fs = require('fs');
 var ini = require('ini');
+var crypto = require('crypto');
 var url = "http://web.stanford.edu/dept/its/projects/desktop/snsr/nmap-mac-prefixes.txt";
 
 var MainSKT = function () {
@@ -13,6 +14,7 @@ var MainSKT = function () {
   this.dbConfig = {
     host: '',
     port: 0,
+    authKey: '',
     db: '',
     tables: {
       'DispMoveis': 'macAddress',
@@ -26,7 +28,8 @@ var MainSKT = function () {
 
   this.dbData = {
     host: 0,
-    port: 0
+    port: 0,
+    authKey: ''
   };
 
   this.sensorCfg = {
@@ -39,20 +42,25 @@ var MainSKT = function () {
 
 MainSKT.prototype.carregarConfig = function () {
   this.config = ini.parse(fs.readFileSync('./ConfigSKT.ini', 'utf-8'));
-  this.dbConfig.host = this.config.database.host;
-  this.dbConfig.port = this.config.database.port;
-  this.dbConfig.db = this.config.database.sitename;
+  this.dbConfig = {
+    host: this.config.database.host,
+    port: this.config.database.port,
+    authKey: crypto.createHash('sha1').update(this.config.database.projectname).digest('hex'),
+    db: this.config.database.sitename
+  };
 
   this.dbData = {
     host: this.dbConfig.host,
-    port: this.dbConfig.port
+    port: this.dbConfig.port,
+    authKey: this.dbConfig.authKey
   };
+
   this.sensorCfg = {
     name: this.config.localsensor.nomeSensor,
     loc: this.normalizeString(this.config.localsensor.morada),
     lati: this.config.localsensor.latitude,
     long: this.config.localsensor.longitude
-  }
+  };
 
   var urlLoc = "https://maps.googleapis.com/maps/api/geocode/json?address=" + this.sensorCfg.loc + "&key=AIzaSyAy2HwVO_Gh9f9JLrtdON77gNQWrn4TQ9U";
 
@@ -82,13 +90,17 @@ MainSKT.prototype.startDb = function () {
   r.connect(self.dbData, function (err, connection) {
     return r.dbCreate(self.dbConfig.db).run(connection, function (err, result) {
       if (err) {
-        console.log(JSON.stringify(err));
+        console.log("[DEBUG] RethinkDB database '%s' already exists (%s:%s)\n%s", self.dbConfig.db, err.name, err.msg, err.message);
+      } else {
+        console.log("[INFO ] RethinkDB database '%s' created", self.dbConfig.db);
       }
       for (var tbl in self.dbConfig.tables) {
         (function (tableName) {
           r.db(self.dbConfig.db).tableCreate(tableName, {primaryKey: self.dbConfig.tables[tbl]}).run(connection, function (err, result) {
             if (err) {
-              console.log(JSON.stringify(err));
+              console.log("ERROR: %s:%s", err.name, err.msg);
+            } else {
+              console.log("[INFO ] RethinkDB table '%s' created", tableName);
             }
           });
         })(tbl);
@@ -182,11 +194,11 @@ MainSKT.prototype.startServers = function () {
   });
 
   var args = {
-    port: this.config.airmon_cfg.tag2port, 
-    configdb: this.dbConfig, 
+    port: this.config.airmon_cfg.tag2port,
+    configdb: this.dbConfig,
     sensorcfg: this.sensorCfg
   };
-  
+
   var child = cp.fork('./lib/socket');
   child.send(args);
 
