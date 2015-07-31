@@ -26,7 +26,7 @@
   box-shadow: 5px 5px 5px black;
 }
 
-#chart2bars, #chart1LineActives, #chartDispVisit {
+.height400 {
   height: 400px;
 }
 

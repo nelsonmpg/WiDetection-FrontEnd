@@ -41,7 +41,7 @@ window.DashboardView = Backbone.View.extend({
     modem("GET",
             "/getAllAntenasAndDisps/" + window.profile.id,
             function (data) {
-              self.graph2Bar = new ArrayToGraph(data, "Quantidade de Dispositivos / Sensor", "", "chart2bars", "column");
+              self.graph2Bar = new ArrayToGraph(data, "", "", "chart2bars", "column");
               // para aparecer a div com os resultados
               self.graph2Bar.createArrayToGraphTwoBar();
             },
