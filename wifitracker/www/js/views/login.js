@@ -15,8 +15,11 @@ window.LoginView = Backbone.View.extend({
 
     if ($("#rememberme").is(':checked')) {
       localStorage.setItem('keyo', btoa(credential));
+      localStorage.setItem('savecredential', true);
     } else {
       sessionStorage.setItem('keyo', btoa(credential));
+      localStorage.setItem('keyo', null);
+      localStorage.setItem('savecredential', false);
     }
 
     modem('POST', "/login",
@@ -60,6 +63,18 @@ window.LoginView = Backbone.View.extend({
     }, function () {
       alert('Login failed');
     });
+  },
+  checkloginstored:function(){
+     var credencial = localStorage.getItem('keyo');
+        if (credencial != "null") {
+            var decoded =  atob(credencial).split(":");
+            $("#login-form input[type='email']").val(decoded[0]);
+            $("#login-form input[type='password']").val(decoded[1]);
+            $("#rememberme").prop('checked', true);
+        } else{
+            $("#login-form input[type='email']").val("");
+            $("#login-form input[type='password']").val(""); 
+        }
   },
   initialize: function () {
   },
