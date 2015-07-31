@@ -95,6 +95,7 @@ var Router = Backbone.Router.extend({
     var self = this;
     self.loginform = new LoginView({});
     $('#content').html(self.loginform.render().el);
+    self.loginform.checkloginstored();
   },
   inicio: function () {
     var self = this;

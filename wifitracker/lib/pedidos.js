@@ -229,30 +229,6 @@ module.exports.changeActiveAnt = function (database, callback) {
   }
 };
 
-module.exports.loginUser = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db("user").table("users")
-            .filter({"email": req.body.email})
-            .filter({"pass": req.body.pass})
-            .withFields("id", "fullname", "email", "logo")
-            .coerceTo("array")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
-              conn.close();
-            });
-  });
-
-};
-
-module.exports.registeruser = function (req, res) {
-
-};
-
-
 /**
  * 
  * @param {type} req
