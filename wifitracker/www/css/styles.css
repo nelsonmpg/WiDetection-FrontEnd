@@ -118,13 +118,6 @@
   text-align: left;
   width: 220px;
 }
-.center-img {
-  display: block;
-  margin: 0 auto;
-}
-.center-text {
-  text-align: center;
-}
 
 .my-modal {
   display: none;
