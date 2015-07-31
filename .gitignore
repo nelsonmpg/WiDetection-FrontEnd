@@ -2,6 +2,7 @@
 /Wifi-Detect/build/
 /Wifi-Detect/dist/
 /TestRest/nbproject/private/
+/wifitracker/nbproject/
 
 *.class
 ProjetoFinal/node_modules/
@@ -14,3 +15,4 @@ ProjetoFinal/serverSocket/node_modules/
 testAuth/TestePassport/node_modules/
 /NbProject/nbproject/private/
 /wifitracker/nbproject/private/
+wifitracker/nbproject/project.properties

@@ -2,13 +2,14 @@
 
 var NewUserView = Backbone.View.extend({
   events: {
-    "click #submit-btn": "newuser"
+    "click #submit-btn": "newuser",
+    "change '#register-form input'":"init"
   },
   initialize: function () {
     this.init();
   },
-  init: function (){
-    (function ($, W, D){
+  init: function () {
+    (function ($, W, D) {
       var JQUERY4U = {};
 
       JQUERY4U.UTIL =
@@ -17,8 +18,13 @@ var NewUserView = Backbone.View.extend({
                 {
                   //form validation rules
                   $("#register-form").validate({
+                    onkeyup: true,
+                    onchange:true,
                     rules: {
-                      name: "required",
+                      name: {
+                        required:true,
+                        minlength: 3
+                      },
                       email: {
                         required: true,
                         email: true
@@ -27,13 +33,22 @@ var NewUserView = Backbone.View.extend({
                         required: true,
                         minlength: 5
                       },
-                      agree: "required"
+                      password2: {
+                        required: true,
+                        minlength: 5,
+                        equalTo: "#password"
+                      }
                     },
                     messages: {
-                      firstname: "Por favor insira o nome do utilizador",
+                      name: "Por favor insira o nome do utilizador",
                       password: {
                         required: "Por favor insira uma password",
                         minlength: "A password deve conter, pelo menos, 5 caracteres"
+                      },
+                       password2: {
+                        required: "Por favor insira a mesma password",
+                        minlength: "A password deve conter, pelo menos, 5 caracteres",
+                        equalTo: "Por favor insira a mesma password"
                       },
                       email: "Por favor insira um email válido"
                     },
