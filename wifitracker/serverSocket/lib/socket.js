@@ -25,7 +25,8 @@ var ServerSocket = function (port, configdb, sensorcfg) {
 
   this.dbData = {
     host: this.dbConfig.host,
-    port: this.dbConfig.port
+    port: this.dbConfig.port,
+    authKey: this.dbConfig.authKey
   };
 
   connectdb.dbData = this.dbData;
