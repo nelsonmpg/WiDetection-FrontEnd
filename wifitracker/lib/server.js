@@ -33,7 +33,8 @@ var Server = function (port, configdb) {
   this.dbConfig = configdb;
   this.dbData = {
     host: this.dbConfig.host,
-    port: this.dbConfig.port
+    port: this.dbConfig.port,
+    authKey: this.dbConfig.authKey
   };
 };
 /**
@@ -102,7 +103,7 @@ Server.prototype.start = function () {
   this.app.get("/getNameVendor/:mac/:sock", pedidos.getNameVendorByMac);
 
   this.app.post("/login", pedidos.loginUser);
-  
+
   this.app.post("/NovoUtilizador", pedidos.registeruser);
 
 //----------------------------------------------------------------------------------

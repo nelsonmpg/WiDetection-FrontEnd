@@ -4,33 +4,26 @@ var cp = require('child_process');
 var http = require('http');
 var fs = require('fs');
 var ini = require('ini');
+var crypto = require('crypto');
 
 var Main = function () {
   this.portHTTP = 0;
   this.dbConfig = {
     host: '',
     port: 0,
-    db: 'ProjetoFinal'
+    authKey: '',
+    db: ''
   };
-
-  this.dbData = {
-    host: 0,
-    port: 0
-  };
-
 };
 
 Main.prototype.start = function () {
   this.config = ini.parse(fs.readFileSync('./ConfigHTTP.ini', 'utf-8'));
   this.dbConfig = {
     host: this.config.database.host,
-    port: this.config.database.port
+    port: this.config.database.port,
+    authKey: crypto.createHash('sha1').update(this.config.database.projectname).digest('hex')
   };
 
-  this.dbData = {
-    host: this.dbConfig.host,
-    port: this.dbConfig.port
-  };
 
   this.portHTTP = this.config.server_http.port;
   this.startHTTPServer();

@@ -14,6 +14,7 @@
   "dependencies": {
     "body-parser": "*",
     "colors": "*",
+    "crypto": "0.0.3",
     "debug": "*",
     "express": "*",
     "ini": "*",
