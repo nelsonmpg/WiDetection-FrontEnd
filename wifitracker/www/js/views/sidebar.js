@@ -39,7 +39,7 @@ window.SideBarView = Backbone.View.extend({
         trigger: true
       });
     } else {
-      $('.my-modal').html($(".my-model-hide").html());
+      $('.my-modal').html($("#site-error").html());
       $(".my-model-hide").css({
         "dispaly": "block"
       });

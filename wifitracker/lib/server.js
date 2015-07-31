@@ -14,10 +14,6 @@ var Worker = require('workerjs');
 var serverIo = require('./serverio');
 var dbUsers = require('./db.js');
 
-var liveActives = [];
-var intervalChart;
-var conn;
-
 /**
  * 
  * @param {type} port

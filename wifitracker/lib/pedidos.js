@@ -12,8 +12,6 @@ var liveActives = [];
 var intervalChart; // interval de update do gráfico dispositivos ativos
 
 module.exports.getNameVendorByMac = function (req, res) {
-  console.log(self.getDataBase(req.params.sock));
-  console.log(req.params.mac);
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.sock))
             .table("DispMoveis")
@@ -107,8 +105,6 @@ module.exports.getAllTimes = function (req, res) {
 };
 
 module.exports.getAllSensorAndisp = function (req, res) {
-  console.log(req.params.sock);
-  console.log(self.getDataBase(req.params.sock));
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
       return [{
@@ -238,7 +234,7 @@ module.exports.loginUser = function (req, res) {
     r.db("user").table("users")
             .filter({"email": req.body.email})
             .filter({"pass": req.body.pass})
-            .withFields("id","fullname","email","logo")
+            .withFields("id", "fullname", "email", "logo")
             .coerceTo("array")
             .run(conn, function (err, result) {
               if (err) {
@@ -286,58 +282,60 @@ module.exports.getAllDisp = function (req, res) {
 
                   //Interval de update do grafico nos clientes
                   intervalChart = setInterval(function () {
-                    //a ultima data do array
-                    var nextDate = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
-                    // + 1 minuto, ou seja, r.now()
-                    nextDate.addMinutes(1);
-                    var min, hou;
-                    // 
-                    if (nextDate.getMinutes() != 0) {
-                      min = 1;
-                      hou = 0;
-                    } else {
-                      min = 1;
-                      hou = 1;
-                    }
+                    if (typeof liveActives[self.getDataBase(req.params.sock)] != "undefined") {
+                      //a ultima data do array
+                      var nextDate = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
+                      // + 1 minuto, ou seja, r.now()
+                      nextDate.addMinutes(1);
+                      var min, hou;
+                      // 
+                      if (nextDate.getMinutes() != 0) {
+                        min = 1;
+                        hou = 0;
+                      } else {
+                        min = 1;
+                        hou = 1;
+                      }
 
-                    r.connect(self.dbData).then(function (conn) {
-                      return r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (row) {
-                        return  row("disp").do(function (ro) {
-                          return {"macAddress": row("macAddress"), "nameVendor": row("nameVendor"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))};
-                        });
-                      }).map(function (a) {
-                        return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
-                            return r.now().inTimezone("+01:00").do(function (time) {
-                              return value('Last_time').ge(r.time(
-                                      time.year(),
-                                      time.month(),
-                                      time.day(),
-                                      time.hours().sub(hou),
-                                      time.minutes().sub(min),
-                                      time.seconds(),
-                                      time.timezone()
-                                      ));
-                            });
-                          })};
-                      }).filter({"state": true}).count().run(conn)
-                              .finally(function () {
-                                conn.close();
+                      connectdb.onConnect(function (err, conn) {
+                        r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (row) {
+                          return  row("disp").do(function (ro) {
+                            return {"macAddress": row("macAddress"), "nameVendor": row("nameVendor"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))};
+                          });
+                        }).map(function (a) {
+                          return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
+                              return r.now().inTimezone("+01:00").do(function (time) {
+                                return value('Last_time').ge(r.time(
+                                        time.year(),
+                                        time.month(),
+                                        time.day(),
+                                        time.hours().sub(hou),
+                                        time.minutes().sub(min),
+                                        time.seconds(),
+                                        time.timezone()
+                                        ));
                               });
-                    }).then(function (output) {
+                            })};
+                        }).filter({"state": true})
+                                .count().run(conn, function (err, result) {
+                          if (err) {
+                            console.log("ERROR: %s:%s", err.name, err.msg);
+                          } else {
+                            //Atualiza o array do servidor       
+                            var novaData = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
+                            novaData.addMinutes(1);
+                            liveActives[self.getDataBase(req.params.sock)].shift();
+                            var x = {x: novaData, y: result * 1};
+                            liveActives[self.getDataBase(req.params.sock)].push(x);
 
-                      //Atualiza o array do servidor       
-                      var novaData = new Date(liveActives[self.getDataBase(req.params.sock)][liveActives[self.getDataBase(req.params.sock)].length - 1].x);
-                      novaData.addMinutes(1);
-                      liveActives[self.getDataBase(req.params.sock)].shift();
-                      var x = {x: novaData, y: output * 1};
-                      liveActives[self.getDataBase(req.params.sock)].push(x);
-
-                      //Envia para os clientes
+                            //Envia para os clientes
 //                      self.io.sockets.emit("updateChart", self.getDataBase(req.params.sock), x);
 
-                    }).error(function (err) {
-                      res.status(500).json({err: err});
-                    });
+                          }
+                          conn.close();
+                        });
+                      });
+                    }
                   }, 1000 * 60); //De minuto a minuto
                 }
                 conn.close();

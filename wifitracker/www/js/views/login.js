@@ -24,7 +24,7 @@ window.LoginView = Backbone.View.extend({
               if (data.length > 0) {
                 self.loginuser(data);
               } else {
-                $('.my-modal').html($(".my-model-hide").html());
+                $('.my-modal').html($("#login-error").html());
                 $(".my-model-hide").css({
                   "dispaly": "block"
                 });
