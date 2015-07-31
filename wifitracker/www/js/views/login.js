@@ -9,7 +9,7 @@ window.LoginView = Backbone.View.extend({
     var self = this;
 
     var user = $("#login-form input[type='email']").val();
-    var password = stringToMd5(btoa($("#login-form input[type='password']").val()));
+    var password = $("#login-form input[type='password']").val();
 
     var credential = user + ':' + password;
 
@@ -50,7 +50,7 @@ window.LoginView = Backbone.View.extend({
               });
             }, {
       "email": user,
-      "pass": password
+      "pass": stringToMd5(btoa($("#login-form input[type='password']").val()))
     });
   },
   loginuser: function (data) {
