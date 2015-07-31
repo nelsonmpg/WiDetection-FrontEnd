@@ -1,31 +1,29 @@
-<div class="register-box"> 
-  <!--<div class="login-logo">-->
-    <!-- HTML form for validation demo -->
-    <form action="" method="post" id="register-form" novalidate="novalidate">
-      <div id="form-content">
-        <fieldset>
-
-          <div class="fieldgroup">
-            <label for="Nome">Nome</label>
-            <input type="text" name="name"/>
+<div class="register-box-body">
+        <form id="register-form" method="post">
+          <div class="form-group has-feedback">
+            <input type="text" class="form-control" name="name" placeholder="Nome" />
+            <span class="glyphicon glyphicon-user form-control-feedback"></span>
           </div>
-
-          <div class="fieldgroup">
-            <label for="email">Email</label>
-            <input type="text" name="email"/>
+          <div class="form-group has-feedback">
+            <input type="email" class="form-control" name="email" placeholder="Email" />
+            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
           </div>
-
-          <div class="fieldgroup">
-            <label for="password">Password</label>
-            <input id="input-password" type="password" name="password"/>
+          <div class="form-group has-feedback">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Password" />
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
           </div>
-
-          <div class="fieldgroup">
-            <input id="submit-btn" type="submit" value="Registar" class="submit"/>
+          <div class="form-group has-feedback">
+            <input type="password" class="form-control" name="password2" placeholder="Retype password" />
+            <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
           </div>
-
-        </fieldset>
-      </div>
-    </form>
- <!-- </div> /.form-box -->
-</div> <!-- /.register-box -->
+          <div class="row">
+            <div class="col-xs-8">
+              <div class="checkbox icheck">
+              </div>
+            </div><!-- /.col -->
+            <div class="col-xs-4">
+              <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-flat">Registar</button>
+            </div><!-- /.col -->
+          </div>
+        </form>
+        </div>

@@ -143,6 +143,7 @@ var Router = Backbone.Router.extend({
       self.contentnav.setView("Registar");
       self.novoutilizador = new NewUserView({});
       $('#content').html(self.novoutilizador.render().el);
+      self.novoutilizador.init();
       self.contentnav.setView("Novo Utilizador");
     });
   },
