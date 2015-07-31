@@ -6,18 +6,15 @@
 
 var r = require('rethinkdb');
 var connectdb = require('./ConnectDb.js');
-
-
 // #### Connection details
 
 // RethinkDB database settings. Defaults can be overridden using environment variables.
 var dbConfig = {
-  db: 'user',
-  tables: {
-    'users': 'id'
-  }
+    db: 'user',
+    tables: {
+        'users': 'id'
+    }
 };
-
 /**
  * Connect to RethinkDB instance and perform a basic database setup:
  *
@@ -25,29 +22,60 @@ var dbConfig = {
  * - create tables `messages`, `cache`, `users` in this database
  */
 module.exports.setup = function () {
-  connectdb.onConnect(function (err, connection) {
-    r.dbCreate(dbConfig.db).run(connection, function (err, result) {
-      if (err) {
-        console.log("[DEBUG] RethinkDB database '%s' already exists (%s:%s)\n%s", dbConfig.db, err.name, err.msg, err.message);
-      } else {
-        console.log("[INFO ] RethinkDB database '%s' created", dbConfig.db);
-      }
-
-      for (var tbl in dbConfig.tables) {
-        (function (tableName) {
-          r.db(dbConfig.db).tableCreate(tableName, {primaryKey: dbConfig.tables[tbl]}).run(connection, function (err, result) {
+    connectdb.onConnect(function (err, connection) {
+        r.dbCreate(dbConfig.db).run(connection, function (err, result) {
             if (err) {
-              console.log("ERROR: %s:%s", err.name, err.msg);
+                console.log("[DEBUG] RethinkDB database '%s' already exists (%s:%s)\n%s", dbConfig.db, err.name, err.msg, err.message);
             } else {
-              console.log("[INFO ] RethinkDB table '%s' created", tableName);
+                console.log("[INFO ] RethinkDB database '%s' created", dbConfig.db);
             }
-          });
-        })(tbl);
-      }
-    });
-  });
-};
 
+            for (var tbl in dbConfig.tables) {
+                (function (tableName) {
+                    r.db(dbConfig.db).tableCreate(tableName, {primaryKey: dbConfig.tables[tbl]}).run(connection, function (err, result) {
+                        if (err) {
+                            console.log("ERROR: %s:%s", err.name, err.msg);
+                        } else {
+                            console.log("[INFO ] RethinkDB table '%s' created", tableName);
+                        }
+                    });
+                })(tbl);
+            }
+        });
+    });
+};
+module.exports.loginUser = function (req, res) {
+    connectdb.onConnect(function (err, conn) {
+        r.db("user").table("users")
+                .filter({"email": req.body.email})
+                .filter({"pass": req.body.pass})
+                .withFields("id", "fullname", "email", "logo")
+                .coerceTo("array")
+                .run(conn, function (err, result) {
+                    if (err) {
+                        console.log("ERROR: %s:%s", err.name, err.msg);
+                    } else {
+                        res.send(result);
+                    }
+                    conn.close();
+                });
+    });
+};
+module.exports.registeruser = function (req, res) {
+    connectdb.onConnect(function (err, conn) {
+        r.db("user").table("users").filter({"email": req.body.email}).count().do(function (valor) {
+            return r.branch(valor.eq(0),
+                    r.db("user").table("users").insert({"email": req.body.email, "fullname": req.body.fullname, "pass": req.body.pass, "logo": ""}),
+                    false)
+        }).run(conn, function (err, result) {
+            if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+            } else {
+                res.send(result);
+            }
+        });
+    });
+};
 // #### Filtering results
 
 /**
@@ -70,31 +98,29 @@ module.exports.setup = function () {
  * @returns {Object} the user if found, `null` otherwise 
  */
 module.exports.findUserByEmail = function (mail, callback) {
-  connectdb.onConnect(function (err, connection) {
-    console.log("[INFO ][%s][findUserByEmail] Login {user: %s, pwd: 'you really thought I'd log it?'}", connection['_id'], mail);
+    connectdb.onConnect(function (err, connection) {
+        console.log("[INFO ][%s][findUserByEmail] Login {user: %s, pwd: 'you really thought I'd log it?'}", connection['_id'], mail);
+        r.db(dbConfig.db).table('users').filter({'mail': mail}).limit(1).run(connection, function (err, cursor) {
+            if (err) {
+                logerror("[ERROR][%s][findUserByEmail][collect] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                callback(err);
+            }
+            else {
+                cursor.next(function (err, row) {
+                    if (err) {
+                        logerror("[ERROR][%s][findUserByEmail][collect] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                        callback(err);
+                    }
+                    else {
+                        callback(null, row);
+                    }
+                    connection.close();
+                });
+            }
 
-    r.db(dbConfig.db).table('users').filter({'mail': mail}).limit(1).run(connection, function (err, cursor) {
-      if (err) {
-        logerror("[ERROR][%s][findUserByEmail][collect] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-        callback(err);
-      }
-      else {
-        cursor.next(function (err, row) {
-          if (err) {
-            logerror("[ERROR][%s][findUserByEmail][collect] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-            callback(err);
-          }
-          else {
-            callback(null, row);
-          }
-          connection.close();
         });
-      }
-
     });
-  });
 };
-
 /**
  * Every user document is assigned a unique id when created. Retrieving
  * a document by its id can be done using the
@@ -111,20 +137,19 @@ module.exports.findUserByEmail = function (mail, callback) {
  * @returns {Object} the user if found, `null` otherwise
  */
 module.exports.findUserById = function (userId, callback) {
-  connectdb.onConnect(function (err, connection) {
-    r.db(dbConfig['db']).table('users').get(userId).run(connection, function (err, result) {
-      if (err) {
-        logerror("[ERROR][%s][findUserById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-        callback(null, null);
-      }
-      else {
-        callback(null, result);
-      }
-      connection.close();
+    connectdb.onConnect(function (err, connection) {
+        r.db(dbConfig['db']).table('users').get(userId).run(connection, function (err, result) {
+            if (err) {
+                logerror("[ERROR][%s][findUserById] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                callback(null, null);
+            }
+            else {
+                callback(null, result);
+            }
+            connection.close();
+        });
     });
-  });
 };
-
 // #### Retrieving chat messages
 
 /**
@@ -149,30 +174,28 @@ module.exports.findUserById = function (userId, callback) {
  * @returns {Array} an array of messages
  */
 module.exports.findMessages = function (max_results, callback) {
-  connectdb.onConnect(function (err, connection) {
-    r.db(dbConfig['db']).table('messages').orderBy(r.desc('timestamp')).limit(max_results).run(connection, function (err, cursor) {
-      if (err) {
-        logerror("[ERROR][%s][findMessages] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-        callback(null, []);
-        connection.close();
-      }
-      else {
-        cursor.toArray(function (err, results) {
-          if (err) {
-            logerror("[ERROR][%s][findMessages][toArray] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-            callback(null, []);
-          }
-          else {
-            callback(null, results);
-          }
-          connection.close();
+    connectdb.onConnect(function (err, connection) {
+        r.db(dbConfig['db']).table('messages').orderBy(r.desc('timestamp')).limit(max_results).run(connection, function (err, cursor) {
+            if (err) {
+                logerror("[ERROR][%s][findMessages] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                callback(null, []);
+                connection.close();
+            }
+            else {
+                cursor.toArray(function (err, results) {
+                    if (err) {
+                        logerror("[ERROR][%s][findMessages][toArray] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                        callback(null, []);
+                    }
+                    else {
+                        callback(null, results);
+                    }
+                    connection.close();
+                });
+            }
         });
-      }
     });
-  });
 };
-
-
 /**
  * To save a new chat message using we are using 
  * [`insert`](http://www.rethinkdb.com/api/javascript/insert/). 
@@ -199,25 +222,24 @@ module.exports.findMessages = function (max_results, callback) {
  * @returns {Boolean} `true` if the user was created, `false` otherwise 
  */
 module.exports.saveMessage = function (msg, callback) {
-  connectdb.onConnect(function (err, connection) {
-    r.db(dbConfig['db']).table('messages').insert(msg).run(connection, function (err, result) {
-      if (err) {
-        logerror("[ERROR][%s][saveMessage] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-        callback(err);
-      }
-      else {
-        if (result.inserted === 1) {
-          callback(null, true);
-        }
-        else {
-          callback(null, false);
-        }
-      }
-      connection.close();
+    connectdb.onConnect(function (err, connection) {
+        r.db(dbConfig['db']).table('messages').insert(msg).run(connection, function (err, result) {
+            if (err) {
+                logerror("[ERROR][%s][saveMessage] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                callback(err);
+            }
+            else {
+                if (result.inserted === 1) {
+                    callback(null, true);
+                }
+                else {
+                    callback(null, false);
+                }
+            }
+            connection.close();
+        });
     });
-  });
 };
-
 /**
  * Adding a new user to database using  [`insert`](http://www.rethinkdb.com/api/javascript/insert/).
  *
@@ -233,21 +255,22 @@ module.exports.saveMessage = function (msg, callback) {
  * @returns {Boolean} `true` if the user was created, `false` otherwise
  */
 module.exports.saveUser = function (user, callback) {
-  connectdb.onConnect(function (err, connection) {
-    r.db(dbConfig.db).table('users').insert(user).run(connection, function (err, result) {
-      if (err) {
-        logerror("[ERROR][%s][saveUser] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
-        callback(err);
-      }
-      else {
-        if (result.inserted === 1) {
-          callback(null, true);
-        }
-        else {
-          callback(null, false);
-        }
-      }
-      connection.close();
+    connectdb.onConnect(function (err, connection) {
+        r.db(dbConfig.db).table('users').insert(user).run(connection, function (err, result) {
+            if (err) {
+                logerror("[ERROR][%s][saveUser] %s:%s\n%s", connection['_id'], err.name, err.msg, err.message);
+                callback(err);
+            }
+            else {
+                if (result.inserted === 1) {
+                    callback(null, true);
+                }
+                else {
+                    callback(null, false);
+                }
+            }
+            connection.close();
+        });
     });
-  });
 };
+

@@ -33,6 +33,9 @@ window.HeaderView = Backbone.View.extend({
     window.logged = false;
     window.localStorage.setItem("Logged", false);
     window.sessionStorage.clear();
+        if (!localStorage.getItem('savecredential')) {
+             localStorage.setItem('keyo', null);
+        }
     app.navigate("", {
       trigger: true
     });

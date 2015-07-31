@@ -102,9 +102,9 @@ Server.prototype.start = function () {
 
   this.app.get("/getNameVendor/:mac/:sock", pedidos.getNameVendorByMac);
 
-  this.app.post("/login", pedidos.loginUser);
+  this.app.post("/login", dbUsers.loginUser);
 
-  this.app.post("/NovoUtilizador", pedidos.registeruser);
+  this.app.post("/NovoUtilizador", dbUsers.registeruser);
 
 //----------------------------------------------------------------------------------
 
