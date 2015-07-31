@@ -1,16 +1,31 @@
 var socketClient = function (options) {
   var self = this;
+  var tryreconnect = false;
   self.vent = options.vent;
 
   self.hostname = window.location.host.split("#")[0];
 
   self.connect = function () {
-    self.socket = io.connect(self.hostname);
-    self.setResponseListeners(self.socket);
-    
+
+    if (typeof self.socket == "undefined") {
+      self.socket = io.connect(self.hostname);
+      self.setResponseListeners(self.socket);
+
+    } else if (tryreconnect) {
+      tryreconnect = false;
+      self.socket.io.open();
+      self.setResponseListeners(self.socket);
+    }
+
   };
-  
-  self.setuserid = function (idd){
+
+  self.disconnect = function () {
+    if (self.socket) {//socket.io.close();
+      self.socket.io.close();
+    }
+  };
+
+  self.setuserid = function (idd) {
     self.socket.emit("userid", idd);
   };
 
@@ -22,56 +37,21 @@ var socketClient = function (options) {
 
     // ento da perda do servidor
     socket.on('disconnect', function () {
+      tryreconnect = true;
       console.log('Socket disconnected');
     });
 
-    socket.on("updateDisp", function (data, disp, database) {
-      console.log(data);
-//      if (database == "ProjetoFinal") {
-//        switch (disp) {
-//          case "ap":
-//            if (graph2Bar) {
-//              graph2Bar.updateNumAp(data);
-//            }
-//            break;
-//          case "disp":
-//            if (graph2Bar) {
-//              graph2Bar.updateNumDisp(data);
-//            }
-//            break;
-//        }
-//      }
+    socket.on("updateDisp", function (data, disp, site) {
+      self.vent.trigger("updateDisp", data, disp, site);
     });
+
     // socket a escuta de incremento de dispositivos na base de dados
-    socket.on("newDisp", function (data, local, database) {
-      console.log(data);
-//      if (database == "ProjetoFinal") {
-//        switch (local) {
-//          case "moveis":
-//            $("body").find("#disp-num-div").html((($("body").find("#disp-num-div").text() * 1) + 1));
-//            break;
-//          case "ap":
-//            $("body").find("#ap-num-div").html((($("body").find("#ap-num-div").text() * 1) + 1));
-//            break;
-//          case "sensor":
-//            $("body").find("#sensores-num-div").html((($("body").find("#sensores-num-div").text() * 1) + 1));
-//            if (graph2Bar) {
-//              graph2Bar.updateSensor(data);
-//            }
-//            break;
-//        }
-//      }
+    socket.on("newDisp", function (data, local, site) {
+      self.vent.trigger("newDisp", data, local, site);
     });
+
     socket.on('updateChart', function (site, data) {
-      console.log(site);
-//      console.log("meu:" + mySite + "\t vem:" + site);
-//      if (mySite == site) {
-//        data.x = new Date(data.x);
-//        data.y = data.y * 1;
-//        chart.options.data[0].dataPoints.push(data);
-//        chart.options.data[0].dataPoints.shift();
-//        chart.render();
-//      }
+      self.vent.trigger("updateChart", site, data);
     });
 
   };

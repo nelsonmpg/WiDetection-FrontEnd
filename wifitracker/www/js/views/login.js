@@ -24,9 +24,18 @@ window.LoginView = Backbone.View.extend({
               if (data.length > 0) {
                 self.loginuser(data);
               } else {
-                app.navigate("", {
-                  trigger: true
+                $('.my-modal').html($(".my-model-hide").html());
+                $(".my-model-hide").css({
+                  "dispaly": "block"
                 });
+                $('.my-modal').show();
+                setTimeout(function () {
+                  $('.my-modal').hide();
+                  $(".my-model-hide").css({
+                    "dispaly": "none"
+                  });
+                  $('.my-modal').html("");
+                }, 2000);
               }
             },
             function (xhr, ajaxOptions, thrownError) {

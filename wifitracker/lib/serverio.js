@@ -14,14 +14,16 @@ var ServerSktIo = function (options) {
 
     // Fired upon a connection
     self.io.on("connection", function (socket) {
+      var iduser;
 
       var c = socket.request.connection._peername;
-      console.log("+++++++++++++++++++++ ADD +++++++++++++++++++++++++");
+      console.log("+++++++++++++++++++++ ADD ++++++++++++++++++++++++++");
       console.log("Connected - " + c.address + " : " + c.port);
       console.log("User - " + socket.id);
       console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
       socket.on("userid", function (id) {
+        iduser = id;
         self.server.setUserServer(id);
       });
 
@@ -29,30 +31,29 @@ var ServerSktIo = function (options) {
         self.server.setDataBase(iduser, data);
       });
 
-      pedidos.changeDispMoveis(self.server.getDataBase(socket.id), function (err, changed) {
+      pedidos.changeDispMoveis(self.server.getDataBase(iduser), function (err, changed) {
         if (!err && changed.length > 0) {
-          socket.emit("newDisp", changed, "moveis", self.server.getDataBase(socket.id));
+          socket.emit("newDisp", changed, "moveis", self.server.getDataBase(iduser));
         }
       });
-      pedidos.changeDispAp(self.server.getDataBase(socket.id), function (err, changed) {
+      pedidos.changeDispAp(self.server.getDataBase(iduser), function (err, changed) {
         if (!err && changed.length > 0) {
-          socket.emit("newDisp", changed, "ap", self.server.getDataBase(socket.id));
+          socket.emit("newDisp", changed, "ap", self.server.getDataBase(iduser));
         }
       });
-      pedidos.changeDispAp(self.server.getDataBase(socket.id), function (err, changed) {
+      pedidos.changeDispAp(self.server.getDataBase(iduser), function (err, changed) {
         if (!err && changed.length > 0) {
-          socket.emit("newDisp", changed, "sensor", self.server.getDataBase(socket.id));
+          socket.emit("newDisp", changed, "sensor", self.server.getDataBase(iduser));
         }
       });
       socket.on('disconnect', function () {
         socket.broadcast.emit('diconnected', socket.id);
-        var usr = self.server.getUserServer(socket.id);
+        var usr = self.server.getUserServer(iduser);
         if (usr !== null) {
           console.log('------------------- REMOVE --------------------');
           console.log("User - " + usr.socket + " - " + usr.db);
-          console.log('-----------------------------------------------');
-          //self.clientArray[socket.id] = null;
           console.log("Socket id removido - " + socket.id);
+          console.log('-----------------------------------------------');
         } else {
           console.log('------------ O Cliente ja nao existe ----------');
         }

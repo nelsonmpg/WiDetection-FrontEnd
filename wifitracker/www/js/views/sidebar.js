@@ -22,7 +22,12 @@ window.SideBarView = Backbone.View.extend({
     $('ul.sidebar-menu ul.site-title li.active').removeClass("active");
     $(e.currentTarget).addClass("active");
     this.databaseselect = true;
+    window.profile.set({"site": $(e.currentTarget).text().trim()});
     self.socketsidebar.setSite(window.profile.id, $(e.currentTarget).text().trim());
+
+    app.navigate("Dashboard", {
+      trigger: true
+    });
   },
   navsidebar: function (e) {
     var self = this;
@@ -34,7 +39,18 @@ window.SideBarView = Backbone.View.extend({
         trigger: true
       });
     } else {
-      alert("Selecione um Site.");
+      $('.my-modal').html($(".my-model-hide").html());
+      $(".my-model-hide").css({
+        "dispaly": "block"
+      });
+      $('.my-modal').show();
+      setTimeout(function () {
+        $('.my-modal').hide();
+        $(".my-model-hide").css({
+          "dispaly": "none"
+        });
+        $('.my-modal').html("");
+      }, 2000);
     }
   },
   initialize: function (opt) {
@@ -53,7 +69,7 @@ window.SideBarView = Backbone.View.extend({
               var json = JSON.parse(xhr.responseText);
               error_launch(json.message);
             }, {}
-            );
+    );
   },
   render: function () {
     var self = this;

@@ -23,6 +23,25 @@ var Router = Backbone.Router.extend({
     var self = this;
     self.appEventBus = _.extend({}, Backbone.Events);
     self.socketclt = new socketClient({vent: self.appEventBus});
+
+    self.appEventBus.on("updateDisp", function (data, disp, site) {
+      if (window.profile.get("site") && window.profile.get("site") == site) {
+        self.dashboard.updatedisp(data, disp);
+      }
+    });
+
+    self.appEventBus.on("newDisp", function (data, local, site) {
+      if (window.profile.get("site") && window.profile.get("site") == site) {
+        self.dashboard.newdisps(data, local);
+      }
+    });
+
+    self.appEventBus.on('updateChart', function (site, data) {
+      if (window.profile.get("site") && window.profile.get("site") == site) {
+        self.dashboard.updateChart(data);
+      }
+    });
+
   },
   showView: function (view, elem, sub) {
     elem.show();
@@ -68,57 +87,60 @@ var Router = Backbone.Router.extend({
     window.profile = null;
     window.sessionStorage.clear();
     window.logged = false;
-    
+
+    if (this.socketclt) {
+      this.socketclt.disconnect();
+    }
+
     var self = this;
     self.loginform = new LoginView({});
     $('#content').html(self.loginform.render().el);
   },
   inicio: function () {
     var self = this;
+    self.verificaLogin(function () {
+      self.socketclt.connect();
 
-    self.socketclt.connect();
+      self.socketclt.setuserid(window.profile.id);
 
-    self.socketclt.setuserid(window.profile.id);
+      self.header = new HeaderView({
+        logo: (window.profile.logo == "") ? "./img/user.png" : window.profile.logo
+      });
 
-    self.header = new HeaderView({
-      logo: (window.profile.logo == "") ? "./img/user.png" : window.profile.logo
+      self.content = new InicioView();
+      self.sidebar = new SideBarView({socket: self.socketclt});
+      self.footer = new FooterView();
+      self.contentnav = new ContentNavView();
+
+      $('header').html(self.header.render().el);
+      self.header.init();
+
+      $('#contentnav').html(self.contentnav.render().el);
+      self.contentnav.setView("Inicio");
+
+      $('#content').html(self.content.render().el);
+
+      $('aside.main-sidebar').html(self.sidebar.render().el);
+      self.sidebar.addsitessidebar();
+
+      $('footer').html(self.footer.render().el);
     });
-
-    this.content = new InicioView();
-    this.sidebar = new SideBarView({
-      socket: self.socketclt
-    });
-    this.footer = new FooterView();
-    this.contentnav = new ContentNavView();
-
-    $('header').html(this.header.render().el);
-    this.header.init();
-
-    $('#contentnav').html(this.contentnav.render().el);
-    this.contentnav.setView("Inicio");
-
-    $('#content').html(this.content.render().el);
-
-    $('aside.main-sidebar').html(this.sidebar.render().el);
-    this.sidebar.addsitessidebar();
-
-    $('footer').html(this.footer.render().el);
-
   },
   dashboardSetup: function () {
     var self = this;
-    self.dashboard = new DashboardView({
-      socket: self.socketclt
+    self.verificaLogin(function () {
+      self.dashboard = new DashboardView({
+        socket: self.socketclt
+      });
+      $('#content').html(self.dashboard.render().el);
+      self.dashboard.init();
+      self.contentnav.setView("Dashboard");
     });
-
-    $('#content').html(self.dashboard.render().el);
-    self.dashboard.init();
-    this.contentnav.setView("Dashboard");
   },
   newUser: function () {
-    this.contentnav.setView("Registar");
     var self = this;
     self.verificaLogin(function () {
+      self.contentnav.setView("Registar");
       self.novoutilizador = new NewUserView({});
       $('#content').html(self.novoutilizador.render().el);
       self.contentnav.setView("Novo Utilizador");
