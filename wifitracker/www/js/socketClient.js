@@ -31,6 +31,7 @@ var socketClient = function (options) {
 
   self.setSite = function (id, site) {
     self.socket.emit("changesite", id, site);
+    window.profile.site = site;
   };
 
   self.setResponseListeners = function (socket) {
@@ -49,10 +50,5 @@ var socketClient = function (options) {
     socket.on("newDisp", function (data, local, site) {
       self.vent.trigger("newDisp", data, local, site);
     });
-
-    socket.on('updateChart', function (site, data) {
-      self.vent.trigger("updateChart", site, data);
-    });
-
   };
 };
