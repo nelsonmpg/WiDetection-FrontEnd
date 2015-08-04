@@ -25,16 +25,19 @@ window.SideBarView = Backbone.View.extend({
     window.profile.set({"site": $(e.currentTarget).text().trim()});
     self.socketsidebar.setSite(window.profile.id, $(e.currentTarget).text().trim());
 
+    $('ul.sidebar-menu li.active').removeClass("active");
+
+
     app.navigate("Dashboard", {
       trigger: true
     });
   },
   navsidebar: function (e) {
     var self = this;
-    $('ul.sidebar-menu li.active').removeClass("active");
-    $(e.currentTarget).parent().addClass("active");
     e.preventDefault();
     if (self.databaseselect) {
+      $('ul.sidebar-menu li.active').removeClass("active");
+      $(e.currentTarget).parent().addClass("active");
       app.navigate($(e.currentTarget).data("nome"), {
         trigger: true
       });
