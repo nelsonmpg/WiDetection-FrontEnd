@@ -164,7 +164,6 @@ var Router = Backbone.Router.extend({
     },
     editProfile: function () {
         var self = this;
-        alert("editProfile no main");
         self.verificaLogin(function () {
             self.editprofile = new EditProfileView();
             self.contentnav.setView("Profile");
