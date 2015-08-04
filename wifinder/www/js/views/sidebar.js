@@ -26,8 +26,9 @@ window.SideBarView = Backbone.View.extend({
     self.socketsidebar.setSite(window.profile.id, $(e.currentTarget).text().trim());
 
     $('ul.sidebar-menu li.active').removeClass("active");
-
-
+    $('ul.sidebar-menu li.dashboard').addClass("active");
+    Backbone.history.stop();
+    Backbone.history.start();
     app.navigate("Dashboard", {
       trigger: true
     });
@@ -42,18 +43,7 @@ window.SideBarView = Backbone.View.extend({
         trigger: true
       });
     } else {
-      $('.my-modal').html($("#site-error").html());
-      $(".my-model-hide").css({
-        "dispaly": "block"
-      });
-      $('.my-modal').show();
-      setTimeout(function () {
-        $('.my-modal').hide();
-        $(".my-model-hide").css({
-          "dispaly": "none"
-        });
-        $('.my-modal').html("");
-      }, 2000);
+      showmsg('.my-modal', "warning", "Select a site first.<br>To continue.");
     }
   },
   initialize: function (opt) {
