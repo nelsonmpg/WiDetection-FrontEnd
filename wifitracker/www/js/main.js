@@ -18,6 +18,7 @@ var Router = Backbone.Router.extend({
     appEventBus: undefined,
     novoutilizador: undefined,
     loginform: undefined,
+    editprofile: undefined,
     socketclt: null,
     initialize: function () {
         var self = this;
@@ -63,6 +64,7 @@ var Router = Backbone.Router.extend({
         "Inicio": "inicio",
         "Dashboard": "dashboardSetup",
         "NovoUtilizador": "newUser",
+        "EditProfile": "editProfile",
         '*notFound': 'login'
     },
     login: function () {
@@ -77,6 +79,7 @@ var Router = Backbone.Router.extend({
         this.appEventBus = undefined;
         this.novoutilizador = undefined;
         this.loginform = undefined;
+        this.editprofile = undefined;
 
         $('header').html("");
         $('#content').html("");
@@ -158,6 +161,16 @@ var Router = Backbone.Router.extend({
             window.logged = true;
             loggedFunction();
         }
+    },
+    editProfile: function () {
+        var self = this;
+        alert("editProfile no main");
+        self.verificaLogin(function () {
+            self.editprofile = new EditProfileView();
+            self.contentnav.setView("Profile");
+            $('#content').html(self.editprofile.render().el);
+            self.editprofile.init();
+        });
     }
 });
 
@@ -169,9 +182,10 @@ templateLoader.load([
     "FooterView",
     "DashboardView",
     "NewUserView",
-    "ContentNavView"],
-        function () {
-            app = new Router();
-            Backbone.history.start();
-        }
+    "ContentNavView",
+    "EditProfileView"],
+    function () {
+        app = new Router();
+        Backbone.history.start();
+    }
 );
