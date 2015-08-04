@@ -20,3 +20,5 @@ wifitracker/nbproject/project.properties
 wifitracker/serverSocket/node_modules/
 testes/ProjetoFinal/node_modules/
 testes/ProjetoFinal/serverSocket/
+/wifinder/nbproject/private/
+wifinder/node_modules/
