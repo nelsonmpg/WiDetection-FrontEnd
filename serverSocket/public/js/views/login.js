@@ -1,4 +1,4 @@
-/* global Backbone */
+/* global Backbone, app */
 
 window.LoginView = Backbone.View.extend({
   events: {
