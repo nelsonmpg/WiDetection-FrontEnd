@@ -1,0 +1,7 @@
+1- Introdução:
+	- Descrição do problema;
+	- Enquadramento;
+	- Motivação;
+2- Estado da arte relativamente à deteção e identificação de dispositivos compatíveis à família IEEE802.11;
+3- Arquitetura da solução proposta;
+4- Conclusões; 

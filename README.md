@@ -13,5 +13,5 @@ npm install
 ## Run
 
 ```
-node main
+node main.js
 ```
