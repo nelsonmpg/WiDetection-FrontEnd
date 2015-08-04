@@ -99,7 +99,8 @@ Server.prototype.start = function () {
      * Retorna as bases de dados dos varios sites
      */
     this.app.get("/getAllDataBase", pedidos.getDataBases);
-
+    
+    this.app.get("/getSensors/:id", pedidos.getSensors);
 
     this.app.get("/getNameVendor/:mac/:sock", pedidos.getNameVendorByMac);
 
