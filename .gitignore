@@ -18,3 +18,5 @@ testAuth/TestePassport/node_modules/
 wifitracker/node_modules/
 wifitracker/nbproject/project.properties
 wifitracker/serverSocket/node_modules/
+testes/ProjetoFinal/node_modules/
+testes/ProjetoFinal/serverSocket/
