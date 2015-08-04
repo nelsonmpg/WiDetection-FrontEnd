@@ -82,6 +82,7 @@
     margin-top: 10px;
     padding-top:10px;
     width: 350px;
+    display: block;
 }
 
 #register-form .fieldgroup {
@@ -234,10 +235,14 @@
     bottom: 0;
     z-index: 1030;
     width: 100%;
-    background: rgba(255, 255, 255, 0.40)
+    background: rgba(0, 0, 0, 0.40)
 }
 
-#checkLogin * {
-    opacity: 1.0;
-    filter: alpha(opacity=100); /* For IE8 and earlier */
+input.error{
+    border:1px solid #FF0000 !important; 
+}
+
+label.error,div.error{
+    font-weight:normal;
+    color:#FF0000 !important;
 }

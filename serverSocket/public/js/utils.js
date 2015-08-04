@@ -77,7 +77,6 @@ var showInfoMsg = function (show, local, msg) {
     $(local).hide();
     $(local).html("");
   }
-
 };
 
 var normalizeString = function (str) {
