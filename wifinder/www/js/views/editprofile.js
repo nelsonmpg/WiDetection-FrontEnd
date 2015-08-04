@@ -37,7 +37,7 @@
                       $("#editProfileDiv").show();
                       $("#checkLogin").hide();
                   } else {
-                      showmsg(".my-modal", "error", "Login Failed!", function () {
+                      showmsg(".my-modal", "error", "Login Checkpoint Failed!... Please Login Again", function () {
                           app.navigate("", {
                               trigger: true
                           });
