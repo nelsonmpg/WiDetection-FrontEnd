@@ -1,0 +1,48 @@
+<div id="editProfileDiv" style="display: none">
+    <form role="form">
+        <div class="box-body">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email address</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                </div>
+                
+            </div>
+
+            <div class="col-md-4 center-block">
+                <div style="display: block">
+                <img id="img-previewProfile" style="display: block;margin: auto" src="./img/user.png" class="img-circle imageuser" alt="User Image" />
+                </div>
+            </div>
+        </div><!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+
+
+<div id="checkLogin" style="display: none">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-md-4 col-md-offset-4">
+                <h1 class="text-center login-title">Sign in to continue</h1>
+                <div class="account-wall">
+                    <img class="profile-img imguser imageuser" src=""
+                         alt="">
+                    <form id="checkLogin-form" class="form-signin">
+                        <input type="text" class="form-control" placeholder="Email" required autofocus>
+                        <input type="password" class="form-control" placeholder="Password" required>
+                        <button id="btn-checkLogin" class="btn btn-lg btn-primary btn-block" type="submit">
+                            Sign in</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
