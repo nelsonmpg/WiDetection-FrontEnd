@@ -43,7 +43,8 @@ window.SideBarView = Backbone.View.extend({
   navsidebar: function (e) {
     var self = this;
     e.preventDefault();
-    if ($(e.currentTarget).parent().attr("class") == "dashboard") {
+    if ($(e.currentTarget).parent().attr("class") == "dashboard" ||
+            $(e.currentTarget).parent().attr("class") == "detail") {
       if (typeof window.profile.get("site") != "undefined") {
         $('ul.sidebar-menu li.active').removeClass("active");
         $(e.currentTarget).parent().addClass("active");
