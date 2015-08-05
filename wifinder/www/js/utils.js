@@ -7,7 +7,6 @@
   var getKeyo = function () {
       var ls = localStorage.getItem('keyo');
       var ss = sessionStorage.getItem('keyo');
-      console.log(ls, ss);
       return ls || ss;
   };
 
@@ -108,15 +107,14 @@
       }
   };
 
-  function thumbnail(base64, maxWidth, maxHeight, amplia) {
-
+  function thumbnail(base64, maxWidth, maxHeight) {
       // Max size for thumbnail
-      /*  if (typeof (maxWidth) === 'undefined') {
+        if (typeof (maxWidth) === 'undefined') {
        var maxWidth = 500;
        }
        if (typeof (maxHeight) === 'undefined') {
        var maxHeight = 500;
-       }*/
+       }
 
       // Create and initialize two canvas
       var canvas = document.createElement("canvas");
@@ -135,15 +133,6 @@
       }
       else if (img.height > maxHeight) {
           ratio = maxHeight / img.height;
-      }
-      if (amplia) {
-          if (img.width < maxWidth) {
-              ratio = maxWidth / img.width;
-          }
-          else if (img.height < maxHeight) {
-              ratio = maxHeight / img.height;
-          }
-
       }
 
       // Draw original image in second canvas

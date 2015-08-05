@@ -44,7 +44,7 @@ Server.prototype.start = function () {
     var self = this;
 
     self.server.listen(self.port);
-    this.skt = new serverIo({io: self.io, server: self}).init();
+    this.skt = new serverIo({server: self}).init();
     
     var allowCrossDomain = function (req, res, next) {
         res.header('Access-Control-Allow-Origin', '*');
@@ -74,7 +74,7 @@ Server.prototype.start = function () {
 
     dbUsers.setup();
 
-    this.app.get("/getNumDispositivos/:sock", pedidos.getNumDispositivos);
+    this.app.get("/getNumDispositivos/:id", pedidos.getNumDispositivos);
 
     /**
      * Devolve o sensor com o numero dos varios dispositivos encontrados
@@ -84,7 +84,7 @@ Server.prototype.start = function () {
     /**
      * Retorna o numero de Disp nas antenasna ultima hora
      */
-    this.app.get("/getAllDisp/:sock", pedidos.getAllDisp);
+//    this.app.get("/getAllDisp/:sock", pedidos.getAllDisp);
     /**
      * Retorna os tempos das visitas dos DispMoveis
      */
@@ -144,7 +144,7 @@ Server.prototype.getUserServer = function (iduser) {
     return this.clientArray[iduser];
 };
 
-Server.prototype.getAllUserServer = function (iduser) {
+Server.prototype.getAllUserServer = function () {
     return this.clientArray;
 };
 

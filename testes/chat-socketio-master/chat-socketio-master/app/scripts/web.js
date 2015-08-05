@@ -19,11 +19,11 @@ var io = socketio.listen(server);
 
 
 var port = process.env.PORT || 8080;
-server.listen(port, function() {
-    console.log(' - listening on ' + port+ ' ' + __dirname);
+server.listen(port, function () {
+  console.log(' - listening on ' + port + ' ' + __dirname);
 });
 
 
 var ChatServer = require('./chatserver');
 
-new ChatServer({ io: io }).init();
+new ChatServer({io: io}).init();

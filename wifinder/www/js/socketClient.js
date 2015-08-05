@@ -34,6 +34,10 @@ var socketClient = function (options) {
     window.profile.site = site;
   };
 
+  self.getAllDisp = function (id) {
+    self.socket.emit("getAllDisp", id);
+  };
+
   self.setResponseListeners = function (socket) {
 
     // ento da perda do servidor
@@ -42,8 +46,20 @@ var socketClient = function (options) {
       console.log('Socket disconnected');
     });
 
+    socket.on("getAllDisp", function (data, site) {
+      self.vent.trigger("getAllDisp", data, site);
+    });
+        
+    socket.on("updateChart", function (x, site) {
+      self.vent.trigger("updateChart", x, site);
+    });
+
     socket.on("updateDisp", function (data, disp, site) {
       self.vent.trigger("updateDisp", data, disp, site);
+    });
+
+    socket.on("teste", function (data) {
+      self.vent.trigger("teste", data);
     });
 
     // socket a escuta de incremento de dispositivos na base de dados
