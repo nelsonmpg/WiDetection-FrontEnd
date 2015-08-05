@@ -19,11 +19,11 @@
           var file = e.originalEvent.target.files[0],
                   reader = new FileReader(file);
           reader.onload = function (evt) {
-            $("body").find('.converteFiles').attr('src', evt.target.result);
+            $("body").find('.converteFiles').attr('src', thumbnail(evt.target.result, 70, 70));
 //            $("#base64result").html(evt.target.result);
 //            $("#base64result2").text(thumbnail($("#base64result").text(), size, size));
           };
-          reader.readAsDataURL(file);
+//          reader.readAsDataURL(file);
         });
         $("body").on('dragenter', ".converteFiles", function (e) {
           e.stopPropagation();

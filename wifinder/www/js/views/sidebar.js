@@ -27,11 +27,12 @@ window.SideBarView = Backbone.View.extend({
 
     $('ul.sidebar-menu li.active').removeClass("active");
     $('ul.sidebar-menu li.dashboard').addClass("active");
-    Backbone.history.stop();
-    Backbone.history.start();
     app.navigate("Dashboard", {
       trigger: true
-    });
+    }); 
+    
+//    Backbone.history.stop();
+//    Backbone.history.start();
   },
   navsidebar: function (e) {
     var self = this;

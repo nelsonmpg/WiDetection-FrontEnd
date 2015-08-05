@@ -159,6 +159,97 @@
       return canvas.toDataURL();
 
   };
+  
+  
+  var carregarmapa = function (local, localaddmap) {
+//    alert();
+  // Define your locations: HTML content for the info window, latitude, longitude
+  //var locations = [['<h4>Bondi Beach</h4>', -33.890542, 151.274856],['<h4>Coogee Beach</h4>', -33.923036, 151.259052],['<h4>Cronulla Beach</h4>', -34.028249, 151.157507],['<h4>Manly Beach</h4>', -33.80010128657071, 151.28747820854187],['<h4>Maroubra Beach</h4>', -33.950198, 151.259302]];
+  var locations = local;
+  var markers = new Array();
+  // Setup the different icons and shadows
+  var iconURLPrefix = 'http://maps.google.com/mapfiles/ms/icons/';
+  var icons = [
+    iconURLPrefix + 'red-dot.png',
+    iconURLPrefix + 'green-dot.png',
+    iconURLPrefix + 'blue-dot.png',
+    iconURLPrefix + 'orange-dot.png',
+    iconURLPrefix + 'purple-dot.png',
+    iconURLPrefix + 'pink-dot.png',
+    iconURLPrefix + 'yellow-dot.png',
+    "./img/wifi60_60.png"
+  ];
+  var iconsLength = icons.length;
+  var map = new google.maps.Map(localaddmap, {
+    zoom: 18,
+    center: new google.maps.LatLng(local[0][1], local[0][2]),
+    mapTypeId: google.maps.MapTypeId.TERRAIN, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
+    mapTypeControl: true,
+    streetViewControl: true,
+    panControl: true,
+    zoomControlOptions: {
+      position: google.maps.ControlPosition.LEFT_BOTTOM
+    }
+  });
+//  var infowindow = new google.maps.InfoWindow({
+//    maxWidth: 160
+//  });
+//  var iconCounter = 7;
+  // Add the markers and infowindows to the map
+  for (var i = 0; i < locations.length; i++) {
+    var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+      map: map,
+      icon: icons[0]
+    });
+    markers.push(marker);
+//    google.maps.event.addListener(marker, 'click', (function (marker, i) {
+//      return function () {
+//        infowindow.setContent(locations[i][0]);
+//        infowindow.open(map, marker);
+//      };
+//    })(marker, i));
+//    iconCounter++;
+//    // We only have a limited number of possible icon colors, so we may have to restart the counter
+//    if (iconCounter >= iconsLength) {
+//      iconCounter = 0;
+//    }
+  }
+
+//  google.maps.event.addListener(map, 'click', function (event) {
+//    if (calback) {
+//      marker.setPosition(event.latLng);
+//      var pos = displayCoordinates(event.latLng);
+//      map.setCenter(new google.maps.LatLng(pos.lat, pos.long));
+//      var geocoder = new google.maps.Geocoder();
+//      var latlng = new google.maps.LatLng(pos.lat, pos.long);
+//      geocoder.geocode({'location': latlng}, function (results, status) {
+//        if (status == google.maps.GeocoderStatus.OK) {
+//          if (results[1]) {
+//            pos.place = results[1].formatted_address;
+//          } else {
+//            window.alert('No results found');
+//          }
+//        } else {
+//          window.alert('Geocoder failed due to: ' + status);
+//        }
+//        calback(pos);
+//      });
+//    }
+//  });
+};
+var displayCoordinates = function (pnt) {
+  var lat = pnt.lat();
+  lat = lat.toFixed(4);
+  var lng = pnt.lng();
+  lng = lng.toFixed(4);
+  return {
+    lat: lat,
+    long: lng,
+    place: ""
+  };
+};
+  
 
   window.modem = function (type, url, sucess, error, data) {
       $.ajax({
