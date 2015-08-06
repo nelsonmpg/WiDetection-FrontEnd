@@ -42,41 +42,14 @@ ServerSktIo.prototype.init = function () {
       self.server.setDataBase(iduser, data);
     });
 
-//    r.db("AaTeste").table('DispAp').changes().run()
-//            .then(function (cursor) {
-//              cursor.each(function (err, row) {
-//                socket.emit('message', row.new_val);
-//              });
-//            })
-//            .catch(function (err) {
-//              console.log('err', err);
-//            });
-
-
-
-//    pedidos.getAllDataBases(function (err, data) {
-//      for (var i = 0; i < data.length; i++) {
-//        console.log(data[i].db);
-//        pedidos.changeDispMoveis("AaTeste", function (err, changed) {
-//          if (!err && changed.length > 0) {
-//            console.log(changed);
-//            socket.emit("newDisp", changed, "moveis", "AaTeste");
-//          }
-//        });
-//        pedidos.changeDispAp("AaTeste", function (err, changed) {
-//          if (!err && changed.length > 0) {
-//            console.log(changed);
-//            socket.emit("newDisp", changed, "ap", "AaTeste");
-//          }
-//        });
-//        pedidos.changeDispAp("AaTeste", function (err, changed) {
-//          if (!err && changed.length > 0) {
-//            console.log(changed);
-//            socket.emit("newDisp", changed, "sensor", "AaTeste");
-//          }
-//        });
-//      }
-//    });
+    pedidos.getAllDataBases(function (err, data) {
+      for (var i = 0; i < data.length; i++) {
+        console.log(data[i].db);
+        pedidos.changeDispMoveis(data[i].db, socket);
+        pedidos.changeDispAp(data[i].db, socket);
+        pedidos.changeActiveAnt(data[i].db, socket);
+      }
+    });
 
     socket.on('disconnect', function () {
       socket.broadcast.emit('diconnected', socket.id);
