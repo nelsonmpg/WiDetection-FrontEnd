@@ -92,7 +92,6 @@ window.EditProfileView = Backbone.View.extend({
     modem('POST', "/login",
             function (data) {
               if (data.length > 0) {
-                console.log(data);
                 $("#editProfileDiv").show();
                 $("#checkLogin").hide();
               } else {
