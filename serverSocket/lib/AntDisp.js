@@ -13,10 +13,10 @@ module.exports.insertAntDisp = function (valuesHst, client) {
               {
                 "nomeAntena": client,
                 "host": [{"macAddress": valuesHst[0],
-                    "data": r.now().inTimezone("+01:00"),
+                    "data": r.now().inTimezone("+01:00").toEpochTime(),
                     "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
                     "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5].replace(/,| /g, ""),
-                    "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : valuesHst[6].split(","), "nameVendor": r.db(self.dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
+                    "nameVendor": r.db(self.dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                   }]
               },
       r.branch(
@@ -27,31 +27,9 @@ module.exports.insertAntDisp = function (valuesHst, client) {
                           d("macAddress").eq(valuesHst[0]).default(false),
                           {
                             "macAddress": valuesHst[0],
-                            "data": r.now().inTimezone("+01:00"),
+                            "data": r.now().inTimezone("+01:00").toEpochTime(),
                             "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
                             "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5].replace(/,| /g, ""),
-                            "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : r.db(self.dbConfig.db)
-                                    .table("DispMoveis")
-                                    .get(valuesHst[0])
-                                    .do(function (row) {
-                                      return r.branch(
-                                              row.eq(null),
-                                              "",
-                                              row("disp")
-                                              .filter({"name": client})
-                                              .do(function (row1) {
-                                                return r.branch(
-                                                        row1.eq([]),
-                                                        "",
-                                                        row1
-                                                        .nth(0)("values")
-                                                        .orderBy(r.desc("Last_time"))
-                                                        .limit(1)("Probed_ESSIDs")
-                                                        .nth(0).
-                                                        setUnion(valuesHst[6].split(","))
-                                                        );
-                                              }));
-                                    }),
                             "nameVendor": r.db(self.dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                           },
                   d);
@@ -60,31 +38,9 @@ module.exports.insertAntDisp = function (valuesHst, client) {
                 "nomeAntena": client,
                 "host": row("host").append({
                   "macAddress": valuesHst[0],
-                  "data": r.now().inTimezone("+01:00"),
+                  "data": r.now().inTimezone("+01:00").toEpochTime(),
                   "Power": (typeof valuesHst[3] == "undefined") ? "" : valuesHst[3],
                   "BSSID": (typeof valuesHst[5] == "undefined") ? "" : valuesHst[5].replace(/,| /g, ""),
-                  "Probed_ESSIDs": (typeof valuesHst[6] == "undefined") ? "" : r.db(self.dbConfig.db)
-                          .table("DispMoveis")
-                          .get(valuesHst[0])
-                          .do(function (row) {
-                            return r.branch(
-                                    row.eq(null),
-                                    "",
-                                    row("disp")
-                                    .filter({"name": client})
-                                    .do(function (row1) {
-                                      return r.branch(
-                                              row1.eq([]),
-                                              "",
-                                              row1
-                                              .nth(0)("values")
-                                              .orderBy(r.desc("Last_time"))
-                                              .limit(1)("Probed_ESSIDs")
-                                              .nth(0)
-                                              .setUnion(valuesHst[6].split(","))
-                                              );
-                                    }));
-                          }),
                   "nameVendor": r.db(self.dbConfig.db).table("tblPrefix").get(valuesHst[0].substring(0, 8)).getField("vendor").default("")
                 })}));
     }, {nonAtomic: true}).run(conn, function (err, result) {
