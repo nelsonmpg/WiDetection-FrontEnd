@@ -151,85 +151,84 @@ module.exports.getNumDispositivos = function (req, res) {
   });
 };
 
+module.exports.getAllDataBases = function (callback) {
+  connectdb.onConnect(function (err, conn) {
+    r.dbList().map({"db": r.row})
+            .filter(r.row("db").ne("rethinkdb"))
+            .filter(r.row("db").ne("user"))
+            .run(conn, function (err, result) {
+              if (err) {
+                callback(err.msg, null);
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                callback(null, result);
+              }
+//              conn.close();
+            });
+  });
+}
+
 module.exports.changeDispMoveis = function (database, callback) {
-  if (database) {
-    connectdb.onConnect(function (err, conn) {
-      r.db(database).table("DispMoveis").changes().filter(function (row) {
-        return row('old_val').eq(null);
-      }).run(conn, function (err, cursor) {
-        if (err) {
-          console.log("ERROR: %s:%s", err.name, err.msg);
-          callback(null, []);
-        } else {
-          cursor.each(function (err, item) {
-            if (err) {
-              console.log("ERROR: %s:%s", err.name, err.msg);
-              callback(null, []);
-            } else {
-              callback(null, item);
-            }
-          });
-        }
-        conn.close();
-      });
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table("DispMoveis").changes().run(conn, function (err, cursor) {
+      if (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
+        callback(null, []);
+      } else {
+        cursor.each(function (err, item) {
+          if (err) {
+            console.log("ERROR: %s:%s", err.name, err.msg);
+            callback(null, []);
+          } else {
+            callback(null, item);
+          }
+        });
+      }
+//      conn.close();
     });
-  } else {
-    callback(null, []);
-  }
+  });
 };
 
 module.exports.changeDispAp = function (database, callback) {
-  if (database) {
-    connectdb.onConnect(function (err, conn) {
-      r.db(database).table("DispAp").changes().filter(function (row) {
-        return row('old_val').eq(null);
-      }).run(conn, function (err, cursor) {
-        if (err) {
-          console.log("ERROR: %s:%s", err.name, err.msg);
-          callback(null, []);
-        } else {
-          cursor.each(function (err, item) {
-            if (err) {
-              console.log("ERROR: %s:%s", err.name, err.msg);
-              callback(null, []);
-            } else {
-              callback(null, item);
-            }
-          });
-        }
-        conn.close();
-      });
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table("DispAp").changes().run(conn, function (err, cursor) {
+      if (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
+        callback(null, []);
+      } else {
+        cursor.each(function (err, item) {
+          if (err) {
+            console.log("ERROR: %s:%s", err.name, err.msg);
+            callback(null, []);
+          } else {
+            callback(null, item);
+          }
+        });
+      }
+//      conn.close();
     });
-  } else {
-    callback(null, []);
-  }
+  });
 };
 
 module.exports.changeActiveAnt = function (database, callback) {
-  if (database) {
-    connectdb.onConnect(function (err, conn) {
-      r.db(database).table("ActiveAnt").changes().filter(function (row) {
-        return row('old_val').eq(null);
-      }).run(conn, function (err, cursor) {
-        if (err) {
-          console.log("ERROR: %s:%s", err.name, err.msg);
-          callback(null, []);
-        } else {
-          cursor.each(function (err, item) {
-            if (err) {
-              console.log("ERROR: %s:%s", err.name, err.msg);
-              callback(null, []);
-            } else {
-              callback(null, item);
-            }
-          });
-        }
-        conn.close();
-      });
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table("ActiveAnt").changes().run(conn, function (err, cursor) {
+      if (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
+        callback(null, []);
+      } else {
+        cursor.each(function (err, item) {
+          if (err) {
+            console.log("ERROR: %s:%s", err.name, err.msg);
+            callback(null, []);
+          } else {
+            callback(null, item);
+          }
+        });
+      }
+      conn.close();
     });
-  } else {
-    callback(null, []);
-  }
+  });
 };
 
 

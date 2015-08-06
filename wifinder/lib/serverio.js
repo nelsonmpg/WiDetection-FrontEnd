@@ -4,6 +4,7 @@ _ = require('underscore');
 var pedidos = require('./pedidos');
 var connectdb = require("./ConnectDb");
 var Worker = require('workerjs');
+var r = require('rethinkdb');
 
 var ServerSktIo = function (options) {
   var updateChartAtives;
@@ -17,7 +18,7 @@ ServerSktIo.prototype.init = function () {
 
   // Fired upon a connection
   this.server.io.on("connection", function (socket) {
-  var iduser;
+    var iduser;
 
     var c = socket.request.connection._peername;
     console.log("+++++++++++++++++++++ ADD ++++++++++++++++++++++++++");
@@ -41,21 +42,42 @@ ServerSktIo.prototype.init = function () {
       self.server.setDataBase(iduser, data);
     });
 
-    pedidos.changeDispMoveis(self.server.getDataBase(iduser), function (err, changed) {
-      if (!err && changed.length > 0) {
-        socket.emit("newDisp", changed, "moveis", self.server.getDataBase(iduser));
-      }
-    });
-    pedidos.changeDispAp(self.server.getDataBase(iduser), function (err, changed) {
-      if (!err && changed.length > 0) {
-        socket.emit("newDisp", changed, "ap", self.server.getDataBase(iduser));
-      }
-    });
-    pedidos.changeDispAp(self.server.getDataBase(iduser), function (err, changed) {
-      if (!err && changed.length > 0) {
-        socket.emit("newDisp", changed, "sensor", self.server.getDataBase(iduser));
-      }
-    });
+//    r.db("AaTeste").table('DispAp').changes().run()
+//            .then(function (cursor) {
+//              cursor.each(function (err, row) {
+//                socket.emit('message', row.new_val);
+//              });
+//            })
+//            .catch(function (err) {
+//              console.log('err', err);
+//            });
+
+
+
+//    pedidos.getAllDataBases(function (err, data) {
+//      for (var i = 0; i < data.length; i++) {
+//        console.log(data[i].db);
+//        pedidos.changeDispMoveis("AaTeste", function (err, changed) {
+//          if (!err && changed.length > 0) {
+//            console.log(changed);
+//            socket.emit("newDisp", changed, "moveis", "AaTeste");
+//          }
+//        });
+//        pedidos.changeDispAp("AaTeste", function (err, changed) {
+//          if (!err && changed.length > 0) {
+//            console.log(changed);
+//            socket.emit("newDisp", changed, "ap", "AaTeste");
+//          }
+//        });
+//        pedidos.changeDispAp("AaTeste", function (err, changed) {
+//          if (!err && changed.length > 0) {
+//            console.log(changed);
+//            socket.emit("newDisp", changed, "sensor", "AaTeste");
+//          }
+//        });
+//      }
+//    });
+
     socket.on('disconnect', function () {
       socket.broadcast.emit('diconnected', socket.id);
       var usr = self.server.getUserServer(iduser);
