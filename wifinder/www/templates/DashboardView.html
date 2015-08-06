@@ -11,10 +11,10 @@
       </div><!-- /.info-box-content -->
     </div><!-- /.info-box -->
   </div><!-- /.col -->
-  
+
   <!-- fix for small devices only -->
   <div class="clearfix visible-sm-block"></div>
-  
+
   <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="info-box">
       <span class="info-box-icon bg-aqua">
@@ -30,7 +30,7 @@
 
   <!-- fix for small devices only -->
   <div class="clearfix visible-sm-block"></div>
-  
+
   <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="info-box">
       <span class="info-box-icon bg-aqua">
@@ -43,44 +43,15 @@
       </div><!-- /.info-box-content -->
     </div><!-- /.info-box -->
   </div><!-- /.col -->
-  
-  
-</div><!-- /.row -->
 
-  <div class="row">
-  <div class="col-md-12">
-    <div class="box">
-      <div  class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-map fa-fw"></i> Sensors </h3>
-        <div class="box-tools pull-right">
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-            <i class="fa fa-minus"></i>
-          </button>
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-            <i class="fa fa-times"></i>
-          </button>
-        </div>
-      </div><!-- /.box-header -->
-      <div class="box-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="chart">
-              <!-- Sales Chart Canvas -->
-              <div id="map"  class="height400"></div>
-            </div><!-- /.chart-responsive -->
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- ./box-body -->
-    </div><!-- /.box -->
-  </div><!-- /.col -->
-</div><!-- /.row -->
 
+</div><!-- /.row -->
 
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-6">
     <div class="box">
       <div  class="box-header with-border">
-        <h3 id="chart2bars-titulo" class="box-title"><i class="fa fa-bar-chart-o"></i><b> Gr&aacute;fico - Quantidade de Dispositivos / Sensor</b></h3>
+        <h3 id="chart2bars-titulo" class="box-title"><i class="fa fa-bar-chart-o"></i><b> Chart - Device Number / Sensor</b></h3>
         <div class="box-tools pull-right">
           <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
             <i class="fa fa-minus"></i>
@@ -104,11 +75,43 @@
         </div><!-- /.row -->
       </div><!-- ./box-body -->
     </div><!-- /.box -->
-  </div><!-- /.col -->
-  <div class="col-md-4">
+  </div><!-- /.col --> 
+  <div class="col-md-6">
     <div class="box">
       <div  class="box-header with-border">
-        <h3 id="chart2bars-titulo" class="box-title"><b> Descrição</b></h3>
+        <h3 class="box-title"><i class="fa fa-map fa-fw"></i><b> Sensors</b></h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div>
+              <div class="chart">
+                <!-- Sales Chart Canvas -->
+                <div id="map"  class="height400">                  
+                </div>
+              </div><!-- /.chart-responsive -->
+            </div>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- ./box-body -->
+    </div><!-- /.box -->
+  </div><!-- /.col --> 
+</div><!-- /.row -->
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 id="chart2bars-titulo" class="box-title"><i class="fa fa-bar-chart-o"></i><b> Chart - Power of Device</b></h3>
         <div class="box-tools pull-right">
           <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
             <i class="fa fa-minus"></i>
@@ -120,20 +123,44 @@
       </div><!-- /.box-header -->
       <div class="box-body">
         <div class="row">
-          <div class="col-md-12 height400">
-            
+          <div class="col-md-12">
+            <div class="col-lg-offset-4 col-md-4">
+              <div class="input-group margin">
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Select Sensor <span class="fa fa-caret-down"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#">Action</a></li>
+                  </ul>
+                </div><!-- /btn-group -->
+                <input type="text" class="form-control">
+              </div>
+            </div>
           </div><!-- /.col -->
-        </div><!-- /.row -->
+        </div><!-- /.col -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="chart">
+              <!-- Sales Chart Canvas -->
+              <div id="chartdisp"  class="height400"></div>
+            </div><!-- /.chart-responsive -->
+          </div><!-- /.col -->
+          <div class="col-md-6">
+            <div class="chart">
+              <!-- Sales Chart Canvas -->
+              <div id="chartap"  class="height400"></div>
+            </div><!-- /.chart-responsive -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->     
       </div><!-- ./box-body -->
     </div><!-- /.box -->
-  </div><!-- /.col -->
+  </div><!-- /.col --> 
 </div><!-- /.row -->
 
 <div class="row">
   <div class="col-md-12">
     <div class="box">
       <div  class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-bar-chart-o"></i> Dispositivos Ativos</h3>
+        <h3 class="box-title"><i class="fa fa-bar-chart-o"></i><b> Dispositivos Ativos</b></h3>
         <div class="box-tools pull-right">
           <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
             <i class="fa fa-minus"></i>
@@ -152,7 +179,7 @@
             </div><!-- /.chart-responsive -->
           </div><!-- /.col -->
           <div class="col-md-4">
-            
+
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- ./box-body -->
@@ -165,7 +192,7 @@
   <div class="col-md-12">
     <div class="box">
       <div  class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-bar-chart-o"></i> Visitas dos dispositivos</h3>
+        <h3 class="box-title"><i class="fa fa-bar-chart-o"></i><b> Visitas dos dispositivos</b></h3>
         <div class="box-tools pull-right">
           <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
             <i class="fa fa-minus"></i>
@@ -184,7 +211,7 @@
             </div><!-- /.chart-responsive -->
           </div><!-- /.col -->
           <div class="col-md-4">
-            
+
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- ./box-body -->
