@@ -29,6 +29,7 @@ var Router = Backbone.Router.extend({
       }
     });
     self.appEventBus.on("newDisp", function (data, local, site) {
+      console.log(data, local, site);
       if (window.profile.get("site") && window.profile.get("site") == site) {
         self.dashboard.newdisps(data, local);
       }

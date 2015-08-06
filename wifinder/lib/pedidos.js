@@ -189,35 +189,66 @@
                       }
                   });
               }
-//      conn.close();
-          });
-      });
-  };
 
-  module.exports.changeDispAp = function (database, callback) {
-      connectdb.onConnect(function (err, conn) {
-          r.db(database).table("DispAp").changes().run(conn, function (err, cursor) {
-              if (err) {
-                  console.log("ERROR: %s:%s", err.name, err.msg);
-                  callback(null, []);
-              } else {
-                  cursor.each(function (err, item) {
-                      if (err) {
-                          console.log("ERROR: %s:%s", err.name, err.msg);
-                          callback(null, []);
-                      } else {
-                          callback(null, item);
-                      }
-                  });
-              }
-//      conn.close();
-          });
-      });
-  };
+//              conn.close();
+            });
+  });
+}
 
-  module.exports.changeActiveAnt = function (database, callback) {
-      connectdb.onConnect(function (err, conn) {
-          r.db(database).table("ActiveAnt").changes().run(conn, function (err, cursor) {
+module.exports.changeDispMoveis = function (database, socket) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table('DispMoveis')
+            .changes()
+            .filter(function (row) {
+              return row('old_val').eq(null);
+            }).run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+//                console.log(item);
+                socket.emit("newDisp", item, "moveis", database);
+              });
+            });
+  });
+};
+
+module.exports.changeDispAp = function (database, socket) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table('DispAp')
+            .changes()
+            .filter(function (row) {
+              return row('old_val').eq(null);
+            }).run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+//                console.log(item);
+                socket.emit("newDisp", item, "ap", database);
+              });
+            });
+  });
+};
+
+module.exports.changeActiveAnt = function (database, socket) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table("ActiveAnt")
+            .changes()
+            .filter(function (row) {
+              return row('old_val').eq(null);
+            }).run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+//                console.log(item);
+                socket.emit("newDisp", item, "sensor", database);
+              });
+            });
+  });
+};
+
+
+module.exports.getSensors = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.id)).table("ActiveAnt")
+            .coerceTo("ARRAY")
+            .run(conn, function (err, result) {
               if (err) {
                   console.log("ERROR: %s:%s", err.name, err.msg);
                   callback(null, []);

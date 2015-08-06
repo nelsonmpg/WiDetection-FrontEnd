@@ -129,6 +129,12 @@
 
         }
       });
+
+      function testedate() {
+        var time = new Date().getTime();
+        var date = new Date(1438883586.206 * 1000);
+        alert(date.toString());
+      }
     </script>
     <style>
       .converteFiles {
@@ -150,6 +156,7 @@
 
   </head>
   <body>
+    <button onclick="testedate();">Teste data</button>
     <div>
       <div>
         <input id="inputFile" type="file" class="" accept="image/*" />
