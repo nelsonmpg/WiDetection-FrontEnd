@@ -34,7 +34,7 @@ self.onmessage = function (e) {
       ini = new Date(teste[a].sensores[b].values[0].Last_time);
       fin = ini;
       for (var c in teste[a].sensores[b].values) {
-        var sensorLastTime = new Date(teste[a].sensores[b].values[c].Last_time);
+        var sensorLastTime = new Date(teste[a].sensores[b].values[c].Last_time*1000);
         if (sensorLastTime > fin) {
           if (sensorLastTime < fin.addMinutes(5)) {
             fin = sensorLastTime;
