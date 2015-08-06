@@ -28,7 +28,6 @@ module.exports.insertDispMovel = function (valsHost, client) {
                 "Probed_ESSIDs":(typeof valsHost[6] == "undefined") ? "" : r.db(self.dbConfig.db)
                         .table("DispMoveis")
                         .get(valsHost[0])("Probed_ESSIDs")
-                        .nth(0)
                         .setUnion(valsHost[6].split(",")),
                 "disp": row('disp').map(function (d) {
                   return r.branch(
@@ -45,7 +44,6 @@ module.exports.insertDispMovel = function (valsHost, client) {
         "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : r.db(self.dbConfig.db)
                 .table("DispMoveis")
                 .get(valsHost[0])("Probed_ESSIDs")
-                .nth(0)
                 .setUnion(valsHost[6].split(",")),
         "disp": row("disp").append({
           "name": client,
