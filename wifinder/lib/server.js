@@ -105,6 +105,14 @@
       this.app.get("/getNameVendor/:mac/:sock", pedidos.getNameVendorByMac);
 
       this.app.get("/getLastAllTimes/:id", pedidos.getLastAllTimes);
+      
+      
+      ///////// Page Detail //////////
+      
+      this.app.get("/getAllOrderbyVendor/:id/:table/:sensor/:max/:min", pedidos.getAllOrderbyVendor);
+      
+      
+      ////////////////////////////////
 
       this.app.post("/login", dbUsers.loginUser);
 
