@@ -65,7 +65,7 @@ ServerSktIo.prototype.init = function () {
               count++;
             }
           }
-          if (count == 0) {
+          if (count == 0 && self.liveActives[a] != null) {
             console.log("STOP->" + a);
             clearInterval(self.liveActives[a].intervalChart);
             self.liveActives[a] = null;

@@ -29,38 +29,6 @@ module.exports.getNameVendorByMac = function (req, res) {
   });
 };
 
-module.exports.getDataBases = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.dbList().map({"db": r.row})
-            .filter(r.row("db").ne("rethinkdb"))
-            .filter(r.row("db").ne("user"))
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
-              conn.close();
-            });
-  });
-};
-
-module.exports.getFabricantes = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.sock))
-            .table('DispMoveis')
-            .coerceTo("array")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(getMACInDate(req.params.min, result));
-              }
-              conn.close();
-            });
-  });
-};
-
 module.exports.getAllTimes = function (req, res) {
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (a) {
@@ -104,6 +72,38 @@ module.exports.getAllTimes = function (req, res) {
 
                 //worker start
                 tempo.postMessage(result2);
+              }
+              conn.close();
+            });
+  });
+};
+
+module.exports.getDataBases = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.dbList().map({"db": r.row})
+            .filter(r.row("db").ne("rethinkdb"))
+            .filter(r.row("db").ne("user"))
+            .run(conn, function (err, result) {
+              if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                res.send(result);
+              }
+              conn.close();
+            });
+  });
+}
+
+module.exports.getFabricantes = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.sock))
+            .table('DispMoveis')
+            .coerceTo("array")
+            .run(conn, function (err, result) {
+              if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                res.send(getMACInDate(req.params.min, result));
               }
               conn.close();
             });
@@ -235,6 +235,7 @@ module.exports.getSensors = function (req, res) {
             });
   });
 };
+
 module.exports.getpluckDispMoveis = function (req, res) {
   var table = "";
   if (req.params.table == "disp") {
@@ -272,6 +273,33 @@ module.exports.getpluckDispMoveis = function (req, res) {
   });
 };
 
+/**
+ * 
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getAllOrderbyVendor = function (req, res) {
+  var min = new Date(req.params.min / 1000).toJSON();
+  var max = new Date(req.params.max / 1000).toJSON();
+  var table = ((req.params.table).toString().toUpperCase() == "AP") ? "AntAp" : "AntDisp";
+  connectdb.onConnect(function (err, conn) {
+    console.log(req.params.min, req.params.max);
+    r.db(self.getDataBase(req.params.id)).table(table).get(req.params.sensor)("host").map(function (a) {
+      return {"nameVendor": a("nameVendor").upcase(), "a": a};
+    }).group("nameVendor")("a")("data").filter(function (result) {
+      return result.ge(r.ISO8601(min).toEpochTime()).le(r.ISO8601(max).toEpochTime());
+    }).coerceTo("ARRAY")
+            .run(conn, function (err, result) {
+              if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                res.send(result);
+              }
+              conn.close();
+            });
+  });
+};
 
 /**
  * 

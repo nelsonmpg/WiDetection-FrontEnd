@@ -106,7 +106,17 @@ Server.prototype.start = function () {
 
   this.app.get("/getLastAllTimes/:id", pedidos.getLastAllTimes);
 
-this.app.get("/getpowerlistdispmoveis/:id/:sensor/:table", pedidos.getpluckDispMoveis);
+  this.app.get("/getpowerlistdispmoveis/:id/:sensor/:table", pedidos.getpluckDispMoveis);
+
+  this.app.get("/getLastAllTimes/:id", pedidos.getLastAllTimes);
+
+
+  ///////// Page Detail //////////
+
+  this.app.get("/getAllOrderbyVendor/:id/:table/:sensor/:max/:min", pedidos.getAllOrderbyVendor);
+
+
+  ////////////////////////////////
 
 // ----------------------------- Pedidos Useres -----------------------------------
   this.app.post("/login", dbUsers.loginUser);
