@@ -1,0 +1,70 @@
+/* global module */
+
+var r = require('rethinkdb');
+var connectdb = require("./ConnectDb");
+
+var self = this;
+
+module.exports.insertDispAp = function (valsAp, client) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.dbConfig.db).table("DispAp").get(valsAp[0]).replace(function (row) {
+      return r.branch(
+              row.eq(null),
+              {
+                "macAddress": valsAp[0],
+                "nameVendor": r.db(self.dbConfig.db).table("tblPrefix").get(valsAp[0].substring(0, 8)).getField("vendor").default(""),
+                "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
+                "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
+                "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
+                "Cipher": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[0] == "undefined") ? "" : valsAp[6].split(",")[0]) : valsAp[6],
+                "Authentication": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[1] == "undefined") ? "" : valsAp[6].split(",")[1]) : valsAp[7],
+                "ESSID": (valsAp.length == 14) ? ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]) : ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]),
+                "disp": [{
+                    name: client,
+                    "First_time": r.now().inTimezone("+01:00").toEpochTime(),
+                    "values": [{
+                        "Last_time": r.now().inTimezone("+01:00").toEpochTime(),
+                        "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8])
+                      }]
+                  }]
+              },
+      r.branch(
+              row("disp")("name").contains(client),
+              row.merge({
+                "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
+                "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
+                "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
+                "Cipher": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[0] == "undefined") ? "" : valsAp[6].split(",")[0]) : valsAp[6],
+                "Authentication": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[1] == "undefined") ? "" : valsAp[6].split(",")[1]) : valsAp[7],
+                "ESSID": (valsAp.length == 14) ? ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]) : ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]),
+                "disp": row('disp').map(function (d) {
+                  return r.branch(d('name').eq(client).default(false), d.merge({values: d("values").append({
+                      "Last_time": r.now().inTimezone("+01:00").toEpochTime(),
+                      "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8])
+                    })}), d);
+                })}),
+              {"macAddress": valsAp[0],
+                "nameVendor": r.db(self.dbConfig.db).table("tblPrefix").get(valsAp[0].substring(0, 8)).getField("vendor").default(""),
+                "channel": (typeof valsAp[3] == "undefined") ? "" : valsAp[3],
+                "Speed": (typeof valsAp[4] == "undefined") ? "" : valsAp[4],
+                "Privacy": (typeof valsAp[5] == "undefined") ? "" : valsAp[5],
+                "Cipher": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[0] == "undefined") ? "" : valsAp[6].split(",")[0]) : valsAp[6],
+                "Authentication": (valsAp.length == 14) ? ((typeof valsAp[6] == "undefined") ? "" : (typeof valsAp[6].split(",")[1] == "undefined") ? "" : valsAp[6].split(",")[1]) : valsAp[7],
+                "ESSID": (valsAp.length == 14) ? ((typeof valsAp[12] == "undefined") ? "" : valsAp[12]) : ((typeof valsAp[13] == "undefined") ? "" : valsAp[13]),
+                "disp": row('disp').append({
+                  name: client,
+                  "First_time": r.now().inTimezone("+01:00").toEpochTime(),
+                  "values": [{
+                      "Last_time": r.now().inTimezone("+01:00").toEpochTime(),
+                      "Power": (valsAp.length == 14) ? ((typeof valsAp[7] == "undefined") ? "" : valsAp[7]) : ((typeof valsAp[8] == "undefined") ? "" : valsAp[8])
+                    }]
+                })}));
+    }, {nonAtomic: true}).run(conn, function (err, result) {
+      if (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
+      }
+//      console.log(result);
+      conn.close();
+    });
+  });
+};

@@ -66,7 +66,11 @@
           <div class="col-md-12">
             <div class="chart">
               <!-- Sales Chart Canvas -->
-              <div id="chart2bars"  class="height400"></div>
+              <div id="chart2bars"  class="height400">
+                <div class="overlay">
+                  <i class="fa fa-refresh fa-spin"></i>
+                </div>
+              </div>
             </div><!-- /.chart-responsive -->
           </div><!-- /.col -->
           <!--<div class="col-md-3">
@@ -122,33 +126,55 @@
         </div>
       </div><!-- /.box-header -->
       <div class="box-body">
-        <div class="row">
+        <div class="row margin">
           <div class="col-md-12">
-            <div class="col-lg-offset-4 col-md-4">
-              <div class="input-group margin">
-                <div class="input-group-btn">
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Select Sensor <span class="fa fa-caret-down"></span></button>
-                  <ul class="dropdown-menu">
-                    <li><a href="#">Action</a></li>
-                  </ul>
-                </div><!-- /btn-group -->
-                <input type="text" class="form-control">
+            <div class="col-md-2 col-centered">
+              <div id="select-chart-sensor">
+                <select name="select-sensor" class="selectpicker show-tick">
+                </select>
               </div>
             </div>
           </div><!-- /.col -->
         </div><!-- /.col -->
         <div class="row">
           <div class="col-md-6">
-            <div class="chart">
-              <!-- Sales Chart Canvas -->
-              <div id="chartdisp"  class="height400"></div>
-            </div><!-- /.chart-responsive -->
+            <div class="box">
+              <div class="box-header with-border">
+                <h3 class="box-title">Power of Mobile Devices</h3>
+              </div><!-- /.box-header -->
+              <div class="box-body">
+                <div class="chart">
+                  <!-- Sales Chart Canvas -->
+                  <div id="chartdisp"  class="box-header with-border height400">
+                    <div class="overlay">
+                      <i class="fa fa-refresh fa-spin"></i>
+                    </div>
+                  </div>
+                </div><!-- /.chart-responsive -->
+              </div><!-- /.box-body -->
+              <div class="box-footer clearfix">                  
+              </div>
+            </div>
           </div><!-- /.col -->
           <div class="col-md-6">
-            <div class="chart">
-              <!-- Sales Chart Canvas -->
-              <div id="chartap"  class="height400"></div>
-            </div><!-- /.chart-responsive -->
+
+            <div class="box">
+              <div class="box-header with-border">
+                <h3 class="box-title">Power of Access Points</h3>
+              </div><!-- /.box-header -->
+              <div class="box-body">
+                <div class="chart">
+                  <!-- Sales Chart Canvas -->
+                  <div id="chartap"  class="box-header with-border height400 box-success">
+                    <div class="overlay">
+                      <i class="fa fa-refresh fa-spin"></i>
+                    </div>
+                  </div>
+                </div><!-- /.chart-responsive -->
+              </div><!-- /.box-body -->
+              <div class="box-footer clearfix">                  
+              </div>
+            </div>
           </div><!-- /.col -->
         </div><!-- /.row -->     
       </div><!-- ./box-body -->
@@ -175,7 +201,11 @@
           <div class="col-md-8">
             <div class="chart">
               <!-- Sales Chart Canvas -->
-              <div id="chart1LineActives"  class="height400"></div>
+              <div id="chart1LineActives"  class="height400">
+                <div class="overlay">
+                  <i class="fa fa-refresh fa-spin"></i>
+                </div>
+              </div>
             </div><!-- /.chart-responsive -->
           </div><!-- /.col -->
           <div class="col-md-4">
@@ -207,7 +237,11 @@
           <div class="col-md-8">
             <div class="chart">
               <!-- Sales Chart Canvas -->
-              <div id="chartDispVisit" class="height400"></div>
+              <div id="chartDispVisit" class="height400">
+                <div class="overlay">
+                  <i class="fa fa-refresh fa-spin"></i>
+                </div>
+              </div>
             </div><!-- /.chart-responsive -->
           </div><!-- /.col -->
           <div class="col-md-4">

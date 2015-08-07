@@ -1,31 +1,27 @@
 window.DashboardView = Backbone.View.extend({
-  loading: '<div class="overlay">' +
-          '<i class="fa fa-refresh fa-spin"></i>' +
-          '</div>',
   socketDashboard: null,
   graph2Bar: undefined,
   chart: undefined,
   interval_chart: null,
   countChart: undefined,
+  lastSensorselect: "",
   self: this,
   events: {
-    "click #teste": "testeMap"
+    "click #teste": "testeMap",
+    "click .select-sensor-lst": "selectsensortochart"
   },
   initialize: function (opt) {
     this.socketDashboard = opt.socket;
   },
   init: function () {
+    $('.selectpicker').selectpicker();
     var self = this;
-    $("body").find("#chart2bars").html(self.loading);
-    $("body").find("#chart1LineActives").html(self.loading);
-    $("body").find("#chartDispVisit").html(self.loading);
 
     self.requestNumDisps();
     self.createChart2Bar();
     self.chartDispActive();
     self.createChartTotalVisitas();
     self.MapSensors();
-
 
     $.AdminLTE.boxWidget.activate();
   },
@@ -48,6 +44,12 @@ window.DashboardView = Backbone.View.extend({
     modem("GET",
             "/getAllAntenasAndDisps/" + window.profile.id,
             function (data) {
+              var sensorList = "";
+              for (var i in data) {
+                sensorList += '<option class="select-sensor-lst">' + data[i].AP.nome + '</option>';
+              }
+              $("#select-chart-sensor > select").html(sensorList).selectpicker('refresh');
+              $("#select-chart-sensor div.dropdown-menu ul.dropdown-menu li.selected a").trigger('click');
               self.graph2Bar = new ArrayToGraph(data, "", "", "chart2bars", "column");
               // para aparecer a div com os resultados
               self.graph2Bar.createArrayToGraphTwoBar();
@@ -57,6 +59,33 @@ window.DashboardView = Backbone.View.extend({
               error_launch(json.message);
             }, {}
     );
+  },
+  selectsensortochart: function (e) {
+    var self = this;
+    var sensor = $(e.currentTarget).text();
+    if (self.lastSensorselect != sensor) {
+      self.lastSensorselect = sensor;
+      modem("GET",
+              "/getpowerlistdispmoveis/" + window.profile.id + "/" + sensor + "/disp",
+              function (data) {
+                var chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
+      );
+      modem("GET",
+              "/getpowerlistdispmoveis/" + window.profile.id + "/" + sensor + "/ap",
+              function (data) {
+                var chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartap");
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
+      );
+    }
   },
   MapSensors: function (e) {
     modem("GET",
