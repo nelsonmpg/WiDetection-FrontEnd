@@ -55,17 +55,21 @@
       },
       setsensor: function () {
           this.sensor = $('#SensorSelect').find(":selected").text();
-          carregarmapa([[$('#SensorSelect').find(":selected").data("city"),
+          var map = carregarmapa([[$('#SensorSelect').find(":selected").data("city"),
                   $('#SensorSelect').find(":selected").data("lat"),
                   $('#SensorSelect').find(":selected").data("log"),
                   $('#SensorSelect').find(":selected").data("date")]],
               $("#mapSensor")[0]);
+
+          addCircletoMap(map, [{lat:$('#SensorSelect').find(":selected").data("lat"),log:$('#SensorSelect').find(":selected").data("log"),
+              value: 1
+          }]);
       },
       changedate: function (ev, picker) {
           console.log(picker.startDate.format());
           console.log(picker.endDate.format());
 
-          
+
           this.loadcharts(moment(picker.startDate, moment.ISO_8601),
               moment(picker.endDate, moment.ISO_8601));
       },
@@ -78,7 +82,7 @@
                   function (data) {
                       var values = [];
                       for (var i in data) {
-                          values.push({y:data[i].reduction.length,label:data[i].group});
+                          values.push({y: data[i].reduction.length, label: data[i].group});
                       }
 
                       var chart = new CanvasJS.Chart("mapAccessPoint",
