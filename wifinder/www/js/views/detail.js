@@ -13,6 +13,9 @@
       init: function () {
           //alert("DetailView Inicializada");
           var self = this;
+
+          this.getSensors();
+
           this.dataselect(moment().subtract(29, 'days'), moment());
 
           $('#reportrange').daterangepicker({
@@ -30,7 +33,9 @@
               self.changedate(ev, picker);
           });
 
-          this.getSensors();
+
+
+
           $.AdminLTE.boxWidget.activate();
       },
       selectSensor: function (e) {
@@ -61,21 +66,50 @@
                   $('#SensorSelect').find(":selected").data("date")]],
               $("#mapSensor")[0]);
 
-          addCircletoMap(map, [{lat:$('#SensorSelect').find(":selected").data("lat"),log:$('#SensorSelect').find(":selected").data("log"),
-              value: 1
-          }]);
+          addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
+                  value: 1
+              }]);
+          this.tableload();
+      },
+      tableload: function () {
+          modem("GET",
+              "/getDispMoveisbySensor/" + window.profile.id + "/" + $('#SensorSelect').find(":selected").text(),
+              function (data) {
+                  var dataSet = [];
+                  for (var i in data) {
+                      for (var a in data[i].reduction) {
+                          dataSet.push([data[i].reduction[a].macAddress, data[i].group,
+                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
+                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID == "(notassociated)") ? "" : data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID
+                          ]);
+                      }
+                  }
+                  if (data.length == 0) {
+                      $('#tblDetails').append('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
+                  } else {
+                      $('#tblDetails').DataTable({
+                          "data": dataSet,
+                          "paging": true,
+                          "lengthChange": false,
+                          "searching": false,
+                          "ordering": true,
+                          "info": true,
+                          "autoWidth": true
+                      });
+                  }
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                  var json = JSON.parse(xhr.responseText);
+                  error_launch(json.message);
+              }, {}
+          );
       },
       changedate: function (ev, picker) {
-          console.log(picker.startDate.format());
-          console.log(picker.endDate.format());
-
-
-          this.loadcharts(moment(picker.startDate, moment.ISO_8601),
-              moment(picker.endDate, moment.ISO_8601));
+          this.loadcharts(picker.startDate.format(), picker.endDate.format());
       },
       loadcharts: function (min, max) {
           var self = this;
-          console.log(window.profile.id, min, max);
           if (window.profile.id != undefined && self.sensor != undefined) {
               modem("GET",
                   "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
@@ -84,30 +118,84 @@
                       for (var i in data) {
                           values.push({y: data[i].reduction.length, label: data[i].group});
                       }
+                      if (data.length == 0) {
+                          $('#chartAccessPoint').html('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
+                      } else {
+                          var chart = new CanvasJS.Chart("chartAccessPoint",
+                              {
+                                  animationEnabled: true,
+                                  axisX: {
+                                      labelAngle: -45,
+                                      interval: 1
+                                  },
+                                  axisY: {
+                                      interval: 1
+                                  },
+                                  legend: {
+                                      verticalAlign: "bottom",
+                                      horizontalAlign: "center"
+                                  },
+                                  theme: "theme2",
+                                  data: [
+                                      {
+                                          type: "column",
+                                          dataPoints: values
+                                      }
+                                  ]
+                              });
 
-                      var chart = new CanvasJS.Chart("mapAccessPoint",
-                          {
-                              animationEnabled: true,
-                              legend: {
-                                  verticalAlign: "bottom",
-                                  horizontalAlign: "center"
-                              },
-                              theme: "theme2",
-                              data: [
-                                  {
-                                      type: "column",
-                                      dataPoints: values
-                                  }
-                              ]
-                          });
-
-                      chart.render();
+                          chart.render();
+                      }
                   },
                   function (xhr, ajaxOptions, thrownError) {
                       var json = JSON.parse(xhr.responseText);
                       error_launch(json.message);
                   }, {}
               );
+
+              //grafico disp moveis
+              modem("GET",
+                  "/getAllOrderbyVendor/" + window.profile.id + "/disp/" + self.sensor + "/" + max + "/" + min,
+                  function (data) {
+                      var values = [];
+                      for (var i in data) {
+                          values.push({y: data[i].reduction.length, label: data[i].group});
+                      }
+                      if (data.length == 0) {
+                          $('#chartDispMoveis').html('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
+                      } else {
+                          var chart = new CanvasJS.Chart("chartDispMoveis",
+                              {
+                                  animationEnabled: true,
+                                  axisX: {
+                                      labelAngle: -45,
+                                      interval: 1
+                                  },
+                                  axisY: {
+                                      interval: 1
+                                  },
+                                  legend: {
+                                      verticalAlign: "bottom",
+                                      horizontalAlign: "center"
+                                  },
+                                  theme: "theme2",
+                                  data: [
+                                      {
+                                          type: "column",
+                                          dataPoints: values
+                                      }
+                                  ]
+                              });
+
+                          chart.render();
+                      }
+                  },
+                  function (xhr, ajaxOptions, thrownError) {
+                      var json = JSON.parse(xhr.responseText);
+                      error_launch(json.message);
+                  }, {}
+              );
+
           }
       },
       render: function () {

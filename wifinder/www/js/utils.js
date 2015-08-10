@@ -235,7 +235,6 @@
 
 
   var addCircletoMap = function (map, list) {
-      console.log(list);
       for (var item in list) {
           var circleOptions = {
               strokeColor: '#FF0000',
