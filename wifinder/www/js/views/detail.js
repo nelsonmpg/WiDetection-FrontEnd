@@ -32,9 +32,8 @@
           $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
               self.changedate(ev, picker);
           });
-
-
-
+          
+         $("#div.daterangepicker.dropdown-menu.opensleft > div.ranges > li:nth-child(1)").click();
 
           $.AdminLTE.boxWidget.activate();
       },
@@ -69,6 +68,11 @@
           addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
                   value: 1
               }]);
+          
+          $("#tblSensor").html('<tr><th style="width:50%">Latitude:</th><td>'+$('#SensorSelect').find(":selected").data("lat")+'</td></tr>'+
+                                '<tr><th style="width:50%">Longitude:</th><td>'+$('#SensorSelect').find(":selected").data("log")+'</td></tr>'+
+                                 '<tr><th style="width:50%">Last Active:</th><td>'+moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm')+'</td></tr>');
+          
           this.tableload();
       },
       tableload: function () {
@@ -116,7 +120,7 @@
                   function (data) {
                       var values = [];
                       for (var i in data) {
-                          values.push({y: data[i].reduction.length, label: data[i].group});
+                          values.push({y: data[i].reduction[0].values.length, label: data[i].group});
                       }
                       if (data.length == 0) {
                           $('#chartAccessPoint').html('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
@@ -159,7 +163,8 @@
                   function (data) {
                       var values = [];
                       for (var i in data) {
-                          values.push({y: data[i].reduction.length, label: data[i].group});
+                          console.log(data[i]);
+                          values.push({y: data[i].reduction[0].values.length, label: data[i].group});
                       }
                       if (data.length == 0) {
                           $('#chartDispMoveis').html('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');

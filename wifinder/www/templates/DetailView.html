@@ -17,7 +17,7 @@
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group  height400">
+                        <div class="form-group">
                             <label>Sensor</label>
                             <select class="form-control select2" id="SensorSelect">
                             </select>
@@ -30,15 +30,26 @@
                             </div>
                         </div><!-- /.form group -->
 
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.box-body -->
 
-        </div><!-- /.box -->
-    </div><!-- /.col -->
+
+                        <div class="col-md-12">
+                            <p class="lead">Details sensor:</p>
+                            <div class="table-responsive">
+                                <table id="tblSensor" class="table"> 
+
+                                </table>
+                            </div>
+                        </div><!-- /.col -->
+
+                    </div><!-- /.box-body -->
+                </div><!-- /.box -->
+            </div> <!-- row -->
+
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+
 
     <div class="col-md-6">
-
         <div class="box">
             <div  class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-map fa-fw"></i> Geolocation </h3>
@@ -53,8 +64,8 @@
             </div><!-- /.box-header -->
             <div class="box-body">
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="chart height400">
+                    <div class="col-md-12 height400">
+                        <div class="chart">
                             <!-- Sales Chart Canvas -->
                             <div id="mapSensor"  class="height400">                                
                                 <div class="overlay text-center">
@@ -125,7 +136,7 @@
                         <div class="chart">
                             <!-- Sales Chart Canvas -->
                             <div id="chartDispMoveis"  class="height400">
-                               <div class="overlay text-center">
+                                <div class="overlay text-center">
                                     <h1><i class="fa fa-refresh fa-spin"></i> No Results</h1>
                                 </div>
                             </div>
