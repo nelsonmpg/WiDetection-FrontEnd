@@ -280,26 +280,62 @@ module.exports.getpluckDispMoveis = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getAllOrderbyVendor = function (req, res) {
-  var min = new Date(req.params.min / 1000).toJSON();
-  var max = new Date(req.params.max / 1000).toJSON();
-  var table = ((req.params.table).toString().toUpperCase() == "AP") ? "AntAp" : "AntDisp";
+  var min = req.params.min;//new Date(req.params.min).toJSON();
+  var max = req.params.max;//new Date(req.params.max).toJSON();
+  console.log(min, max);
+  var table = ((req.params.table).toString().toUpperCase() == "AP") ? "DispAp" : "DispMoveis";
   connectdb.onConnect(function (err, conn) {
-    console.log(req.params.min, req.params.max);
-    r.db(self.getDataBase(req.params.id)).table(table).get(req.params.sensor)("host").map(function (a) {
-      return {"nameVendor": a("nameVendor").upcase(), "a": a};
-    }).group("nameVendor")("a")("data").filter(function (result) {
-      return result.ge(r.ISO8601(min).toEpochTime()).le(r.ISO8601(max).toEpochTime());
-    }).coerceTo("ARRAY")
+    r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
+      return row("disp")("values").contains(function (a) {
+        return a("Last_time").contains(function (b) {
+          return b.ge(r.ISO8601(min).toEpochTime()).and(b.le(r.ISO8601(max).toEpochTime()));
+        })
+      })
+    }).group("nameVendor").filter(function (a) {
+      return a("disp").contains(function (b) {
+        return b("name").eq(req.params.sensor)
+      })
+    })
+            .coerceTo("ARRAY")
             .run(conn, function (err, result) {
               if (err) {
                 console.log("ERROR: %s:%s", err.name, err.msg);
               } else {
+                console.log(result);
                 res.send(result);
               }
               conn.close();
             });
   });
 };
+
+/**
+ * Devolve a tabela DispMoveis filtrada pelo nome do sensor
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getDispMoveisbySensor = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.id)).table("DispMoveis").filter(function (row) {
+      return row("disp")("name").contains(function (a) {
+        return a.match("^" + req.params.sensor + "$");
+      });
+    })
+            .group("nameVendor")
+            .coerceTo("ARRAY")
+            .run(conn, function (err, result) {
+              if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                console.log(result);
+                res.send(result);
+              }
+              conn.close();
+            });
+  });
+};
+
 
 /**
  * 
@@ -387,7 +423,6 @@ module.exports.getAllDisp = function (iduser, socket) {
   }
 };
 
-
 /**
  * 
  * @param {type} req
@@ -403,7 +438,7 @@ module.exports.getLastAllTimes = function (req, res) {
 
 module.exports.getLiveActives = function () {
   return liveActives;
-};
+}
 
 Date.prototype.addMinutes = function (h) {
   this.setMinutes(this.getMinutes() + h);

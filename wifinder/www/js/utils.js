@@ -188,7 +188,7 @@
           if (locations[i][3] != null) {
               var now = new Date();
               if (new Date(locations[i][3]) > now.addMinutes(-5)) {
-                  icon = icons[2];
+                  icon = icons[3];
               } else {
                   icon = icons[0];
               }
@@ -230,8 +230,27 @@
 //      }
 //    });
       });
+      return map;
   };
 
+
+  var addCircletoMap = function (map, list) {
+      for (var item in list) {
+          var circleOptions = {
+              strokeColor: '#FF0000',
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+              fillColor: '#FF0000',
+              fillOpacity: 0.35,
+              map: map,
+              center: new google.maps.LatLng(list[item].lat,list[item].log),
+              radius: Math.sqrt(list[item].value) * 10
+          };
+          // Add the circle for this city to the map.
+          return new google.maps.Circle(circleOptions);
+      }
+  };
+  
   var displayCoordinates = function (pnt) {
       var lat = pnt.lat();
       lat = lat.toFixed(4);
