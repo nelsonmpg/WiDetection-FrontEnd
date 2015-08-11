@@ -284,16 +284,19 @@
       var max = req.params.max;//new Date(req.params.max).toJSON();
       console.log(min, max);
       var table = ((req.params.table).toString().toUpperCase() == "AP") ? "DispAp" : "DispMoveis";
-      connectdb.onConnect(function (err, conn) {          
-           r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
+      connectdb.onConnect(function (err, conn) {
+          r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
               return row("disp")("values").contains(function (a) {
                   return a("Last_time").contains(function (b) {
                       return b.ge(r.ISO8601(min).toEpochTime()).and(b.le(r.ISO8601(max).toEpochTime()));
                   })
               })
-          }).group("nameVendor")("disp").nth(0)
-              .filter({"name": req.params.sensor})
-              .coerceTo("ARRAY")          
+          }).group("nameVendor").filter(function (a) {
+              return a("disp").contains(function (b) {
+                  return b("name").eq(req.params.sensor)
+              })
+          })
+              .coerceTo("ARRAY")
               .run(conn, function (err, result) {
                   if (err) {
                       console.log("ERROR: %s:%s", err.name, err.msg);

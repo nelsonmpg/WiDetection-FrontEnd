@@ -188,7 +188,7 @@
           if (locations[i][3] != null) {
               var now = new Date();
               if (new Date(locations[i][3]) > now.addMinutes(-5)) {
-                  icon = icons[2];
+                  icon = icons[3];
               } else {
                   icon = icons[0];
               }
