@@ -116,7 +116,11 @@
       this.app.get("/getAllOrderbyVendor/:id/:table/:sensor/:max/:min", pedidos.getAllOrderbyVendor);
 
       this.app.get("/getDispMoveisbySensor/:id/:sensor", pedidos.getDispMoveisbySensor);
-
+      
+       ///////// Page DetailAP //////////
+      
+      this.app.get("/getAllAP/:id", pedidos.getAllAP);
+      
       ////////////////////////////////
 
 // ----------------------------- Pedidos Users -----------------------------------

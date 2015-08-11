@@ -15,7 +15,7 @@
           var self = this;
 
           this.getSensors();
-
+          
           this.dataselect(moment().subtract(29, 'days'), moment());
 
           $('#reportrange').daterangepicker({
@@ -64,7 +64,7 @@
                   $('#SensorSelect').find(":selected").data("log"),
                   $('#SensorSelect').find(":selected").data("date")]],
               $("#mapSensor")[0]);
-
+         
           addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
                   value: 1
               }]);
@@ -173,7 +173,7 @@
 
                           chart.render();
                       }
-                  },
+      },
                   function (xhr, ajaxOptions, thrownError) {
                       var json = JSON.parse(xhr.responseText);
                       error_launch(json.message);
