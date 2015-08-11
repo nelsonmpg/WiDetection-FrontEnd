@@ -9,7 +9,7 @@ var jsdiff = require('diff');
 var chokidar = require('chokidar');
 var lineReader = require('line-reader');
 var localTable = [];
-var fileRead = './scanNetworks-01.csv';
+var fileRead = '/media/usb/scanNetworks-01.csv';
 
 var watcher = chokidar.watch(fileRead, {
   ignored: /[\/\\]\./,

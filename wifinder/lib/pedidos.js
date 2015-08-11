@@ -336,7 +336,6 @@ module.exports.getDispMoveisbySensor = function (req, res) {
     });
 };
 
-
 /**
  * Devolve todos os ap organizados por macaddress e essid 
  * @param {type} req
@@ -446,7 +445,6 @@ module.exports.getAllDisp = function (iduser, socket) {
         });
     }
 };
-
 
 /**
  * 
