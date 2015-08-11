@@ -25,10 +25,10 @@ module.exports.insertDispMovel = function (valsHost, client) {
       r.branch(
               row("disp")("name").contains(client),
               row.merge({
-                "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : r.db(self.dbConfig.db)
+                "Probed_ESSIDs": r.db(self.dbConfig.db)
                         .table("DispMoveis")
                         .get(valsHost[0])("Probed_ESSIDs")
-                        .setUnion(valsHost[6].split(",")),
+                        .setUnion((typeof valsHost[6] == "undefined") ? "" : valsHost[6].split(",")),
                 "disp": row('disp').map(function (d) {
                   return r.branch(
                           d('name').eq(client).default(false),
@@ -41,10 +41,10 @@ module.exports.insertDispMovel = function (valsHost, client) {
                 })}), {
         "macAddress": valsHost[0],
         "nameVendor": r.db(self.dbConfig.db).table("tblPrefix").get(valsHost[0].substring(0, 8)).getField("vendor").default(""),
-        "Probed_ESSIDs": (typeof valsHost[6] == "undefined") ? "" : r.db(self.dbConfig.db)
+        "Probed_ESSIDs": r.db(self.dbConfig.db)
                 .table("DispMoveis")
                 .get(valsHost[0])("Probed_ESSIDs")
-                .setUnion(valsHost[6].split(",")),
+                .setUnion((typeof valsHost[6] == "undefined") ? "" : valsHost[6].split(",")),
         "disp": row("disp").append({
           "name": client,
           "First_time": r.now().inTimezone("+01:00").toEpochTime(),
