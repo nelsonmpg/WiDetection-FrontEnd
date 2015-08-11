@@ -403,7 +403,7 @@ module.exports.getLastAllTimes = function (req, res) {
 
 module.exports.getLiveActives = function () {
   return liveActives;
-}
+};
 
 Date.prototype.addMinutes = function (h) {
   this.setMinutes(this.getMinutes() + h);
