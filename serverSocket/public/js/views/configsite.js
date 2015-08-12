@@ -82,14 +82,14 @@ window.ConfigSiteView = Backbone.View.extend({
                 $("#sensor-posx").val(data.localsensorposx);
                 $("#sensor-posy").val(data.localsensorposy);
                 carregarmapa([["<h4>" + $("#sensor-name").val() + "</h4>", $("#sensor-latitude").val(), $("#sensor-longitude").val()]], $("#map-google")[0], self.selectnewposition);
-                $("#Check-Position").css({
-                  display: "none"
-                });
+//                $("#Check-Position").css({
+//                  display: "none"
+//                });
                 self.validinifile = true;
               } else {
-                $("#Check-Position").css({
-                  display: "block"
-                });
+//                $("#Check-Position").css({
+//                  display: "block"
+//                });
                 self.validinifile = false;
               }
             },
@@ -286,9 +286,9 @@ window.ConfigSiteView = Backbone.View.extend({
       $("#sensor-latitude").val(data.results[0].geometry.location.lat);
       $("#sensor-longitude").val(data.results[0].geometry.location.lng);
       carregarmapa([["<h4>" + $("#sensor-name").val() + "</h4>", $("#sensor-latitude").val(), $("#sensor-longitude").val()]], $("#map-google")[0], self.selectnewposition);
-      $("#Check-Position").css({
-        display: "none"
-      });
+//      $("#Check-Position").css({
+//        display: "none"
+//      });
     });
   },
   render: function () {
