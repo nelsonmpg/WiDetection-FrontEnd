@@ -9,6 +9,10 @@ window.DetailAPView = Backbone.View.extend({
     },
     init: function () {
         this.carregarSelect();
+        console.log(this.mac);
+        if (this.mac != null) {
+            $("#ApSelect > option[data-mac='"+this.mac+"']").select();
+        }
     },
     setAp: function () {
         this.ap = $('#ApSelect').find(":selected").data("mac");
