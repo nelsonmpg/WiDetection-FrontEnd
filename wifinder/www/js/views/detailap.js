@@ -11,7 +11,7 @@ window.DetailAPView = Backbone.View.extend({
         this.carregarSelect();
         console.log(this.mac);
         if (this.mac != null) {
-            $("#ApSelect > option[data-mac='"+this.mac+"']").select();
+            $("#ApSelect > option[data-mac='" + this.mac + "']").select();
         }
     },
     setAp: function () {
@@ -29,7 +29,7 @@ window.DetailAPView = Backbone.View.extend({
                         }
                     }
                     for (var i in values) {
-                        $("#ApSelect").append("<option data-mac='" + i + "' >" + values[i] + "</option>");
+                        $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i] == "") ? "Hidden network" : values[i]) + " - (" + i + ")</option>");
                     }
                 },
                 function (xhr, ajaxOptions, thrownError) {
@@ -43,6 +43,7 @@ window.DetailAPView = Backbone.View.extend({
         modem("GET",
                 "/getDispConnectedtoAp/" + window.profile.id + "/" + mac,
                 function (data) {
+                    console.log(data);
                     self.network(data);
                 },
                 function (xhr, ajaxOptions, thrownError) {
@@ -51,32 +52,62 @@ window.DetailAPView = Backbone.View.extend({
                 }, {}
         );
     },
-    network: function(data){
+    network: function (data) {
         var xnodes = [];
-                    var xedges = [];
-                    xnodes.push({id: 1, label: $('#ApSelect').find(":selected").text()});
-                    for (var i in data) {
-                        xnodes.push({id: i + 2, label: data[i].nameVendor + "\n" + data[i].macAddress});
-                        xedges.push({from: 1, to: (i + 2)});
+        var xedges = [];
+        xnodes.push({id: 1, label: $('#ApSelect').find(":selected").text(),group:"ap"});
+        for (var i in data) {
+            xnodes.push({id: i + 2, label: data[i].nameVendor + "\n" + data[i].macAddress,group:"device"});
+            xedges.push({from: 1, to: (i + 2)});
+        }
+        // create 2 array with edges and nodes
+        var edges = new vis.DataSet(xedges);
+        var nodes = new vis.DataSet(xnodes);
+        // create a network
+        var container = document.getElementById('mynetwork');
+
+        // provide the data in the vis format
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        var options = {
+            "edges": {
+                "smooth": {
+                    "roundness": 1
+                }
+            },
+            groups: {
+                ap: {
+                    shape: 'icon',
+                    icon: {
+                        face: 'FontAwesome',
+                        code: '\uf1eb',
+                        size: 50,
+                        color: '#00ff00'
                     }
-                    // create 2 array with edges and nodes
-                    var edges = new vis.DataSet(xedges);
-                    var nodes = new vis.DataSet(xnodes);
-                    // create a network
-                    var container = document.getElementById('mynetwork');
+                },
+                device: {
+                    shape: 'icon',
+                    icon: {
+                        face: 'FontAwesome',
+                        code: '\uf108',
+                        size: 50,
+                        color: '#eeeeee'
+                    }
+                }
+            }
+        };
 
-                    // provide the data in the vis format
-                    var data = {
-                        nodes: nodes,
-                        edges: edges
-                    };
-                    var options = {};
+        // initialize your network!
+        var network = new vis.Network(container, data, options);
 
-                    // initialize your network!
-                    var network = new vis.Network(container, data, options);
-    },
-    render: function () {
-        $(this.el).html(this.template());
-        return this;
-    }
+
+
+        }
+        ,
+                render: function () {
+                $(this.el).html(this.template());
+                return this;
+            }
 });

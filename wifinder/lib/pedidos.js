@@ -138,8 +138,6 @@ module.exports.getAllSensorAndisp = function (req, res) {
 };
 
 module.exports.getNumDispositivos = function (req, res) {
-    console.log(req.params.id);
-    console.log(self.getDataBase(req.params.id));
     connectdb.onConnect(function (err, conn) {
         r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().do(function (val) {
             return {"sensor": val,
@@ -282,7 +280,6 @@ module.exports.getpluckDispMoveis = function (req, res) {
 module.exports.getAllOrderbyVendor = function (req, res) {
     var min = req.params.min;//new Date(req.params.min).toJSON();
     var max = req.params.max;//new Date(req.params.max).toJSON();
-    console.log(min, max);
     var table = ((req.params.table).toString().toUpperCase() == "AP") ? "DispAp" : "DispMoveis";
     connectdb.onConnect(function (err, conn) {
         r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
