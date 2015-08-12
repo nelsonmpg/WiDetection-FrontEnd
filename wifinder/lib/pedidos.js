@@ -301,7 +301,6 @@ module.exports.getAllOrderbyVendor = function (req, res) {
                     if (err) {
                         console.log("ERROR: %s:%s", err.name, err.msg);
                     } else {
-                        console.log(result);
                         res.send(result);
                     }
                     conn.close();
@@ -328,7 +327,6 @@ module.exports.getDispMoveisbySensor = function (req, res) {
                     if (err) {
                         console.log("ERROR: %s:%s", err.name, err.msg);
                     } else {
-                        console.log(result);
                         res.send(result);
                     }
                     conn.close();
@@ -345,13 +343,12 @@ module.exports.getDispMoveisbySensor = function (req, res) {
 module.exports.getAllAP = function (req, res) {
     connectdb.onConnect(function (err, conn) {
         r.db(self.getDataBase(req.params.id))
-                .table("DispMoveis")("host")
+                .table("AntAp")("host")
                 .group("macAddress", "ESSID")
                 .run(conn, function (err, result) {
                     if (err) {
                         console.log("ERROR: %s:%s", err.name, err.msg);
                     } else {
-                        console.log(result);
                         res.send(result);
                     }
                     conn.close();
@@ -359,6 +356,33 @@ module.exports.getAllAP = function (req, res) {
     });
 };
 
+/**
+ * retorna os dispositivos que estiveram ligados a um determinado ap
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getDispConnectedtoAp = function (req, res) {
+    connectdb.onConnect(function (err, conn) {
+        r.db(self.getDataBase(req.params.id))
+                .table("DispMoveis").filter(function (row) {
+            return row("disp")("values").contains(function (a) {
+                return a("BSSID").contains(function (b) {
+                    return b.match(req.params.mac)
+                })
+            })
+        })
+                .coerceTo("array")
+                .run(conn, function (err, result) {
+                    if (err) {
+                        console.log("ERROR: %s:%s", err.name, err.msg);
+                    } else {
+                        res.send(result);
+                    }
+                    conn.close();
+                });
+    });
+};
 
 /**
  * 
