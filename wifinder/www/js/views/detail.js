@@ -147,7 +147,13 @@ window.DetailView = Backbone.View.extend({
                         }
                         if (data.length == 0) {
                             $('#chartAccessPoint').html('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
+                            $("#div-charts-details").hide();
+                            $("#div-row-table-ap").hide();
+                             $("#div-no-result").show();
                         } else {
+                            $("#div-charts-details").show();
+                            $("#div-row-table-ap").show();
+                             $("#div-no-result").hide();
                             $('#tblDetailsAp').DataTable({
                                 "data": dataSet,
                                 "paging": true,
@@ -162,7 +168,9 @@ window.DetailView = Backbone.View.extend({
                                     {
                                         animationEnabled: true,
                                         axisX: {
-                                            labelAngle: 0,
+                                            labelAngle: -90,
+                                            labelMaxWidth: 100,
+                                            labelWrap: false,
                                             interval: 1
                                         },
                                         axisY: {
@@ -206,9 +214,11 @@ window.DetailView = Backbone.View.extend({
                             }
                         }
                         if (data.length == 0) {
-                            $('#chartDispMoveis').html('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
+                             $("#div-row-table-devices").hide();
+                             $("#div-no-result").show();
                         } else {
-
+                            $("#div-row-table-devices").show();
+                             $("#div-no-result").hide();
                             $('#tblDetailsDevices').DataTable({
                                 "data": dataSet,
                                 "paging": true,
@@ -224,7 +234,9 @@ window.DetailView = Backbone.View.extend({
                                     {
                                         animationEnabled: true,
                                         axisX: {
-                                            labelAngle: -45,
+                                            labelAngle: -90,
+                                            labelMaxWidth: 100,
+                                             labelWrap: false,
                                             interval: 1
                                         },
                                         axisY: {
