@@ -21,6 +21,7 @@
     "express": "*",
     "ini": "*",
     "line-reader": "^0.2.4",
+    "request": "^2.60.0",
     "rethinkdb": "*",
     "socket.io": "*",
     "underscore": "*",

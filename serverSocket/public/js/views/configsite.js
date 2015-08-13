@@ -4,6 +4,8 @@ window.ConfigSiteView = Backbone.View.extend({
   location: "http://maps.google.com/maps/api/geocode/json?address=",
   keyloc: "&sensor=false",
   validinifile: false,
+  inputchanged: false,
+  continue: false,
   events: {
     "click .select-opt-device": "selectDevice",
     "click #create-monitor": "createmonitor",
@@ -12,7 +14,8 @@ window.ConfigSiteView = Backbone.View.extend({
     "click #start_monitor": "startmonitor",
     "click #stop-monitor": "stopmonitor",
     "click #Check-Position": "fistposition",
-    "click #refresh-values": "refresh"
+    "click #refresh-values": "refresh",
+    "click .btn-modal": "checksave"
   },
   initialize: function () {
   },
@@ -49,6 +52,10 @@ window.ConfigSiteView = Backbone.View.extend({
   },
   init: function () {
     var self = this;
+    $("#server-ip:input").inputmask();
+    $('body').on('input', function (e) {
+      self.inputchanged = true;
+    });
     $('table input').keyup(function () { //  fa-check   fa-close
       self.checkImputs();
     });
@@ -82,14 +89,8 @@ window.ConfigSiteView = Backbone.View.extend({
                 $("#sensor-posx").val(data.localsensorposx);
                 $("#sensor-posy").val(data.localsensorposy);
                 carregarmapa([["<h4>" + $("#sensor-name").val() + "</h4>", $("#sensor-latitude").val(), $("#sensor-longitude").val()]], $("#map-google")[0], self.selectnewposition);
-//                $("#Check-Position").css({
-//                  display: "none"
-//                });
                 self.validinifile = true;
               } else {
-//                $("#Check-Position").css({
-//                  display: "block"
-//                });
                 self.validinifile = false;
               }
             },
@@ -200,9 +201,25 @@ window.ConfigSiteView = Backbone.View.extend({
     $("#sensor-longitude").val(data.long);
     $("#sensor-local").val(data.place);
   },
-  savesettings: function () {
+  checksave: function (e) {
     var self = this;
-
+    switch ($(e.currentTarget).data("event")) {
+      case"close":
+        break;
+      case "notsave":
+        self.continue = true;
+        self.startmonitor();
+        break;
+      case "save":
+        self.inputchanged = false;
+        self.continue = true;
+        self.savesettings(self.startmonitor());
+        break;
+    }
+    $(".modal").hide();
+  },
+  savesettings: function (callback) {
+    var self = this;
     if (self.checkImputs()) {
       var settings = {
         sitename: $("#site-name").val(),
@@ -222,6 +239,9 @@ window.ConfigSiteView = Backbone.View.extend({
                 if (data == "save") {
                   showmsg('.my-modal', "success", "Seved Settings!");
                   self.validinifile = true;
+                  if (typeof callback == "function") {
+                    callback();
+                  }
                 } else {
                   showmsg('.my-modal', "error", "Error");
                 }
@@ -239,29 +259,33 @@ window.ConfigSiteView = Backbone.View.extend({
   },
   startmonitor: function () {
     var self = this;
-    if (self.validinifile) {
-      console.log("start monitor");
-      showInfoMsg(true, '.my-modal', "Start Monitor.<br>Wait... <i class='fa fa-refresh fa-spin'></i>");
-      if ($("#device-monitor").val().trim().length > 0) {
-        modem("POST",
-                "/startmonitor",
-                function (data) {
-                  console.log(data);
-                  self.checkmonitorstarted();
-                  showInfoMsg(false, '.my-modal');
-                },
-                function (xhr, ajaxOptions, thrownError) {
-                  var json = JSON.parse(xhr.responseText);
-                  error_launch(json.message);
-                }, {}
-        );
-      } else {
-        showmsg('.my-modal', "warning", "Create Monitor First!");
-      }
+    if (self.inputchanged && !self.continue) {
+      $(".modal").show();
     } else {
-      showmsg('.my-modal', "warning", "Save Settings First!");
+      if (self.validinifile) {
+        self.continue = false;
+        if ($("#device-monitor").val().trim().length > 0) {
+          console.log("start monitor");
+          showInfoMsg(true, '.my-modal', "Start Monitor.<br>Wait... <i class='fa fa-refresh fa-spin'></i>");
+          modem("POST",
+                  "/startmonitor",
+                  function (data) {
+                    console.log(data);
+                    self.checkmonitorstarted();
+                    showInfoMsg(false, '.my-modal');
+                  },
+                  function (xhr, ajaxOptions, thrownError) {
+                    var json = JSON.parse(xhr.responseText);
+                    error_launch(json.message);
+                  }, {}
+          );
+        } else {
+          showmsg('.my-modal', "warning", "Create Monitor First!");
+        }
+      } else {
+        showmsg('.my-modal', "warning", "Save Settings First!");
+      }
     }
-
   },
   stopmonitor: function () {
     var self = this;
@@ -285,10 +309,8 @@ window.ConfigSiteView = Backbone.View.extend({
       $("#sensor-local").val(data.results[0].formatted_address);
       $("#sensor-latitude").val(data.results[0].geometry.location.lat);
       $("#sensor-longitude").val(data.results[0].geometry.location.lng);
+      self.inputchanged = true;
       carregarmapa([["<h4>" + $("#sensor-name").val() + "</h4>", $("#sensor-latitude").val(), $("#sensor-longitude").val()]], $("#map-google")[0], self.selectnewposition);
-//      $("#Check-Position").css({
-//        display: "none"
-//      });
     });
   },
   render: function () {

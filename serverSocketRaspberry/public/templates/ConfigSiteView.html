@@ -96,7 +96,7 @@
                       </tr> -->
                       <tr>
                         <td><label>Server IP</label></td>
-                        <td><input id="server-ip" class=" width100 valid-input" data-typevalue="ipaddress" type="text" value="127.0.0.1" placeholder="127.0.0.1"></td>
+                        <td><input id="server-ip" data-inputmask="'alias': 'ip'" data-mask="" class=" width100 valid-input" data-typevalue="ipaddress" type="text" value="127.0.0.1" placeholder="127.0.0.1"></td>
                         <td class="whith10p color-red" data-toggle="tooltip" title="Valid Ip Address Server Data Base"><i class="icon fa fa-close"></i></td>
                       </tr>
                       <tr>
@@ -258,3 +258,22 @@
     </div><!-- /.row -->
   </div><!-- /.row -->
 </div><!-- /.row -->
+
+<div class="modal modal-warning">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"> <!--  data-toggle="tooltip" title="Collapse" data-widget="collapse" -->
+        <button type="button" class="close btn-modal" data-event="close"  data-toggle="tooltip" title="Close Warning" data-dismiss="modal" aria-label="Close" data-widget="close"><span aria-hidden="true">×</span></button>
+        <h2 class="modal-title icon fa  fa-info-circle"> Warning</h2>
+      </div>
+      <div class="modal-body">
+        <p><b>Careful!</b><br>You have unsaved settings!!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline pull-left btn-modal" data-event="close" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-outline btn-modal" data-event="notsave" data-dismiss="modal">Dont save settings and continue</button>
+        <button type="button" data-event="save" class="btn btn-outline pull-right btn-modal">Save settings and continue</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
