@@ -75,6 +75,8 @@ ServerSocket.prototype.start = function () {
             if (part.added) {
               localTable[result[0]] = line;
               self.sendToDataBase(a);
+              activeant.updateActiveAnt(self.clienteSend);
+              console.log('--------------------------------------------------------');
             }
           });
         } else {
@@ -82,8 +84,6 @@ ServerSocket.prototype.start = function () {
           localTable[result[0]] = line;
           self.sendToDataBase(b);
         }
-        activeant.updateActiveAnt(self.clienteSend);
-        console.log('--------------------------------------------------------');
       }
     }).then(function () {
       console.log("I'm done!!");

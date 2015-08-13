@@ -23,13 +23,8 @@ var Router = Backbone.Router.extend({
     var self = this;
     self.appEventBus = _.extend({}, Backbone.Events);
     self.socketclt = new socketClient({vent: self.appEventBus});
-    self.appEventBus.on("updateDisp", function (data, disp, site) {
-      if (window.profile.get("site") && window.profile.get("site") == site) {
-        self.dashboard.updatedisp(data, disp);
-      }
-    });
+    
     self.appEventBus.on("newDisp", function (data, local, site) {
-      console.log(data, local, site);
       if (window.profile.get("site") && window.profile.get("site") == site) {
         self.dashboard.newdisps(data, local);
       }

@@ -54,14 +54,6 @@ var socketClient = function (options) {
       self.vent.trigger("updateChart", x, site);
     });
 
-    socket.on("updateDisp", function (data, disp, site) {
-      self.vent.trigger("updateDisp", data, disp, site);
-    });
-
-    socket.on("teste", function (data) {
-      self.vent.trigger("teste", data);
-    });
-
     // socket a escuta de incremento de dispositivos na base de dados
     socket.on("newDisp", function (data, local, site) {
       self.vent.trigger("newDisp", data, local, site);

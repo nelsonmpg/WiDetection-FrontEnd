@@ -106,7 +106,7 @@
 
       this.app.get("/getLastAllTimes/:id", pedidos.getLastAllTimes);
 
-      this.app.get("/getpowerlistdispmoveis/:id/:sensor/:table", pedidos.getpluckDispMoveis);
+      this.app.get("/getpowerlistdisps/:id/:sensor/:table", pedidos.getActiveDisps);
 
       this.app.get("/getLastAllTimes/:id", pedidos.getLastAllTimes);
 

@@ -10,53 +10,170 @@ var ChartRealTime = function (arrayValues, sensor, localChart) {
   this.timeRemove = 5;
   this.arrayvalues = [];
   this.valuesToGraph = [];
+  this.listaHostsStartAndUpdateValues = [];
 
-  this.createlistvalues();
+  this.createAndUpdateListaHostAndValues(this.arrayValues);
 };
 
-ChartRealTime.prototype.createlistvalues = function () {
-  var self = this;
-  for (var i in self.arrayValues) {
-    var valuesArray = [];// self.inicializaArray();
-    for (var j in self.arrayValues[i][0].values) {
-      valuesArray.push({
-        x: new Date(self.arrayValues[i][0].values[j].Last_time),
-        y: 1 * self.arrayValues[i][0].values[j].Power
+ChartRealTime.prototype.createAndUpdateListaHostAndValues = function (lista) {
+  for (var i in lista) {
+    if (!this.checkDdiffDates(lista[i].data)) {
+      var val = this.listaHostsStartAndUpdateValues[lista[i].macAddress];
+      var graphDisp = (typeof val == "undefined") ? this.inicializaArray() : val.listaValues;
+      graphDisp.push({
+        x: new Date(),
+        y: 1 * lista[i].Power
       });
-      if (valuesArray.length > this.dataLength) {
-        valuesArray.shift();
+      if (graphDisp.length > this.dataLength) {
+        graphDisp.shift();
       }
+      this.listaHostsStartAndUpdateValues[lista[i].macAddress] = {
+        Power: lista[i].Power,
+        data: lista[i].data,
+        macAddress: lista[i].macAddress,
+        nameVendor: lista[i].nameVendor,
+        listaValues: graphDisp
+      };
     }
-    this.arrayvalues[self.arrayValues[i][0].macAddress] = {
-      "firstTime": self.arrayValues[i][0].First_time,
-      "macAddress": self.arrayValues[i][0].macAddress,
-      "nameSensor": self.arrayValues[i][0].name,
-      "nameVendor": self.arrayValues[i][0].nameVendor,
-      "values": valuesArray
+  }
+  console.log(this.listaHostsStartAndUpdateValues);
+//  var sizeArr = this.countHosts(this.listaHostsStartAndUpdateValues);
+//  if (this.lastSizeListArray != sizeArr) {
+//    this.lastSizeListArray = sizeArr;
+//    this.showNewGraph = true;
+//  }
+};
+
+ChartRealTime.prototype.updateGraph = function () {
+  for (var i in this.listaHostsStartAndUpdateValues) {
+    var val = this.listaHostsStartAndUpdateValues[i];
+    var graphDisp = val.listaValues;
+    graphDisp.push({
+      x: new Date(),
+      y: 1 * val.Power
+    });
+    if (graphDisp.length > this.dataLength) {
+      graphDisp.shift();
+    }
+    this.listaHostsStartAndUpdateValues[i] = {
+      Power: val.Power,
+      data: val.data,
+      macAddress: val.macAddress,
+      nameVendor: val.nameVendor,
+      listaValues: graphDisp
     };
   }
-  self.createListValuesToChart();
+  this.createUpdateScaleGraph();
 };
 
-ChartRealTime.prototype.createListValuesToChart = function () {
+ChartRealTime.prototype.createUpdateScaleGraph = function () {
+  this.valuesToGraph = [];
   var self = this;
-  for (var i in this.arrayvalues) {
+//  if (!this.oneGraph) {
+  for (var i in this.listaHostsStartAndUpdateValues) {
     var val = {
       type: "line",
       xValueType: "dateTime",
       lineThickness: 3,
       name: i,
-//      click: function (e) {
-//        self.oneGraph = true;
-//        self.showNewGraph = true;
-//        self.graphSelect = e.dataSeries.name;
-//      },
-      dataPoints: this.arrayvalues[i].values
+//        click: function (e) {
+//          self.oneGraph = true;
+//          self.showNewGraph = true;
+//          self.graphSelect = e.dataSeries.name;
+//        },
+      dataPoints: this.listaHostsStartAndUpdateValues[i].listaValues
     };
     this.valuesToGraph.push(val);
   }
-  self.graph();
+
+//  } else {
+//    var powerVal = this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues[this.dataLength - 1].y;
+//    var val = {
+//      type: "line",
+//      xValueType: "dateTime",
+//      lineThickness: 3,
+//      showInLegend: true,
+//      legendText: this.graphSelect + " " + powerVal,
+//      name: this.graphSelect,
+//      toolTipContent: "<span>MacAddress: {name}</span><br>" +
+//              "<span>Power: {y}</span><br>" +
+//              "<span>Hora: {x}</span><br>" +
+//              "<span>Fabricante: " + this.listaHostsStartAndUpdateValues[this.graphSelect].nameVendor + "</span>",
+//      click: function (e) {
+//        self.oneGraph = false;
+//        self.showNewGraph = true;
+//        self.graphSelect = "";
+//      },
+//      dataPoints: this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues
+//    };
+//    this.chart.options.data[0].legendText = this.graphSelect + " " + powerVal;
+//    this.valuesToGraph.push(val);
+//  }
+//  if (this.showNewGraph && this.chart != null) {
+//    this.stopIntervalGraph();
+//    this.chart = null;
+  this.graph();
+//    this.showNewGraph = false;
+//  this.updateIntervalGraph();
+//  }
 };
+
+ChartRealTime.prototype.stopIntervalGraph = function () {
+  clearInterval(this.updateInterGraph);
+};
+
+ChartRealTime.prototype.updateIntervalGraph = function () {
+  var self = this;
+  this.updateInterGraph = setInterval(function () {
+    self.updateGraph();
+    self.chart.render();
+  }, self.updateInterval);
+};
+
+
+//ChartRealTime.prototype.createlistvalues = function () {
+//  var self = this;
+//  for (var i in self.arrayValues) {
+//    var valuesArray = [];// self.inicializaArray();
+//    for (var j in self.arrayValues[i][0].values) {
+//      valuesArray.push({
+//        x: new Date(self.arrayValues[i][0].values[j].Last_time),
+//        y: 1 * self.arrayValues[i][0].values[j].Power
+//      });
+//      if (valuesArray.length > this.dataLength) {
+//        valuesArray.shift();
+//      }
+//    }
+//    this.arrayvalues[self.arrayValues[i][0].macAddress] = {
+//      "firstTime": self.arrayValues[i][0].First_time,
+//      "macAddress": self.arrayValues[i][0].macAddress,
+//      "nameSensor": self.arrayValues[i][0].name,
+//      "nameVendor": self.arrayValues[i][0].nameVendor,
+//      "values": valuesArray
+//    };
+//  }
+//  self.createListValuesToChart();
+//};
+//
+//ChartRealTime.prototype.createListValuesToChart = function () {
+//  var self = this;
+//  for (var i in this.arrayvalues) {
+//    var val = {
+//      type: "line",
+//      xValueType: "dateTime",
+//      lineThickness: 3,
+//      name: i,
+////      click: function (e) {
+////        self.oneGraph = true;
+////        self.showNewGraph = true;
+////        self.graphSelect = e.dataSeries.name;
+////      },
+//      dataPoints: this.arrayvalues[i].values
+//    };
+//    this.valuesToGraph.push(val);
+//  }
+//  self.graph();
+//};
 
 ChartRealTime.prototype.graph = function () {
   var self = this;
@@ -114,10 +231,18 @@ ChartRealTime.prototype.inicializaArray = function () {
   for (var i = 0; i < this.dataLength; i++) {
     vals.push({
       x: new Date(newTime + (i * 1000)),
-      y: 0
+      y: null
     });
   }
   return vals;
+};
+
+ChartRealTime.prototype.countHosts = function (list) {
+  var a = 0;
+  for (var i in list) {
+    a++;
+  }
+  return a;
 };
 
 ChartRealTime.prototype.checkDdiffDates = function (last_date) {
