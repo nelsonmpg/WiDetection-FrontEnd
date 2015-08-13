@@ -195,7 +195,7 @@ module.exports.changeTableAnt = function (database, socket, table, nemedisp) {
               return {"sensor": v("nomeAntena"), "hosts": v("host").do(function (row) {
                   return row.filter(function (o) {
                     return o("data").ge(r.now().toEpochTime().sub(60));
-                  }).withFields("macAddress", "nameVendor","Power", "data");
+                  }).withFields("macAddress", "nameVendor", "Power", "data");
                 })};
             }).run(conn)
             .then(function (cursor) {
@@ -340,22 +340,49 @@ module.exports.getAllAP = function (req, res) {
 module.exports.getDispConnectedtoAp = function (req, res) {
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.id))
-            .table("DispMoveis").filter(function (row) {
-      return row("disp")("values").contains(function (a) {
-        return a("BSSID").contains(function (b) {
-          return b.match(req.params.mac)
-        })
-      })
-    })
-            .coerceTo("array")
+            .table("DispMoveis")
+            .filter(function (row) {
+              return row("disp")("values").contains(function (a) {
+                return a("BSSID").contains(function (b) {
+                  return b.match(req.params.mac);
+                });
+              });
+            }).coerceTo("array")
             .run(conn, function (err, result) {
               if (err) {
                 console.log("ERROR: %s:%s", err.name, err.msg);
               } else {
-                res.send(result);
+                res.send([result, req.params.mac]);
               }
               conn.close();
             });
+  });
+};
+
+/**
+ * Retorna a data ISO8060 da primeira vez que um AP foi visto
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getApFirstTime = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.id))
+            .table("DispAp")
+            .get(req.params.mac)("disp")("First_time")
+            .min().do(function (result) {
+      return [result, r.db(self.getDataBase(req.params.id))
+                .table("DispAp")
+                .get(req.params.mac)("disp")("values")
+                .nth(0)("Last_time").max()];
+    }).run(conn, function (err, result) {
+      if (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
+      } else {
+        res.send(result);
+      }
+      conn.close();
+    });
   });
 };
 
