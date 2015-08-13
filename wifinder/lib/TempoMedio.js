@@ -1,5 +1,4 @@
 self.onmessage = function (e) {
-  console.log("Start WebWorker Tempo");
   var teste = [];
   var output = e.data;
   for (var a in output) {
@@ -53,7 +52,6 @@ self.onmessage = function (e) {
       }
     }
   }
-  
-  console.log("Finnish WebWorker Tempo");
+ 
   self.postMessage("stop");
 };

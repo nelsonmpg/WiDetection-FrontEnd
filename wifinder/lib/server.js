@@ -122,6 +122,8 @@
       this.app.get("/getAllAP/:id", pedidos.getAllAP);
       
       this.app.get("/getDispConnectedtoAp/:id/:mac", pedidos.getDispConnectedtoAp);
+      
+      this.app.get("/getApFirstTime/:id/:mac", pedidos.getApFirstTime);
       ////////////////////////////////
 
 // ----------------------------- Pedidos Users -----------------------------------
