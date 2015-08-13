@@ -30,9 +30,6 @@ ServerSktIo.prototype.init = function () {
       iduser = id;
       self.server.setUserServer(id);
     });
-//      setInterval(function (){
-//        socket.emit("teste", iduser);
-//      }, 5000);
 
     socket.on("getAllDisp", function (id) {
       pedidos.getAllDisp(id, socket);
@@ -45,9 +42,11 @@ ServerSktIo.prototype.init = function () {
     pedidos.getAllDataBases(function (err, data) {
       for (var i = 0; i < data.length; i++) {
         console.log(data[i].db);
-        pedidos.changeDispMoveis(data[i].db, socket);
-        pedidos.changeDispAp(data[i].db, socket);
-        pedidos.changeActiveAnt(data[i].db, socket);
+        pedidos.changeTablesDisps(data[i].db, socket, 'DispMoveis', "moveis");
+        pedidos.changeTablesDisps(data[i].db, socket, 'DispAp', "ap");
+        pedidos.changeTablesDisps(data[i].db, socket, "ActiveAnt", "sensor");
+        pedidos.changeTableAnt(data[i].db, socket, "AntAp", "ap");
+        pedidos.changeTableAnt(data[i].db, socket, "AntDisp", "disp");
       }
     });
 

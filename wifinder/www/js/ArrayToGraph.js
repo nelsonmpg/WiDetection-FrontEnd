@@ -138,19 +138,27 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
 };
 
 ArrayToGraph.prototype.updateNumDisp = function (data) {
+  console.log("Disp");
+  console.log(data);
   for (var j in this.dataTograph[0].dataPoints) {
-    if (data.nomeAntena == this.dataTograph[0].dataPoints[j].label) {
-      this.dataTograph[0].dataPoints[j].y = data.host.length;
-      this.chart.render();
+    for (var i in data.new_val.disp) {
+      if (data.new_val.disp[i].name == this.dataTograph[0].dataPoints[j].label) {
+        this.dataTograph[0].dataPoints[j].y = this.dataTograph[0].dataPoints[j].y + 1;
+        this.chart.render();
+      }
     }
   }
 };
 
 ArrayToGraph.prototype.updateNumAp = function (data) {
+  console.log("Ap");
+  console.log(data);
   for (var j in this.dataTograph[0].dataPoints) {
-    if (data.nomeAntena == this.dataTograph[1].dataPoints[j].label) {
-      this.dataTograph[1].dataPoints[j].y = data.host.length;
-      this.chart.render();
+    for (var i in data.new_val.disp) {
+      if (data.new_val.disp[i].name == this.dataTograph[1].dataPoints[j].label) {
+        this.dataTograph[1].dataPoints[j].y = this.dataTograph[1].dataPoints[j].y + 1;
+        this.chart.render();
+      }
     }
   }
 };
@@ -188,7 +196,7 @@ ArrayToGraph.prototype.createAndShowGraph = function (dataVelues) {
       shared: true
     },
     axisY: {
-      title: "Dispositivos Moveis",
+      title: "Wireless Devices",
       titleFontSize: 20,
       titleFontColor: "black"
     },
@@ -198,7 +206,6 @@ ArrayToGraph.prototype.createAndShowGraph = function (dataVelues) {
       titleFontColor: "black"
     },
     axisX: {
-      title: "Sensores",
       labelAngle: this.anguloX,
       labelFontSize: 14,
       titleFontSize: 20,

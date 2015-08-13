@@ -66,9 +66,11 @@ window.DashboardView = Backbone.View.extend({
     if (self.lastSensorselect != sensor) {
       self.lastSensorselect = sensor;
       modem("GET",
-              "/getpowerlistdispmoveis/" + window.profile.id + "/" + sensor + "/disp",
+              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
               function (data) {
                 var chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
+                chartrealtimeMoveis.updateGraph();
+                chartrealtimeMoveis.updateIntervalGraph();
               },
               function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);
@@ -76,9 +78,11 @@ window.DashboardView = Backbone.View.extend({
               }, {}
       );
       modem("GET",
-              "/getpowerlistdispmoveis/" + window.profile.id + "/" + sensor + "/ap",
+              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
               function (data) {
-                var chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartap");
+                var chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
+                chartrealtimeAp.updateGraph();
+                chartrealtimeAp.updateIntervalGraph();
               },
               function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);
@@ -192,9 +196,15 @@ window.DashboardView = Backbone.View.extend({
     var self = this;
     switch (local) {
       case "moveis":
+        if (self.graph2Bar) {
+          self.graph2Bar.updateNumDisp(data);
+        }
         $("body").find("#disp-num-div").html((($("body").find("#disp-num-div").text() * 1) + 1));
         break;
       case "ap":
+        if (self.graph2Bar) {
+          self.graph2Bar.updateNumAp(data);
+        }
         $("body").find("#ap-num-div").html((($("body").find("#ap-num-div").text() * 1) + 1));
         break;
       case "sensor":

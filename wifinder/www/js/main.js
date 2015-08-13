@@ -6,6 +6,7 @@ Backbone.View.prototype.close = function () {
     this.undelegateEvents();
 };
 var Router = Backbone.Router.extend({
+
     currentView: undefined,
     header: undefined,
     sidebar: undefined,
@@ -23,11 +24,6 @@ var Router = Backbone.Router.extend({
         var self = this;
         self.appEventBus = _.extend({}, Backbone.Events);
         self.socketclt = new socketClient({vent: self.appEventBus});
-        self.appEventBus.on("updateDisp", function (data, disp, site) {
-            if (window.profile.get("site") && window.profile.get("site") == site) {
-                self.dashboard.updatedisp(data, disp);
-            }
-        });
         self.appEventBus.on("newDisp", function (data, local, site) {
             console.log(data, local, site);
             if (window.profile.get("site") && window.profile.get("site") == site) {
