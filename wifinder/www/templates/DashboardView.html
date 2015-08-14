@@ -1,233 +1,265 @@
 <!-- Info boxes -->
 <div class="row">
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="info-box">
-      <span class="info-box-icon bg-aqua">
-        <i class="material-icons md-48">settings_input_antenna</i>
-        <!--  <i class="ion ion-ios-gear-outline"></i> --> </span>
-      <div class="info-box-content">
-        <span class="info-box-text">Total of Sensors</span>
-        <span id="sensores-num-div" class="info-box-number"></span>
-      </div><!-- /.info-box-content -->
-    </div><!-- /.info-box -->
-  </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-aqua">
+                <i class="material-icons md-48">settings_input_antenna</i>
+                <!--  <i class="ion ion-ios-gear-outline"></i> --> </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Total of Sensors</span>
+                <span id="sensores-num-div" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
 
-  <!-- fix for small devices only -->
-  <div class="clearfix visible-sm-block"></div>
+    <!-- fix for small devices only -->
+    <div class="clearfix visible-sm-block"></div>
 
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="info-box">
-      <span class="info-box-icon bg-aqua">
-        <i class="fa fa-wifi"></i>
-        <!-- <i class="fa fa-google-plus"></i> -->
-      </span>
-      <div class="info-box-content">
-        <span class="info-box-text">Total of Wireless Devices</span>
-        <span id="disp-num-div" class="info-box-number"></span>
-      </div><!-- /.info-box-content -->
-    </div><!-- /.info-box -->
-  </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-aqua">
+                <i class="fa fa-wifi"></i>
+                <!-- <i class="fa fa-google-plus"></i> -->
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Total of Wireless Devices</span>
+                <span id="disp-num-div" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
 
-  <!-- fix for small devices only -->
-  <div class="clearfix visible-sm-block"></div>
+    <!-- fix for small devices only -->
+    <div class="clearfix visible-sm-block"></div>
 
-  <div class="col-md-4 col-sm-6 col-xs-12">
-    <div class="info-box">
-      <span class="info-box-icon bg-aqua">
-        <i class="material-icons md-48">router</i>
-        <!-- <i class="ion ion-ios-cart-outline"></i> -->
-      </span>
-      <div class="info-box-content">
-        <span class="info-box-text">Total of Access Points</span>
-        <span id="ap-num-div" class="info-box-number"></span>
-      </div><!-- /.info-box-content -->
-    </div><!-- /.info-box -->
-  </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-aqua">
+                <i class="material-icons md-48">router</i>
+                <!-- <i class="ion ion-ios-cart-outline"></i> -->
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Total of Access Points</span>
+                <span id="ap-num-div" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
 
 
 </div><!-- /.row -->
 
 <div class="row">
-  <div class="col-md-6">
-    <div class="box">
-      <div  class="box-header with-border">
-        <h3 id="chart2bars-titulo" class="box-title"><i class="fa fa-bar-chart-o"></i><b> Chart - Device Number / Sensor</b></h3>
-        <div class="box-tools pull-right">
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-            <i class="fa fa-minus"></i>
-          </button><!--
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-            <i class="fa fa-times"></i>
-          </button>-->
-        </div>
-      </div><!-- /.box-header -->
-      <div class="box-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="chart">
-              <!-- Sales Chart Canvas -->
-              <div id="chart2bars"  class="height400">
-                <div class="overlay">
-                  <i class="fa fa-refresh fa-spin"></i>
+    <div class="col-md-6">
+        <div class="box">
+            <div  class="box-header with-border">
+                <h3 id="chart2bars-titulo" class="box-title"><i class="fa fa-bar-chart-o"></i><b> Chart - Device Number / Sensor</b></h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button><!--
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
+                      <i class="fa fa-times"></i>
+                    </button>-->
                 </div>
-              </div>
-            </div><!-- /.chart-responsive -->
-          </div><!-- /.col -->
-          <!--<div class="col-md-3">
-            
-          </div> /.col -->
-        </div><!-- /.row -->
-      </div><!-- ./box-body -->
-    </div><!-- /.box -->
-  </div><!-- /.col --> 
-  <div class="col-md-6">
-    <div class="box">
-      <div  class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-map fa-fw"></i><b> Sensors</b></h3>
-        <div class="box-tools pull-right">
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-            <i class="fa fa-minus"></i>
-          </button>
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-            <i class="fa fa-times"></i>
-          </button>
-        </div>
-      </div><!-- /.box-header -->
-      <div class="box-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div>
-              <div class="chart">
-                <!-- Sales Chart Canvas -->
-                <div id="map"  class="height400">                  
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="chart">
+                            <!-- Sales Chart Canvas -->
+                            <div id="chart2bars"  class="height400">
+                                <div class="overlay">
+                                    <i class="fa fa-refresh fa-spin"></i>
+                                </div>
+                            </div>
+                        </div><!-- /.chart-responsive -->
+                    </div><!-- /.col -->
+                    <!--<div class="col-md-3">
+                      
+                    </div> /.col -->
+                </div><!-- /.row -->
+            </div><!-- ./box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col --> 
+    <div class="col-md-6">
+        <div class="box">
+            <div  class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-map fa-fw"></i><b> Sensors</b></h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
+                        <i class="fa fa-times"></i>
+                    </button>
                 </div>
-              </div><!-- /.chart-responsive -->
-            </div>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- ./box-body -->
-    </div><!-- /.box -->
-  </div><!-- /.col --> 
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div>
+                            <div class="chart">
+                                <!-- Sales Chart Canvas -->
+                                <div id="map"  class="height400">                  
+                                </div>
+                            </div><!-- /.chart-responsive -->
+                        </div>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- ./box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col --> 
 </div><!-- /.row -->
 
 
 <div class="row">
-  <div class="col-md-12">
-    <div class="box">
-      <div  class="box-header with-border">
-        <h3 id="chart2bars-titulo" class="box-title"><i class="fa fa-bar-chart-o"></i><b> Chart - Power of Device</b></h3>
-        <div class="box-tools pull-right">
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-            <i class="fa fa-minus"></i>
-          </button><!--
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-            <i class="fa fa-times"></i>
-          </button>-->
-        </div>
-      </div><!-- /.box-header -->
-      <div class="box-body">
-        <div class="row margin">
-          <div class="col-md-12">
-            <div class="col-md-2 col-centered">
-              <div id="select-chart-sensor">
-                <select name="select-sensor" class="selectpicker show-tick">
-                </select>
-              </div>
-            </div>
-          </div><!-- /.col -->
+    <div class="col-md-12">
+        <div class="box">
+            <div  class="box-header with-border">
+                <h3 id="chart2bars-titulo" class="box-title"><i class="fa fa-bar-chart-o"></i><b> Chart - Power of Device</b></h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button><!--
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
+                      <i class="fa fa-times"></i>
+                    </button>-->
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row margin">
+                    <div class="col-md-12">
+                        <div class="col-md-2 col-centered">
+                            <div id="select-chart-sensor">
+                                <select name="select-sensor" class="selectpicker show-tick">
+                                </select>
+                            </div>
+                        </div>
+                    </div><!-- /.col -->
+                </div><!-- /.col -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Power of Mobile Devices</h3>
+                            </div><!-- /.box-header -->
+                            <div class="box-body">
+                                <div class="chart">
+                                    <!-- Sales Chart Canvas -->
+                                    <div id="chartdisp"  class="box-header with-border height400">
+                                        <div class="overlay">
+                                            <i class="fa fa-refresh fa-spin"></i>
+                                        </div>
+                                    </div>
+                                </div><!-- /.chart-responsive -->
+                            </div><!-- /.box-body -->
+                            <div class="box-footer clearfix">                  
+                            </div>
+                        </div>
+                    </div><!-- /.col -->
+                    <div class="col-md-6">
+
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Power of Access Points</h3>
+                            </div><!-- /.box-header -->
+                            <div class="box-body">
+                                <div class="chart">
+                                    <!-- Sales Chart Canvas -->
+                                    <div id="chartap"  class="box-header with-border height400 box-success">
+                                        <div class="overlay">
+                                            <i class="fa fa-refresh fa-spin"></i>
+                                        </div>
+                                    </div>
+                                </div><!-- /.chart-responsive -->
+                            </div><!-- /.box-body -->
+                            <div class="box-footer clearfix">                  
+                            </div>
+                        </div>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->     
+            </div><!-- ./box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col --> 
+</div><!-- /.row -->
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="box">
+            <div  class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-bar-chart-o"></i><b> Active Wireless Devices</b></h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="chart1LineActives" class="chart height500">
+                            <div class="overlay">
+                                <i class="fa fa-refresh fa-spin"></i>
+                            </div>
+                        </div><!-- /.chart-responsive -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- ./box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col -->
+
+    <div class="col-md-7">
+        <div class="box">
+            <div  class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-bar-chart-o"></i><b> Device's Occurrences</b></h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="chartDispVisit"  class="chart height500">
+                            <div class="overlay">
+                                <i class="fa fa-refresh fa-spin"></i>
+                            </div>
+                        </div><!-- /.chart-responsive -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- ./box-body -->
+        </div><!-- /.box -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div  class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Chart </h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="mynetwork" class="height600">                            
+                        </div><!-- /#mynetwork -->
+                    </div><!-- /.box-body -->
+                </div><!-- /.box -->
+            </div> <!-- row -->
+
         </div><!-- /.col -->
-        <div class="row">
-          <div class="col-md-6">
-            <div class="box">
-              <div class="box-header with-border">
-                <h3 class="box-title">Power of Mobile Devices</h3>
-              </div><!-- /.box-header -->
-              <div class="box-body">
-                <div class="chart">
-                  <!-- Sales Chart Canvas -->
-                  <div id="chartdisp"  class="box-header with-border height400">
-                    <div class="overlay">
-                      <i class="fa fa-refresh fa-spin"></i>
-                    </div>
-                  </div>
-                </div><!-- /.chart-responsive -->
-              </div><!-- /.box-body -->
-              <div class="box-footer clearfix">                  
-              </div>
-            </div>
-          </div><!-- /.col -->
-          <div class="col-md-6">
-
-            <div class="box">
-              <div class="box-header with-border">
-                <h3 class="box-title">Power of Access Points</h3>
-              </div><!-- /.box-header -->
-              <div class="box-body">
-                <div class="chart">
-                  <!-- Sales Chart Canvas -->
-                  <div id="chartap"  class="box-header with-border height400 box-success">
-                    <div class="overlay">
-                      <i class="fa fa-refresh fa-spin"></i>
-                    </div>
-                  </div>
-                </div><!-- /.chart-responsive -->
-              </div><!-- /.box-body -->
-              <div class="box-footer clearfix">                  
-              </div>
-            </div>
-          </div><!-- /.col -->
-        </div><!-- /.row -->     
-      </div><!-- ./box-body -->
-    </div><!-- /.box -->
-  </div><!-- /.col --> 
+    </div><!-- /.row -->
 </div><!-- /.row -->
 
-<div class="row">
-  <div class="col-md-5">
-    <div class="box">
-      <div  class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-bar-chart-o"></i><b> Active Wireless Devices</b></h3>
-        <div class="box-tools pull-right">
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-            <i class="fa fa-minus"></i>
-          </button>
-        </div>
-      </div><!-- /.box-header -->
-      <div class="box-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div id="chart1LineActives" class="chart height500">
-              <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
-              </div>
-            </div><!-- /.chart-responsive -->
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- ./box-body -->
-    </div><!-- /.box -->
-  </div><!-- /.col -->
 
-  <div class="col-md-7">
-    <div class="box">
-      <div  class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-bar-chart-o"></i><b> Device's Occurrences</b></h3>
-        <div class="box-tools pull-right">
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-            <i class="fa fa-minus"></i>
-          </button>
-        </div>
-      </div><!-- /.box-header -->
-      <div class="box-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div id="chartDispVisit"  class="chart height500">
-              <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
-              </div>
-            </div><!-- /.chart-responsive -->
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- ./box-body -->
-    </div><!-- /.box -->
-  </div><!-- /.col -->
-</div><!-- /.row -->
+
+    <script type="text/javascript" src="./js/vis.min.js"></script>
+    <link href="./css/vis.min.css" rel="stylesheet" type="text/css" />

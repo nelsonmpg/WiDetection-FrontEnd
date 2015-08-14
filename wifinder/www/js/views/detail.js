@@ -163,13 +163,20 @@ window.DetailView = Backbone.View.extend({
                                     {
                                         animationEnabled: true,
                                         axisX: {
-                                            labelAngle: -90,
                                             labelMaxWidth: 100,
                                             labelWrap: false,
-                                            interval: 1
+                                            interval: 1,
+                                            labelAngle: -70,
+                                            labelFontSize: 12,
+                                            labelFontFamily: "verdana",
+                                            labelFontColor: "black"
                                         },
                                         axisY: {
-                                            interval: 1
+                                            gridThickness: 1,
+                                            interval: 1,
+                                            labelFontSize: 12,
+                                            labelFontFamily: "verdana",
+                                            labelFontColor: "black"
                                         },
                                         legend: {
                                             verticalAlign: "bottom",
@@ -224,13 +231,20 @@ window.DetailView = Backbone.View.extend({
                                     {
                                         animationEnabled: true,
                                         axisX: {
-                                            labelAngle: -90,
                                             labelMaxWidth: 100,
                                             labelWrap: false,
-                                            interval: 1
+                                            interval: 1,
+                                            labelAngle: -70,
+                                            labelFontSize: 12,
+                                            labelFontFamily: "verdana",
+                                            labelFontColor: "black"
                                         },
                                         axisY: {
-                                            interval: 1
+                                            gridThickness: 1,
+                                            interval: 1,
+                                            labelFontSize: 12,
+                                            labelFontFamily: "verdana",
+                                            labelFontColor: "black"
                                         },
                                         legend: {
                                             verticalAlign: "bottom",
