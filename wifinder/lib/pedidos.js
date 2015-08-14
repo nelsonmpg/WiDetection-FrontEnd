@@ -200,7 +200,6 @@ module.exports.changeTableAnt = function (database, socket, table, nemedisp) {
             }).run(conn)
             .then(function (cursor) {
               cursor.each(function (err, item) {
-                console.log(item);
                 socket.emit("updateRealTimeChart", item, nemedisp, database);
               });
             });

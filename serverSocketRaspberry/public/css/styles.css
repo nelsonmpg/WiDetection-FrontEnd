@@ -145,7 +145,7 @@
 
 .my-modal {
   display: none;
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   top: 0;
@@ -155,7 +155,7 @@
 
 .my-modal:before {
   content:'';
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;

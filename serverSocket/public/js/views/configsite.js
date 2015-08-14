@@ -271,8 +271,7 @@ window.ConfigSiteView = Backbone.View.extend({
                   "/startmonitor",
                   function (data) {
                     console.log(data);
-                    self.checkmonitorstarted();
-                    showInfoMsg(false, '.my-modal');
+                    self.confirmMonitorStart();
                   },
                   function (xhr, ajaxOptions, thrownError) {
                     var json = JSON.parse(xhr.responseText);
@@ -286,6 +285,17 @@ window.ConfigSiteView = Backbone.View.extend({
         showmsg('.my-modal', "warning", "Save Settings First!");
       }
     }
+  },
+  confirmMonitorStart: function () {
+    var self = this;
+    setTimeout(function () {
+      self.checkmonitorstarted();
+      if (!$("#stop-monitor").prop('disabled')) {
+        showInfoMsg(false, '.my-modal');
+      } else {
+        self.confirmMonitorStart();
+      }
+    }, 1000);
   },
   stopmonitor: function () {
     var self = this;

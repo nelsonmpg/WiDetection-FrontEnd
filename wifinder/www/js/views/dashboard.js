@@ -5,6 +5,8 @@ window.DashboardView = Backbone.View.extend({
   interval_chart: null,
   countChart: undefined,
   lastSensorselect: "",
+  chartrealtimeMoveis: null,
+  chartrealtimeAp: null,
   self: this,
   events: {
     "click #teste": "testeMap",
@@ -14,8 +16,8 @@ window.DashboardView = Backbone.View.extend({
     this.socketDashboard = opt.socket;
   },
   init: function () {
-    $('.selectpicker').selectpicker();
     var self = this;
+    $('.selectpicker').selectpicker();
 
     self.requestNumDisps();
     self.createChart2Bar();
@@ -68,9 +70,8 @@ window.DashboardView = Backbone.View.extend({
       modem("GET",
               "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
               function (data) {
-                var chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
-                chartrealtimeMoveis.updateGraph();
-                chartrealtimeMoveis.updateIntervalGraph();
+                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
+                self.chartrealtimeMoveis.updateIntervalGraph();
               },
               function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);
@@ -80,9 +81,8 @@ window.DashboardView = Backbone.View.extend({
       modem("GET",
               "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
               function (data) {
-                var chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
-                chartrealtimeAp.updateGraph();
-                chartrealtimeAp.updateIntervalGraph();
+                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
+                self.chartrealtimeAp.updateIntervalGraph();
               },
               function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);
@@ -118,14 +118,21 @@ window.DashboardView = Backbone.View.extend({
     result = data;
     self.chart = new CanvasJS.Chart("chart1LineActives", {
       theme: "theme2",
-//        title: {
-//          text: "Dispositivos Ativos"
-//        },
       animationEnabled: true,
       axisX: {
-        valueFormatString: "HH:mm"
+        valueFormatString: "HH:mm",
+        labelFontSize: 12,
+        labelFontFamily: "verdana",
+        labelFontColor: "black"
       },
-      axisY: {includeZero: false},
+      axisY: {
+        includeZero: false,
+        gridThickness: 1,
+        interval: 1,
+        labelFontSize: 12,
+        labelFontFamily: "verdana",
+        labelFontColor: "black"
+      },
       data: [{
           type: "line",
           lineThickness: 3,
@@ -144,26 +151,23 @@ window.DashboardView = Backbone.View.extend({
                 arrayToChart.push({label: i, y: data[i].length * 1});
               }
               var options = {
-//		title: {
-//			text: "Column Chart using jQuery Plugin"
-//		},
                 animationEnabled: true,
+                axisY: {
+                  gridThickness: 1,
+                  interval: 1,
+                  labelFontSize: 12,
+                  labelFontFamily: "verdana",
+                  labelFontColor: "black"
+                },
+                axisX: {
+                  interval: 1,
+                  labelAngle: -70,
+                  labelFontSize: 12,
+                  labelFontFamily: "verdana",
+                  labelFontColor: "black"
+                },
                 data: [{
-                    type: "bar", //change it to line, area, bar, pie, etc
-//                    click: function (e) { //no click mostrar o fabricante do dispositivo
-//                      $.ajax({
-//                        type: "GET",
-//                        url: "/getNameVendor/" + e.dataPoint.label + "/" + socket.id,
-//                        dataType: 'json',
-//                        success: function (data) {
-//                          alert(data);
-//                        },
-//                        error: function (error) {
-//                          console.log(JSON.stringify(error));
-//                        }
-//                      });
-//                      ;
-//                    },
+                    type: "column", //change it to line, area, bar, pie, etc
                     dataPoints: arrayToChart
                   }
                 ]
@@ -177,17 +181,17 @@ window.DashboardView = Backbone.View.extend({
             }, {}
     );
   },
-  updatedisp: function (data, disp) {
+  updatePower: function (data, disp) {
     var self = this;
     switch (disp) {
       case "ap":
-        if (self.graph2Bar) {
-          self.graph2Bar.updateNumAp(data);
+        if (self.chartrealtimeAp) {
+          self.chartrealtimeAp.updatePowerChart(data);
         }
         break;
       case "disp":
-        if (self.graph2Bar) {
-          self.graph2Bar.updateNumDisp(data);
+        if (self.chartrealtimeMoveis) {
+          self.chartrealtimeMoveis.updatePowerChart(data);
         }
         break;
     }

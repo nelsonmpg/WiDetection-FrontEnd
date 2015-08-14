@@ -11,6 +11,12 @@ var ChartRealTime = function (arrayValues, sensor, localChart) {
   this.arrayvalues = [];
   this.valuesToGraph = [];
   this.listaHostsStartAndUpdateValues = [];
+  this.showNewGraph = false;
+  this.lastSizeListArray = 1;
+  this.updateInterGraph = null;
+  this.oneGraph = false;
+  this.chart = null;
+  this.atualSite = window.profile.get("site");
 
   this.createAndUpdateListaHostAndValues(this.arrayValues);
 };
@@ -36,12 +42,11 @@ ChartRealTime.prototype.createAndUpdateListaHostAndValues = function (lista) {
       };
     }
   }
-  console.log(this.listaHostsStartAndUpdateValues);
-//  var sizeArr = this.countHosts(this.listaHostsStartAndUpdateValues);
-//  if (this.lastSizeListArray != sizeArr) {
-//    this.lastSizeListArray = sizeArr;
-//    this.showNewGraph = true;
-//  }
+  var sizeArr = this.countHosts(this.listaHostsStartAndUpdateValues);
+  if (this.lastSizeListArray != sizeArr) {
+    this.lastSizeListArray = sizeArr;
+    this.showNewGraph = true;
+  }
 };
 
 ChartRealTime.prototype.updateGraph = function () {
@@ -66,56 +71,63 @@ ChartRealTime.prototype.updateGraph = function () {
   this.createUpdateScaleGraph();
 };
 
+ChartRealTime.prototype.updatePowerChart = function (values) {
+  if (values.sensor.trim() == this.sensor) {
+    this.createAndUpdateListaHostAndValues(values.hosts);
+  }
+};
+
 ChartRealTime.prototype.createUpdateScaleGraph = function () {
   this.valuesToGraph = [];
   var self = this;
-//  if (!this.oneGraph) {
-  for (var i in this.listaHostsStartAndUpdateValues) {
+  if (!this.oneGraph) {
+    for (var i in this.listaHostsStartAndUpdateValues) {
+      var val = {
+        type: "line",
+        xValueType: "dateTime",
+        lineThickness: 3,
+        name: i,
+        click: function (e) {
+          self.oneGraph = true;
+          self.showNewGraph = true;
+          self.graphSelect = e.dataSeries.name;
+        },
+        dataPoints: this.listaHostsStartAndUpdateValues[i].listaValues
+      };
+      this.valuesToGraph.push(val);
+    }
+  } else {
+    var powerVal = this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues[this.dataLength - 1].y;
     var val = {
       type: "line",
       xValueType: "dateTime",
       lineThickness: 3,
-      name: i,
-//        click: function (e) {
-//          self.oneGraph = true;
-//          self.showNewGraph = true;
-//          self.graphSelect = e.dataSeries.name;
-//        },
-      dataPoints: this.listaHostsStartAndUpdateValues[i].listaValues
+      showInLegend: true,
+      legendText: this.graphSelect + " " + powerVal,
+      name: this.graphSelect,
+      toolTipContent: "<span>MacAddress: {name}</span><br>" +
+              "<span>Power: {y}</span><br>" +
+              "<span>Hora: {x}</span><br>" +
+              "<span>Fabricante: " + this.listaHostsStartAndUpdateValues[this.graphSelect].nameVendor + "</span>",
+      click: function (e) {
+        self.oneGraph = false;
+        self.showNewGraph = true;
+        self.graphSelect = "";
+      },
+      dataPoints: this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues
     };
+    this.chart.options.data[0].legendText = this.graphSelect + " " + powerVal;
     this.valuesToGraph.push(val);
   }
-
-//  } else {
-//    var powerVal = this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues[this.dataLength - 1].y;
-//    var val = {
-//      type: "line",
-//      xValueType: "dateTime",
-//      lineThickness: 3,
-//      showInLegend: true,
-//      legendText: this.graphSelect + " " + powerVal,
-//      name: this.graphSelect,
-//      toolTipContent: "<span>MacAddress: {name}</span><br>" +
-//              "<span>Power: {y}</span><br>" +
-//              "<span>Hora: {x}</span><br>" +
-//              "<span>Fabricante: " + this.listaHostsStartAndUpdateValues[this.graphSelect].nameVendor + "</span>",
-//      click: function (e) {
-//        self.oneGraph = false;
-//        self.showNewGraph = true;
-//        self.graphSelect = "";
-//      },
-//      dataPoints: this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues
-//    };
-//    this.chart.options.data[0].legendText = this.graphSelect + " " + powerVal;
-//    this.valuesToGraph.push(val);
-//  }
-//  if (this.showNewGraph && this.chart != null) {
-//    this.stopIntervalGraph();
-//    this.chart = null;
-  this.graph();
-//    this.showNewGraph = false;
-//  this.updateIntervalGraph();
-//  }
+  if (this.showNewGraph && this.chart != null) {
+    this.stopIntervalGraph();
+    this.chart = null;
+    this.graph();
+    this.showNewGraph = false;
+    this.updateIntervalGraph();
+  } else {
+    this.graph();
+  }
 };
 
 ChartRealTime.prototype.stopIntervalGraph = function () {
@@ -125,55 +137,14 @@ ChartRealTime.prototype.stopIntervalGraph = function () {
 ChartRealTime.prototype.updateIntervalGraph = function () {
   var self = this;
   this.updateInterGraph = setInterval(function () {
+    if (Backbone.history.getFragment() != "Dashboard" ||
+            self.atualSite != window.profile.get("site")) {
+      self.stopIntervalGraph();
+    }
     self.updateGraph();
     self.chart.render();
   }, self.updateInterval);
 };
-
-
-//ChartRealTime.prototype.createlistvalues = function () {
-//  var self = this;
-//  for (var i in self.arrayValues) {
-//    var valuesArray = [];// self.inicializaArray();
-//    for (var j in self.arrayValues[i][0].values) {
-//      valuesArray.push({
-//        x: new Date(self.arrayValues[i][0].values[j].Last_time),
-//        y: 1 * self.arrayValues[i][0].values[j].Power
-//      });
-//      if (valuesArray.length > this.dataLength) {
-//        valuesArray.shift();
-//      }
-//    }
-//    this.arrayvalues[self.arrayValues[i][0].macAddress] = {
-//      "firstTime": self.arrayValues[i][0].First_time,
-//      "macAddress": self.arrayValues[i][0].macAddress,
-//      "nameSensor": self.arrayValues[i][0].name,
-//      "nameVendor": self.arrayValues[i][0].nameVendor,
-//      "values": valuesArray
-//    };
-//  }
-//  self.createListValuesToChart();
-//};
-//
-//ChartRealTime.prototype.createListValuesToChart = function () {
-//  var self = this;
-//  for (var i in this.arrayvalues) {
-//    var val = {
-//      type: "line",
-//      xValueType: "dateTime",
-//      lineThickness: 3,
-//      name: i,
-////      click: function (e) {
-////        self.oneGraph = true;
-////        self.showNewGraph = true;
-////        self.graphSelect = e.dataSeries.name;
-////      },
-//      dataPoints: this.arrayvalues[i].values
-//    };
-//    this.valuesToGraph.push(val);
-//  }
-//  self.graph();
-//};
 
 ChartRealTime.prototype.graph = function () {
   var self = this;
@@ -186,40 +157,20 @@ ChartRealTime.prototype.graph = function () {
       shared: true
     },
     axisY: {
-      title: "Power",
       gridThickness: 0.2,
-      labelFontSize: 14,
+      labelFontSize: 12,
       suffix: " dBm",
       labelFontFamily: "verdana",
       labelFontColor: "black"
     },
     axisX: {
       valueFormatString: "H:mm:ss",
-      interval: 5,
-      labelAngle: -50,
-      labelFontSize: 14,
-      title: "Tempo",
+      interval: 10,
+      labelFontSize: 12,
       labelFontFamily: "verdana",
       labelFontColor: "black"
     },
-    data: this.valuesToGraph //,
-//    legend: {
-//      horizontalAlign: "right", // left, center ,right 
-//      verticalAlign: "center", // top, center, bottom,
-//      fontSize: 14,
-//      fontWeight: "bold",
-//      fontFamily: "calibri",
-//      fontColor: "dimGrey",
-//      cursor: "pointer",
-//      itemclick: function (e) {
-//        if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-//          e.dataSeries.visible = false;
-//        } else {
-//          e.dataSeries.visible = true;
-//        }
-//        self.chart.render();
-//      }
-//    }
+    data: this.valuesToGraph
   });
   this.chart.render();
 };

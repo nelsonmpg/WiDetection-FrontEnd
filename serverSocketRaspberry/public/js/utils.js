@@ -37,9 +37,6 @@ var showmsg = function (local, tipo, msg) {
       };
       break;
   }
-  $("body").animate({
-    scrollTop: 0
-  });
   $(local).html('<div class="col-md-8">' +
           '<div class="box box-default">' +
           '<div class="box-body">' +
@@ -60,10 +57,6 @@ var showInfoMsg = function (show, local, msg) {
     icon: "fa-info",
     titulo: "Info"
   };
-
-  $("body").animate({
-    scrollTop: 0
-  });
   if (show) {
     $(local).html('<div class="col-md-8">' +
             '<div class="box box-default">' +

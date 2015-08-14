@@ -58,5 +58,10 @@ var socketClient = function (options) {
     socket.on("newDisp", function (data, local, site) {
       self.vent.trigger("newDisp", data, local, site);
     });
+
+    // socket a escuta sa atualizacao do power dos dispositivos
+    socket.on("updateRealTimeChart", function (data, local, site) {
+      self.vent.trigger("updateRealTimeChart", data, local, site);
+    });
   };
 };

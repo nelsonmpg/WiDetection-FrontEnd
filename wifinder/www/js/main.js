@@ -24,29 +24,37 @@ var Router = Backbone.Router.extend({
         var self = this;
         self.appEventBus = _.extend({}, Backbone.Events);
         self.socketclt = new socketClient({vent: self.appEventBus});
+        
+        self.appEventBus.on("updateRealTimeChart", function (data, local, site) {
+            if (window.profile.get("site") && window.profile.get("site") == site && 
+                    Backbone.history.getFragment() == "Dashboard") {
+                self.dashboard.updatePower(data, local);
+            }
+        });
+        
         self.appEventBus.on("newDisp", function (data, local, site) {
-            console.log(data, local, site);
-            if (window.profile.get("site") && window.profile.get("site") == site) {
+            if (window.profile.get("site") && window.profile.get("site") == site && 
+                    Backbone.history.getFragment() == "Dashboard") {
                 self.dashboard.newdisps(data, local);
             }
         });
         self.appEventBus.on('updateChart', function (site, data) {
-            if (window.profile.get("site") && window.profile.get("site") == site) {
+            if (window.profile.get("site") && window.profile.get("site") == site && 
+                    Backbone.history.getFragment() == "Dashboard") {
                 self.dashboard.updateChart(data);
             }
         });
         self.appEventBus.on('getAllDisp', function (data, site) {
-            if (window.profile.get("site") && window.profile.get("site") == site) {
+            if (window.profile.get("site") && window.profile.get("site") == site && 
+                    Backbone.history.getFragment() == "Dashboard") {
                 self.dashboard.createChartDispActive(data);
             }
         });
         self.appEventBus.on('updateChart', function (x, site) {
-            if (window.profile.get("site") && window.profile.get("site") == site) {
+            if (window.profile.get("site") && window.profile.get("site") == site && 
+                    Backbone.history.getFragment() == "Dashboard") {
                 self.dashboard.updateChart(x);
             }
-        });
-        self.appEventBus.on('teste', function (data) {
-            console.log(data);
         });
     },
     showView: function (view, elem, sub) {
