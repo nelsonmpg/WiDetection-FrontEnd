@@ -19,7 +19,7 @@ window.DetailAPView = Backbone.View.extend({
         this.ap = $('#ApSelect').find(":selected").data("mac");
         this.getDisps(this.ap);
         if (this.ap != "all") {
-        this.ApHourChart(this.ap);
+            this.ApHourChart(this.ap);
         }
     },
     carregarSelect: function () {
@@ -30,7 +30,8 @@ window.DetailAPView = Backbone.View.extend({
                     var values = [];
                     for (var sensor in data) {
                         for (var rede in data[sensor].group[0]) {
-                            values[data[sensor].group[0][rede]] = data[sensor].group[1][rede];
+//                            values[data[sensor].group[0][rede]] = data[sensor].group[1][rede];
+                            values[data[sensor].group[0][rede]]={"name":data[sensor].group[1][rede], "details":data[sensor].reduction[1][rede]}
                         }
                     }
                     _(values).sortBy(function (obj) {
@@ -38,7 +39,7 @@ window.DetailAPView = Backbone.View.extend({
                     });
                     for (var i in values) {
                         self.allap.push(i);
-                        $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i] == "") ? "Hidden network" : values[i]) + " - (" + i + ")</option>");
+                        $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].nome == "") ? "Hidden network" : values[i].nome) + " - (" + i + ")</option>");
                     }
                     $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
                 },
@@ -140,8 +141,8 @@ window.DetailAPView = Backbone.View.extend({
                                 devices.push((data[0][i].macAddress).trim());
                                 xnodes.push({id: devices.indexOf((data[0][i].macAddress).trim()) + 1, label: data[0][i].nameVendor + "\n" + data[0][i].macAddress, group: "device"});
                             }
-                            if (_.where(xedges, {from: devices.indexOf(data[1].trim()), to: devices.indexOf((data[0][i].macAddress).trim()) + 1}) ==  0){
-                            xedges.push({from: devices.indexOf(data[1].trim()), to: devices.indexOf((data[0][i].macAddress).trim()) + 1});
+                            if (_.where(xedges, {from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1}) == 0) {
+                                xedges.push({from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1});
                             }
                         }
                         if (data[1] == macs[a]) { //se for o ultimo ap

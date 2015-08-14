@@ -18,16 +18,12 @@ window.DetailView = Backbone.View.extend({
             mac: $(e.currentTarget).text(),
             trigger: true
         });
-
     },
     init: function () {
         //alert("DetailView Inicializada");
         var self = this;
-
         this.getSensors();
-
         this.dataselect(moment().subtract(29, 'days'), moment());
-
         $('#reportrange').daterangepicker({
             ranges: {
                 'Today': [moment().hours(0).minutes(0).seconds(0), moment()],
@@ -38,14 +34,21 @@ window.DetailView = Backbone.View.extend({
                 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
             }
         }, self.dataselect);
-
         $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
             self.changedate(ev, picker);
         });
-
-        $("#div.daterangepicker.dropdown-menu.opensleft > div.ranges > li:nth-child(1)").click();
-
         $.AdminLTE.boxWidget.activate();
+
+
+        $("#reportrange").click();
+
+        setTimeout(function () {
+            if (true) {
+                $("body > div.daterangepicker.dropdown-menu.opensleft > div.ranges > ul > li:nth-child(5)").click();
+//                $("body > div.daterangepicker.dropdown-menu.opensleft > div.ranges > div > button.applyBtn.btn.btn-sm.btn-success").click();
+            }
+        }, 120);
+
     },
     selectSensor: function (e) {
         e.preventDefault();
@@ -74,15 +77,12 @@ window.DetailView = Backbone.View.extend({
                 $('#SensorSelect').find(":selected").data("log"),
                 $('#SensorSelect').find(":selected").data("date")]],
                 $("#mapSensor")[0]);
-
         addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
                 value: 1
             }]);
-
         $("#tblSensor").html('<tr><th style="width:50%">Latitude:</th><td>' + $('#SensorSelect').find(":selected").data("lat") + '</td></tr>' +
                 '<tr><th style="width:50%">Longitude:</th><td>' + $('#SensorSelect').find(":selected").data("log") + '</td></tr>' +
                 '<tr><th style="width:50%">Last Active:</th><td>' + moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
-
 //          this.tableload();
     },
     tableload: function () {
@@ -128,8 +128,8 @@ window.DetailView = Backbone.View.extend({
             modem("GET",
                     "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
                     function (data) {
-                        var values = [], dataSet = [];
-                        ;
+                        $("#div-loading").hide();
+                        var values = [], dataSet = [];                        
                         for (var i in data) {
                             values.push({y: data[i].reduction.length, label: data[i].group});
                             for (var a in data[i].reduction) {
@@ -149,11 +149,11 @@ window.DetailView = Backbone.View.extend({
                             $('#chartAccessPoint').html('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
                             $("#div-charts-details").hide();
                             $("#div-row-table-ap").hide();
-                             $("#div-no-result").show();
+                            $("#div-no-result").show();
                         } else {
                             $("#div-charts-details").show();
                             $("#div-row-table-ap").show();
-                             $("#div-no-result").hide();
+                            $("#div-no-result").hide();
                             $('#tblDetailsAp').DataTable({
                                 "data": dataSet,
                                 "paging": true,
@@ -188,7 +188,6 @@ window.DetailView = Backbone.View.extend({
                                             }
                                         ]
                                     });
-
                             chart.render();
                         }
                     },
@@ -197,11 +196,11 @@ window.DetailView = Backbone.View.extend({
                         error_launch(json.message);
                     }, {}
             );
-
             //grafico disp moveis
             modem("GET",
                     "/getAllOrderbyVendor/" + window.profile.id + "/disp/" + self.sensor + "/" + max + "/" + min,
                     function (data) {
+                        $("#div-loading").hide();
                         var values = [], dataSet = [];
                         for (var i in data) {
                             values.push({y: data[i].reduction.length, label: data[i].group});
@@ -214,11 +213,11 @@ window.DetailView = Backbone.View.extend({
                             }
                         }
                         if (data.length == 0) {
-                             $("#div-row-table-devices").hide();
-                             $("#div-no-result").show();
+                            $("#div-row-table-devices").hide();
+                            $("#div-no-result").show();
                         } else {
                             $("#div-row-table-devices").show();
-                             $("#div-no-result").hide();
+                            $("#div-no-result").hide();
                             $('#tblDetailsDevices').DataTable({
                                 "data": dataSet,
                                 "paging": true,
@@ -229,14 +228,13 @@ window.DetailView = Backbone.View.extend({
                                 "autoWidth": true,
                                 "destroy": true
                             });
-
                             var chart = new CanvasJS.Chart("chartDispMoveis",
                                     {
                                         animationEnabled: true,
                                         axisX: {
                                             labelAngle: -90,
                                             labelMaxWidth: 100,
-                                             labelWrap: false,
+                                            labelWrap: false,
                                             interval: 1
                                         },
                                         axisY: {
@@ -254,7 +252,6 @@ window.DetailView = Backbone.View.extend({
                                             }
                                         ]
                                     });
-
                             chart.render();
                         }
                     },
@@ -263,7 +260,6 @@ window.DetailView = Backbone.View.extend({
                         error_launch(json.message);
                     }, {}
             );
-
         }
     },
     render: function () {
