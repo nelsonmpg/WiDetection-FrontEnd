@@ -52,10 +52,12 @@ window.DashboardView = Backbone.View.extend({
                 sensorList += '<option class="select-sensor-lst">' + data[i].AP.nome + '</option>';
               }
               $("#select-chart-sensor > select").html(sensorList).selectpicker('refresh');
+              var scroll = $(window).scrollTop();
               $("#select-chart-sensor div.dropdown-menu ul.dropdown-menu li.selected a").trigger('click');
               self.graph2Bar = new ArrayToGraph(data, "", "", "chart2bars", "column");
               // para aparecer a div com os resultados
               self.graph2Bar.createArrayToGraphTwoBar();
+              $(window).scrollTop(scroll);
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
