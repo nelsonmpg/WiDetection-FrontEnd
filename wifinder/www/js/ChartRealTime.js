@@ -27,7 +27,7 @@ ChartRealTime.prototype.createAndUpdateListaHostAndValues = function (lista) {
       var val = this.listaHostsStartAndUpdateValues[lista[i].macAddress];
       var graphDisp = (typeof val == "undefined") ? this.inicializaArray() : val.listaValues;
       graphDisp.push({
-        x: new Date(),
+        x:  new Date(),
         y: 1 * lista[i].Power
       });
       if (graphDisp.length > this.dataLength) {
@@ -158,6 +158,7 @@ ChartRealTime.prototype.graph = function () {
     },
     axisY: {
       gridThickness: 0.2,
+      interval: 5,
       labelFontSize: 12,
       suffix: " dBm",
       labelFontFamily: "verdana",

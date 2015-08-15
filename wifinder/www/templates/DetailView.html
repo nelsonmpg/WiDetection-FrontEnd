@@ -1,263 +1,312 @@
 <div class="row">
-    <div class="col-md-6">
-        <div class="box">
-            <div  class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Details </h3>
-                <div class="box-tools pull-right">
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-                        <i class="fa fa-times"></i>
-                    </button>
+  <div class="col-md-6">
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Details </h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+
+
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <div class="col-md-4">
+                <label>Sensor</label>
+                <select class="form-control select2" id="SensorSelect">
+                </select>
+              </div>
+              <div class="col-md-8">
+                <div class="input-group">                                
+                  <label>Date range:</label>
+                  <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                    <span></span> <b class="caret"></b>
+                  </div>
                 </div>
-            </div><!-- /.box-header -->
+              </div>
+            </div><!-- /.form group -->
+          </div><!-- /.box-body -->
+        </div><!-- /.box -->
+      </div> <!-- row -->
+    </div><!-- /.col -->
+
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Details sensor</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
 
 
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label>Sensor</label>
-                            <select class="form-control select2" id="SensorSelect">
-                            </select>
-                            <div class="input-group">                                
-                                <label>Date range:</label>
-                                <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                                    <span></span> <b class="caret"></b>
-                                </div>
-                            </div>
-                        </div><!-- /.form group -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">     
+            <div class="table-responsive">
+              <table id="tblSensor" class="table"> 
 
-
-
-                        <div class="col-md-12">
-                            <p class="lead">Details sensor:</p>
-                            <div class="table-responsive">
-                                <table id="tblSensor" class="table"> 
-
-                                </table>
-                            </div>
-                        </div><!-- /.col -->
-
-                    </div><!-- /.box-body -->
-                </div><!-- /.box -->
-            </div> <!-- row -->
-
-        </div><!-- /.col -->
-    </div><!-- /.row -->
-
-
-    <div class="col-md-6">
-        <div class="box">
-            <div  class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-map fa-fw"></i> Geolocation </h3>
-                <div class="box-tools pull-right">
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-            </div><!-- /.box-header -->
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-12 height400">
-                        <div class="chart">
-                            <!-- Sales Chart Canvas -->
-                            <div id="mapSensor"  class="height400">                                
-                                <div class="overlay text-center">
-                                    <h1><i class="fa fa-refresh fa-spin"></i> Select a sensor</h1>
-                                </div>
-                            </div>
-                        </div><!-- /.chart-responsive -->
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- ./box-body -->
+              </table>
+            </div><!-- /.col -->
+          </div><!-- /.box-body -->
+        </div><!-- /.box -->
+        <div class="row">
+          <div class="col-md-4 text-center">     
+            <input id="chartCpu" 
+                   class="knob" 
+                   type="text" 
+                   data-displayPrevious=true 
+                   data-step="0.1" 
+                   value="0" 
+                   data-skin="tron" 
+                   data-thickness="0.2" 
+                   data-width="100" 
+                   data-height="100" 
+                   data-fgColor="#f56954" 
+                   data-readonly="true" >
+            <div class="knob-label"><b>CPU Usage</b></div>
+          </div><!-- /.box-body -->
+          <div class="col-md-4 text-center">     
+            <input id="chartMem" 
+                   class="knob" 
+                   type="text" 
+                   data-displayPrevious=true 
+                   data-step="0.1" 
+                   value="0" 
+                   data-skin="tron"  
+                   data-thickness="0.2" 
+                   data-width="100" 
+                   data-height="100" 
+                   data-fgColor="#f56954" 
+                   data-readonly="true" >
+            <div class="knob-label"><b>Ram usage</b></div>
+          </div><!-- /.box-body -->
+          <div class="col-md-4 text-center">     
+            <input id="chartDisc" 
+                   class="knob" 
+                   type="text" 
+                   data-displayPrevious=true 
+                   data-step="0.1" 
+                   value="0" 
+                   data-skin="tron"  
+                   data-thickness="0.2" 
+                   data-width="100" 
+                   data-height="100" 
+                   data-fgColor="#f56954" 
+                   data-readonly="true" >
+            <div class="knob-label"><b>Disc space usage</b></div>
+          </div><!-- /.box-body -->
         </div><!-- /.box -->
 
+      </div> <!-- row -->
     </div><!-- /.col -->
+  </div><!-- /.row -->
+
+  <div class="col-md-6">
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-map fa-fw"></i> Geolocation </h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12 height400">
+            <div class="chart">
+              <!-- Sales Chart Canvas -->
+              <div id="mapSensor"  class="height400">                                
+                <div class="overlay text-center">
+                  <h1><i class="fa fa-refresh fa-spin"></i> Select a sensor</h1>
+                </div>
+              </div>
+            </div><!-- /.chart-responsive -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- ./box-body -->
+    </div><!-- /.box -->
+
+  </div><!-- /.col -->
 </div><!-- /.row -->
 
 <div class="row" id="div-charts-details" style="display: none">
-
-    <div class="col-md-6">
-
-        <div class="box">
-            <div  class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-info"></i> Access Point </h3>
-                <div class="box-tools pull-right">
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-                        <i class="fa fa-times"></i>
-                    </button>
+  <div class="col-md-6">
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-info"></i> Access Point </h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="chart">
+              <!-- Sales Chart Canvas -->
+              <div id="chartAccessPoint"  class="height400">
+                <div class="overlay text-center">
+                  <h1><i class="fa fa-refresh fa-spin"></i> Select a date range</h1>
                 </div>
-            </div><!-- /.box-header -->
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="chart">
-                            <!-- Sales Chart Canvas -->
-                            <div id="chartAccessPoint"  class="height400">
-                                <div class="overlay text-center">
-                                    <h1><i class="fa fa-refresh fa-spin"></i> Select a date range</h1>
-                                </div>
-                            </div>
-                        </div><!-- /.chart-responsive -->
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- ./box-body -->
-        </div><!-- /.box -->
+              </div>
+            </div><!-- /.chart-responsive -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- ./box-body -->
+    </div><!-- /.box -->
+  </div><!-- /.col -->
 
-    </div><!-- /.col -->
-
-
-    <div class="col-md-6">
-
-        <div class="box">
-            <div  class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-info"></i> Mobile Devices </h3>
-                <div class="box-tools pull-right">
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-                        <i class="fa fa-times"></i>
-                    </button>
+  <div class="col-md-6">
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-info"></i> Mobile Devices </h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="chart">
+              <!-- Sales Chart Canvas -->
+              <div id="chartDispMoveis"  class="height400">
+                <div class="overlay text-center">
+                  <h1><i class="fa fa-refresh fa-spin"></i> Select a date range</h1>
                 </div>
-            </div><!-- /.box-header -->
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="chart">
-                            <!-- Sales Chart Canvas -->
-                            <div id="chartDispMoveis"  class="height400">
-                                <div class="overlay text-center">
-                                    <h1><i class="fa fa-refresh fa-spin"></i> Select a date range</h1>
-                                </div>
-                            </div>
-                        </div><!-- /.chart-responsive -->
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- ./box-body -->
-        </div><!-- /.box -->
-
-    </div><!-- /.col -->
-
+              </div>
+            </div><!-- /.chart-responsive -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- ./box-body -->
+    </div><!-- /.box -->
+  </div><!-- /.col -->
 </div>
 
 <div class="row" id="div-row-table-devices" style="display: none">
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">Devices detected by sensor</h3>
-            </div><!-- /.box-header -->
-            <div class="box-body">
-                <table id="tblDetailsDevices" class="height400 table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>MAC address</th>
-                            <th>Manufacturer</th>
-                            <th>First Seen</th>
-                            <th>Last Seen</th>
-                            <th>Connected to</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>MAC address</th>
-                            <th>Manufacturer</th>
-                            <th>First Seen</th>
-                            <th>Last Seen</th>
-                            <th>Connected to</th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div><!-- /.box-body -->
-        </div><!-- /.box -->
-    </div> <!-- row -->
+  <div class="col-xs-12">
+    <div class="box">
+      <div class="box-header">
+        <h3 class="box-title">Devices detected by sensor</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <table id="tblDetailsDevices" class="height400 table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>MAC address</th>
+              <th>Manufacturer</th>
+              <th>First Seen</th>
+              <th>Last Seen</th>
+              <th>Connected to</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>MAC address</th>
+              <th>Manufacturer</th>
+              <th>First Seen</th>
+              <th>Last Seen</th>
+              <th>Connected to</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div><!-- /.box-body -->
+    </div><!-- /.box -->
+  </div> <!-- row -->
 </div>
 
 <div class="row" id="div-row-table-ap" style="display: none">
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-header">
-                <h3 class="box-title">Access Point detected by sensor</h3>
-            </div><!-- /.box-header -->
-            <div class="box-body">
-                <table id="tblDetailsAp" class="height400 table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>Manufacturer</th>
-                            <th>SSID</th>
-                            <th>Authentication</th>
-                            <th>Cipher</th>
-                            <th>Privacy</th>
-                            <th>Speed</th>
-                            <th>Channel</th>
-                            <th>First Seen</th>
-                            <th>Last Seen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Manufacturer</th>
-                            <th>SSID</th>
-                            <th>Authentication</th>
-                            <th>Cipher</th>
-                            <th>Privacy</th>
-                            <th>Speed</th>
-                            <th>Channel</th>
-                            <th>First Seen</th>
-                            <th>Last Seen</th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div><!-- /.box-body -->
-        </div><!-- /.box -->
-    </div> <!-- row -->
+  <div class="col-xs-12">
+    <div class="box">
+      <div class="box-header">
+        <h3 class="box-title">Access Point detected by sensor</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <table id="tblDetailsAp" class="height400 table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Manufacturer</th>
+              <th>SSID</th>
+              <th>Authentication</th>
+              <th>Cipher</th>
+              <th>Privacy</th>
+              <th>Speed</th>
+              <th>Channel</th>
+              <th>First Seen</th>
+              <th>Last Seen</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>Manufacturer</th>
+              <th>SSID</th>
+              <th>Authentication</th>
+              <th>Cipher</th>
+              <th>Privacy</th>
+              <th>Speed</th>
+              <th>Channel</th>
+              <th>First Seen</th>
+              <th>Last Seen</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div><!-- /.box-body -->
+    </div><!-- /.box -->
+  </div> <!-- row -->
 </div>
 
 
 <div class="row" id="div-no-result" style="display:none">
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-body">
-                <div class="col-xs-12 height400">
-                    <div class="box">
-                        <div class="overlay text-center">
-                            <h1 style="margin-top: 10%"><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>
-                    </div>
-                </div>
-            </div><!-- /.box-body -->
-        </div><!-- /.box -->
-    </div> <!-- row -->
+  <div class="col-xs-12">
+    <div class="box">
+      <div class="box-body">
+        <div class="col-xs-12 height400">
+          <div class="box">
+            <div class="overlay text-center">
+              <h1 style="margin-top: 10%"><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>
+          </div>
+        </div>
+      </div><!-- /.box-body -->
+    </div><!-- /.box -->
+  </div> <!-- row -->
 </div>
 
 
 <div class="row" id="div-loading">
-    <div class="col-xs-12">
-        <div class="box">
-            <div class="box-body">
-                <div class="col-xs-12 height400">
-                    <div class="box">
-                        <div class="overlay text-center">
-                            <h1 style="margin-top: 10%"><i class="fa fa-spinner fa-spin"></i> Loading </h1></div>
-                    </div>
-                </div>
-            </div><!-- /.box-body -->
-        </div><!-- /.box -->
-    </div> <!-- row -->
+  <div class="col-xs-12">
+    <div class="box">
+      <div class="box-body">
+        <div class="col-xs-12 height400">
+          <div class="box">
+            <div class="overlay text-center">
+              <h1 style="margin-top: 10%"><i class="fa fa-spinner fa-spin"></i> Loading </h1></div>
+          </div>
+        </div>
+      </div><!-- /.box-body -->
+    </div><!-- /.box -->
+  </div> <!-- row -->
 </div>
-
-<!-- DATA TABES SCRIPT -->
-<script src="plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
-<script src="plugins/datatables/dataTables.bootstrap.min.js" type="text/javascript"></script>

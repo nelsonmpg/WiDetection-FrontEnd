@@ -8,6 +8,7 @@ var fs = require('fs');
 var jsdiff = require('diff');
 var chokidar = require('chokidar');
 var lineReader = require('line-reader');
+var shellInterval = require("shell-interval");
 var localTable = [];
 var fileRead = '/media/usb/scanNetworks-01.csv';
 
@@ -34,6 +35,8 @@ var ServerSocket = function (port, configdb, sensorcfg) {
   this.lati = sensorcfg.lati;
   this.long = sensorcfg.long;
   this.local = sensorcfg.loc;
+  this.posx = sensorcfg.posx;
+  this.posy = sensorcfg.posy;
   this.scanStart = false;
   this.dbConfig = configdb;
 
@@ -56,11 +59,46 @@ var ServerSocket = function (port, configdb, sensorcfg) {
   dispmoveis.dbConfig = this.dbConfig;
   dispap.dbConfig = this.dbConfig;
   activeant.dbConfig = this.dbConfig;
+
+  var self = this;
+
+  shellInterval({
+    options: {
+      command: "./serverStatus.sh",
+      time: 5
+    },
+    onExec: function (err, stdout, stderr) {
+      if (err) {
+        throw err;
+      }
+      var outres = stdout.split("\n");
+      var memarr = outres[0].split(" ");
+      var discarr = outres[2].split(" ");
+      var mem = {
+        total: memarr[0],
+        used: memarr[1],
+        free: memarr[2]
+      };
+      var disc = {
+        size: discarr[0],
+        used: discarr[1],
+        avail: discarr[2],
+        use: discarr[3]
+      };
+      var cpu = outres[1];
+
+      activeant.updateActiveAnt(self.clienteSend, mem, cpu, disc);
+      console.log('--------------------------------------------------------');
+    },
+    onFinish: function () {
+      console.log("The shell command was called five times. Exiting...");
+    }
+  });
 };
 
 ServerSocket.prototype.start = function () {
   var self = this;
-  activeant.insertActiveAnt(self.clienteSend, self.lati, self.long, self.local);
+  activeant.insertActiveAnt(self.clienteSend, self.lati, self.long, self.local, self.posx, self.posy);
   this.serverSck.listen(this.port);
 
   watcher.on('change', function (path) {
@@ -75,8 +113,6 @@ ServerSocket.prototype.start = function () {
             if (part.added) {
               localTable[result[0]] = line;
               self.sendToDataBase(a);
-              activeant.updateActiveAnt(self.clienteSend);
-              console.log('--------------------------------------------------------');
             }
           });
         } else {

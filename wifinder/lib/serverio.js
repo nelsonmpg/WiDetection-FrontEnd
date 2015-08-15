@@ -47,6 +47,7 @@ ServerSktIo.prototype.init = function () {
         pedidos.changeTablesDisps(data[i].db, socket, "ActiveAnt", "sensor");
         pedidos.changeTableAnt(data[i].db, socket, "AntAp", "ap");
         pedidos.changeTableAnt(data[i].db, socket, "AntDisp", "disp");
+        pedidos.changeActiveAnt(data[i].db, socket);
       }
     });
 

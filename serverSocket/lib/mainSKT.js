@@ -57,7 +57,9 @@ MainSKT.prototype.carregarConfig = function () {
     name: this.config.localsensor.nomeSensor,
     loc: this.normalizeString(this.config.localsensor.morada),
     lati: this.config.localsensor.latitude,
-    long: this.config.localsensor.longitude
+    long: this.config.localsensor.longitude,
+    posx: this.config.localsensor.posx,
+    posy: this.config.localsensor.posy
   };
 
   var urlLoc = "https://maps.googleapis.com/maps/api/geocode/json?address=" + this.sensorCfg.loc + "&key=AIzaSyAy2HwVO_Gh9f9JLrtdON77gNQWrn4TQ9U";

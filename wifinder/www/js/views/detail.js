@@ -37,18 +37,61 @@ window.DetailView = Backbone.View.extend({
         $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
             self.changedate(ev, picker);
         });
-        $.AdminLTE.boxWidget.activate();
-
-
         $("#reportrange").click();
-
         setTimeout(function () {
             if (true) {
                 $("body > div.daterangepicker.dropdown-menu.opensleft > div.ranges > ul > li:nth-child(5)").click();
 //                $("body > div.daterangepicker.dropdown-menu.opensleft > div.ranges > div > button.applyBtn.btn.btn-sm.btn-success").click();
             }
-        }, 120);
+        }, 150);
+        $(".knob").knob({
+            "min": 0,
+            "max": 100,
+            'format': function (value) {
+                return value + '%';
+            },
+            change: function (value) {
+                console.log("change : " + value);
+            },
+            draw: function () {
+                // "tron" case
+                if (this.$.data('skin') == 'tron') {
 
+                    var a = this.angle(this.cv)  // Angle
+                            , sa = this.startAngle          // Previous start angle
+                            , sat = this.startAngle         // Start angle
+                            , ea                            // Previous end angle
+                            , eat = sat + a                 // End angle
+                            , r = true;
+                    this.g.lineWidth = this.lineWidth;
+                    this.o.cursor
+                            && (sat = eat - 0.3)
+                            && (eat = eat + 0.3);
+                    if (this.o.displayPrevious) {
+                        ea = this.startAngle + this.angle(this.value);
+                        this.o.cursor
+                                && (sa = ea - 0.3)
+                                && (ea = ea + 0.3);
+                        this.g.beginPath();
+                        this.g.strokeStyle = this.previousColor;
+                        this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sa, ea, false);
+                        this.g.stroke();
+                    }
+
+                    this.g.beginPath();
+                    this.g.strokeStyle = r ? this.o.fgColor : this.fgColor;
+                    this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sat, eat, false);
+                    this.g.stroke();
+                    this.g.lineWidth = 2;
+                    this.g.beginPath();
+                    this.g.strokeStyle = this.o.fgColor;
+                    this.g.arc(this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false);
+                    this.g.stroke();
+                    return false;
+                }
+            }
+        });
+        $.AdminLTE.boxWidget.activate();
     },
     selectSensor: function (e) {
         e.preventDefault();
@@ -153,7 +196,7 @@ window.DetailView = Backbone.View.extend({
                                 "data": dataSet,
                                 "paging": true,
                                 "lengthChange": false,
-                                "searching": true,
+                                "searching": false,
                                 "ordering": true,
                                 "info": true,
                                 "autoWidth": true,
@@ -221,7 +264,7 @@ window.DetailView = Backbone.View.extend({
                                 "data": dataSet,
                                 "paging": true,
                                 "lengthChange": false,
-                                "searching": true,
+                                "searching": false,
                                 "ordering": true,
                                 "info": true,
                                 "autoWidth": true,
@@ -282,6 +325,15 @@ window.DetailView = Backbone.View.extend({
             $("#div-row-table-ap").hide();
             $("#div-charts-details").hide();
         }
+    },
+    render: function () {
+        $(this.el).html(this.template());
+        return this;
+    },
+    updateDataSensor: function (data) {
+        $('#chartCpu').val(data.cpu).trigger('change');
+        $('#chartMem').val((data.memory.used / data.memory.total) * 100).trigger('change');
+        $('#chartDisc').val(data.disc.use.toString().replace(/%/g, "")).trigger('change');
     },
     render: function () {
         $(this.el).html(this.template());
