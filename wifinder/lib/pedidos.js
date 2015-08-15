@@ -420,7 +420,7 @@ module.exports.getAllDisp = function (iduser, socket) {
 
                   //Interval de update do grafico nos clientes
                   liveActives[self.getDataBase(iduser)].intervalChart = setInterval(function () {
-                    if (typeof liveActives[self.getDataBase(iduser)] != "undefined") {
+                    if (typeof liveActives[self.getDataBase(iduser)] != "undefined" && liveActives[self.getDataBase(iduser)] != null) {
                       //a ultima data do array
                       var nextDate = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
                       // + 1 minuto, ou seja, r.now()
@@ -457,11 +457,13 @@ module.exports.getAllDisp = function (iduser, socket) {
                             liveActives[self.getDataBase(iduser)].array.push(x);
                             //Envia para os clientes
                             socket.emit("updateChart", x, self.getDataBase(iduser));
-
+                            clearInterval(liveActives[self.getDataBase(iduser)].intervalChart);
                           }
                           conn.close();
                         });
                       });
+                    } else {
+                        
                     }
                   }, 1000 * 60); //De minuto a minuto
                 }

@@ -31,7 +31,7 @@ window.DetailAPView = Backbone.View.extend({
                     for (var ssid in data[0].group[0]) {
                         values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
                     }
-                        self.allap = values;
+                    self.allap = values;
                     for (var i in values) {
                         $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
                     }
@@ -52,8 +52,31 @@ window.DetailAPView = Backbone.View.extend({
         if (mac == "all") {
             self.networkAllAP(self.allap);
             $("#div-row-table-ap").hide();
-        } else {            
+        } else {
             $("#div-row-table-ap").show();
+
+            var dataSet = [];
+            dataSet.push([
+                self.allap[mac].bssid,
+                self.allap[mac].name,
+                self.allap[mac].value.Authentication,
+                self.allap[mac].value.Cipher,
+                self.allap[mac].value.Privacy,
+                self.allap[mac].value.channel
+            ]);
+            $('#tblAp').DataTable({
+                "data": dataSet,
+                "paging": false,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": false,
+                "autoWidth": true,
+                "destroy": true
+            });
+
+
+
             modem("GET",
                     "/getDispConnectedtoAp/" + window.profile.id + "/" + mac,
                     function (data) {
@@ -142,7 +165,6 @@ window.DetailAPView = Backbone.View.extend({
                             }
                         }
                         if (data[1] == macs[a].bssid) { //se for o ultimo ap
-                            console.log(xedges,xnodes);
                             self.fazergrafico(xedges, xnodes);
                         }
 
@@ -222,7 +244,6 @@ window.DetailAPView = Backbone.View.extend({
         modem("GET",
                 "/getDispConnectedtoAp/" + window.profile.id + "/" + mac,
                 function (data) {
-                    console.log(data);
                     var count, tmp = [], yes = false;
                     while (first < last) {
                         count = 0, yes = false;
@@ -230,7 +251,6 @@ window.DetailAPView = Backbone.View.extend({
                             for (var b in data[a].disp) {
                                 for (var c in data[a].disp[b].values) {
                                     if (first.startOf("hour") <= moment(data[a].disp[b].values[c].Last_time * 1000) <= first.endOf("hour")) {
-                                        console.log(moment(data[a].disp[b].values[c].Last_time * 1000));
                                         count++;
                                         yes = true;
                                         break;
