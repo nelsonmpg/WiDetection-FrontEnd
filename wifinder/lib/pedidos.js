@@ -206,6 +206,19 @@ module.exports.changeTableAnt = function (database, socket, table, nemedisp) {
   });
 };
 
+module.exports.changeActiveAnt = function (database, socket) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table("ActiveAnt")
+            .changes()('new_val').withFields("cpu", "disc", "memory", "data").run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+//                console.log(item);
+                socket.emit("changeActiveAnt", item, database);
+              });
+            });
+  });
+};
+
 module.exports.getSensors = function (req, res) {
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.id)).table("ActiveAnt")

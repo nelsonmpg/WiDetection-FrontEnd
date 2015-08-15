@@ -66,6 +66,14 @@ window.DashboardView = Backbone.View.extend({
     var self = this;
     var sensor = $(e.currentTarget).text();
     if (self.lastSensorselect != sensor) {
+      if (self.chartrealtimeMoveis != null) {
+        self.chartrealtimeMoveis.stopIntervalGraph();
+        self.chartrealtimeMoveis = null;
+      }
+      if (self.chartrealtimeAp != null) {
+        self.chartrealtimeAp.stopIntervalGraph();
+        self.chartrealtimeAp = null;
+      }
       self.lastSensorselect = sensor;
       modem("GET",
               "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",

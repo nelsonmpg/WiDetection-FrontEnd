@@ -5,7 +5,7 @@ var connectdb = require("./ConnectDb");
 
 var self = this;
 
-module.exports.insertActiveAnt = function (client, latitude, longitude, local) {
+module.exports.insertActiveAnt = function (client, latitude, longitude, local, posx, posy) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db).table("ActiveAnt").get(client).replace(function (row) {
       return r.branch(
@@ -15,14 +15,24 @@ module.exports.insertActiveAnt = function (client, latitude, longitude, local) {
                 "latitude": latitude,
                 "longitude": longitude,
                 "local": local,
-                "data": r.now().inTimezone("+01:00")
+                "data": r.now().inTimezone("+01:00"),
+                "posX": posx,
+                "posY": posy,
+                "memory": "",
+                "cpu": "",
+                "disc": ""
               },
       {
         "nomeAntena": client,
         "latitude": latitude,
         "longitude": longitude,
         "local": local,
-        "data": r.now().inTimezone("+01:00")
+        "data": r.now().inTimezone("+01:00"),
+        "posX": posx,
+        "posY": posy,
+        "memory": "",
+        "cpu": "",
+        "disc": ""
       });
     }).run(conn)
             .finally(function () {
@@ -36,13 +46,16 @@ module.exports.insertActiveAnt = function (client, latitude, longitude, local) {
   });
 };
 
-module.exports.updateActiveAnt = function (client) {
+module.exports.updateActiveAnt = function (client, mem, cpu, disc) {
   r.connect(self.dbData).then(function (conn) {
     return  r.db(self.dbConfig.db)
             .table("ActiveAnt")
             .get(client)
             .update({
-              "data": r.now().inTimezone("+01:00")
+              "data": r.now().inTimezone("+01:00"),
+              "memory": mem,
+              "cpu": cpu,
+              "disc": disc
             }).run(conn)
             .finally(function () {
               conn.close();
