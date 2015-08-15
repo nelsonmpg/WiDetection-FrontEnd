@@ -177,11 +177,11 @@ window.DetailView = Backbone.View.extend({
   },
   loadcharts: function (min, max) {
     var self = this;
+    $("#div-loading").show();
     if (window.profile.id != undefined && self.sensor != undefined) {
       modem("GET",
               "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
               function (data) {
-                $("#div-loading").hide();
                 var values = [], dataSet = [];
                 for (var i in data) {
                   values.push({y: data[i].reduction.length, label: data[i].group});
@@ -199,14 +199,9 @@ window.DetailView = Backbone.View.extend({
                   }
                 }
                 if (data.length == 0) {
-                  $('#chartAccessPoint').html('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
-                  $("#div-charts-details").hide();
-                  $("#div-row-table-ap").hide();
-                  $("#div-no-result").show();
+                  self.toggleContentors(false);
                 } else {
-                  $("#div-charts-details").show();
-                  $("#div-row-table-ap").show();
-                  $("#div-no-result").hide();
+                  self.toggleContentors(true);
                   $('#tblDetailsAp').DataTable({
                     "data": dataSet,
                     "paging": true,
@@ -221,13 +216,20 @@ window.DetailView = Backbone.View.extend({
                           {
                             animationEnabled: true,
                             axisX: {
-                              labelAngle: -90,
                               labelMaxWidth: 100,
                               labelWrap: false,
-                              interval: 1
+                              interval: 1,
+                              labelAngle: -70,
+                              labelFontSize: 12,
+                              labelFontFamily: "verdana",
+                              labelFontColor: "black"
                             },
                             axisY: {
-                              interval: 1
+                              gridThickness: 1,
+                              interval: 1,
+                              labelFontSize: 12,
+                              labelFontFamily: "verdana",
+                              labelFontColor: "black"
                             },
                             legend: {
                               verticalAlign: "bottom",
@@ -253,7 +255,6 @@ window.DetailView = Backbone.View.extend({
       modem("GET",
               "/getAllOrderbyVendor/" + window.profile.id + "/disp/" + self.sensor + "/" + max + "/" + min,
               function (data) {
-                $("#div-loading").hide();
                 var values = [], dataSet = [];
                 for (var i in data) {
                   values.push({y: data[i].reduction.length, label: data[i].group});
@@ -266,11 +267,9 @@ window.DetailView = Backbone.View.extend({
                   }
                 }
                 if (data.length == 0) {
-                  $("#div-row-table-devices").hide();
-                  $("#div-no-result").show();
+                  self.toggleContentors(false);
                 } else {
-                  $("#div-row-table-devices").show();
-                  $("#div-no-result").hide();
+                  self.toggleContentors(true);
                   $('#tblDetailsDevices').DataTable({
                     "data": dataSet,
                     "paging": true,
@@ -285,13 +284,20 @@ window.DetailView = Backbone.View.extend({
                           {
                             animationEnabled: true,
                             axisX: {
-                              labelAngle: -90,
                               labelMaxWidth: 100,
                               labelWrap: false,
-                              interval: 1
+                              interval: 1,
+                              labelAngle: -70,
+                              labelFontSize: 12,
+                              labelFontFamily: "verdana",
+                              labelFontColor: "black"
                             },
                             axisY: {
-                              interval: 1
+                              gridThickness: 1,
+                              interval: 1,
+                              labelFontSize: 12,
+                              labelFontFamily: "verdana",
+                              labelFontColor: "black"
                             },
                             legend: {
                               verticalAlign: "bottom",
@@ -313,6 +319,21 @@ window.DetailView = Backbone.View.extend({
                 error_launch(json.message);
               }, {}
       );
+    }
+  },
+  toggleContentors: function (show) {
+    if (show) {
+      $("#div-loading").hide();
+      $("#div-no-result").hide();
+      $("#div-row-table-devices").show();
+      $("#div-row-table-ap").show();
+      $("#div-charts-details").show();
+    } else {
+      $("#div-no-result").show();
+      $("#div-loading").hide();
+      $("#div-row-table-devices").hide();
+      $("#div-row-table-ap").hide();
+      $("#div-charts-details").hide();
     }
   },
   updateDataSensor: function (data) {

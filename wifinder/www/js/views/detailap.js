@@ -28,18 +28,12 @@ window.DetailAPView = Backbone.View.extend({
                 "/getAllAP/" + window.profile.id,
                 function (data) {
                     var values = [];
-                    for (var sensor in data) {
-                        for (var rede in data[sensor].group[0]) {
-//                            values[data[sensor].group[0][rede]] = data[sensor].group[1][rede];
-                            values[data[sensor].group[0][rede]]={"name":data[sensor].group[1][rede], "details":data[sensor].reduction[1][rede]}
-                        }
+                    for (var ssid in data[0].group[0]) {
+                        values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
                     }
-                    _(values).sortBy(function (obj) {
-                        return obj.toString
-                    });
+                        self.allap = values;
                     for (var i in values) {
-                        self.allap.push(i);
-                        $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].nome == "") ? "Hidden network" : values[i].nome) + " - (" + i + ")</option>");
+                        $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
                     }
                     $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
                 },
@@ -57,7 +51,9 @@ window.DetailAPView = Backbone.View.extend({
         }
         if (mac == "all") {
             self.networkAllAP(self.allap);
-        } else {
+            $("#div-row-table-ap").hide();
+        } else {            
+            $("#div-row-table-ap").show();
             modem("GET",
                     "/getDispConnectedtoAp/" + window.profile.id + "/" + mac,
                     function (data) {
@@ -128,13 +124,13 @@ window.DetailAPView = Backbone.View.extend({
         var xedges = [];
         var devices = [];
         for (var a in macs) {
-            if (devices.indexOf(macs[a].trim()) < 0) {
-                devices.push(macs[a]);
-                xnodes.push({id: devices.indexOf(macs[a].trim()) + 1, label: "Access Point\n" + macs[a].trim(), group: "ap"});
+            if (devices.indexOf(macs[a].bssid.trim()) < 0) {
+                devices.push(macs[a].bssid.trim());
+                xnodes.push({id: devices.indexOf(macs[a].bssid.trim()) + 1, label: self.allap[macs[a].bssid].name + "\n" + macs[a].bssid.trim(), group: "ap"});
             }
 
             modem("GET",
-                    "/getDispConnectedtoAp/" + window.profile.id + "/" + macs[a],
+                    "/getDispConnectedtoAp/" + window.profile.id + "/" + macs[a].bssid,
                     function (data) {
                         for (var i in data[0]) {
                             if (devices.indexOf((data[0][i].macAddress).trim()) < 0) {
@@ -145,7 +141,8 @@ window.DetailAPView = Backbone.View.extend({
                                 xedges.push({from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1});
                             }
                         }
-                        if (data[1] == macs[a]) { //se for o ultimo ap
+                        if (data[1] == macs[a].bssid) { //se for o ultimo ap
+                            console.log(xedges,xnodes);
                             self.fazergrafico(xedges, xnodes);
                         }
 
@@ -175,7 +172,7 @@ window.DetailAPView = Backbone.View.extend({
         var options = {
             "edges": {
                 "smooth": {
-                    "roundness": 1
+                    "roundness": 0
                 }
             },
             groups: {

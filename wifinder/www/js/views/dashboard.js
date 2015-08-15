@@ -24,6 +24,7 @@ window.DashboardView = Backbone.View.extend({
     self.chartDispActive();
     self.createChartTotalVisitas();
     self.MapSensors();
+    self.carregarNetwork();
 
     $.AdminLTE.boxWidget.activate();
   },
@@ -66,14 +67,6 @@ window.DashboardView = Backbone.View.extend({
     var self = this;
     var sensor = $(e.currentTarget).text();
     if (self.lastSensorselect != sensor) {
-      if (self.chartrealtimeMoveis != null) {
-        self.chartrealtimeMoveis.stopIntervalGraph();
-        self.chartrealtimeMoveis = null;
-      }
-      if (self.chartrealtimeAp != null) {
-        self.chartrealtimeAp.stopIntervalGraph();
-        self.chartrealtimeAp = null;
-      }
       self.lastSensorselect = sensor;
       modem("GET",
               "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
@@ -234,6 +227,108 @@ window.DashboardView = Backbone.View.extend({
     self.chart.options.data[0].dataPoints.push(data);
     self.chart.options.data[0].dataPoints.shift();
     self.chart.render();
+  },
+  carregarNetwork: function () {
+    var self = this;
+    modem("GET",
+            "/getAllAP/" + window.profile.id,
+            function (data) {
+              var values = [];
+              for (var ssid in data[0].group[0]) {
+                values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
+              }
+
+              self.makeNetwork(values);
+
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
+    );
+  },
+  makeNetwork: function (macs) {
+    var self = this;
+    var xnodes = [];
+    var xedges = [];
+    var devices = [];
+    for (var a in macs) {
+      if (devices.indexOf(macs[a].bssid.trim()) < 0) {
+        devices.push(macs[a].bssid.trim());
+        xnodes.push({id: devices.indexOf(macs[a].bssid.trim()) + 1, label: macs[a].name + "\n" + macs[a].bssid.trim(), group: "ap"});
+      }
+
+      modem("GET",
+              "/getDispConnectedtoAp/" + window.profile.id + "/" + macs[a].bssid,
+              function (data) {
+                for (var i in data[0]) {
+                  if (devices.indexOf((data[0][i].macAddress).trim()) < 0) {
+                    devices.push((data[0][i].macAddress).trim());
+                    xnodes.push({id: devices.indexOf((data[0][i].macAddress).trim()) + 1, label: data[0][i].nameVendor + "\n" + data[0][i].macAddress, group: "device"});
+                  }
+                  if (_.where(xedges, {from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1}) == 0) {
+                    xedges.push({from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1});
+                  }
+                }
+                if (data[1] == macs[a].bssid) { //se for o ultimo ap
+                  self.fazergrafico(xedges, xnodes);
+                }
+
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
+      );
+    }
+  },
+  fazergrafico: function (xedges, xnodes) {
+    var self = this;
+    // xnodes.push({id: 1, label: $('#ApSelect').find(":selected").text(), group: "ap"});
+
+    // create 2 array with edges and nodes
+    var edges = new vis.DataSet(xedges);
+    var nodes = new vis.DataSet(xnodes);
+    // create a network
+    var container = document.getElementById('mynetwork');
+    // provide the data in the vis format
+    var data = {
+      nodes: nodes,
+      edges: edges
+    };
+    var options = {
+      "edges": {
+        "smooth": {
+          "roundness": 0
+        }
+      },
+      groups: {
+        ap: {
+          shape: 'icon',
+          icon: {
+            face: 'FontAwesome',
+            code: '\uf1eb',
+            size: 50,
+            color: '#00ff00'
+          }
+        },
+        device: {
+          shape: 'icon',
+          icon: {
+            face: 'FontAwesome',
+            code: '\uf108',
+            size: 50,
+            color: '#eeeeee'
+          }
+        }
+      }
+    };
+    if (this.net != undefined) {
+      this.net.destroy();
+      this.net = null;
+    }
+    // initialize your network!
+    self.net = new vis.Network(container, data, options);
   },
   render: function () {
     var self = this;
