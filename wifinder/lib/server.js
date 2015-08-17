@@ -71,6 +71,8 @@ Server.prototype.start = function () {
 
   connectdb.dbData = this.dbData;
 
+  dbUsers.dbData = this.dbData;
+  
   dbUsers.setup();
 
   this.app.get("/getNumDispositivos/:id", pedidos.getNumDispositivos);
