@@ -84,19 +84,21 @@ module.exports.registeruser = function (req, res) {
   });
 };
 
-module.exports.updateuser
-        = function (req, res) {
-    connectdb.onConnect(function (err, conn) {
-        r.db("user").table("users").filter({"email": req.body.oldEmail}).count().do(function (valor) {
+module.exports.updateuser  = function (req, res) {
+      console.log(req.body.oldEmail, req.body.newEmail,req.body.fullname,req.body.pass,req.body.id);
+      var mail = (req.body.newEmail == req.body.oldEmail) ? true : req.body.newEmail;
+     r.connect(self.dbData).then(function (conn) {
+        return r.db("user").table("users").filter({"email": mail}).count().do(function (valor) {
             return r.branch(valor.eq(0),
-                    r.db("user").table("users").insert({"email": req.body.newEmail, "fullname": req.body.fullname, "pass": req.body.pass, "logo": req.body.img}),
-                    false)
-        }).run(conn, function (err, result) {
-            if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-            } else {
-                res.send(result);
-            }
-        });
+                    r.db("user").table("users").get(req.body.id).update({"email": req.body.newEmail, "fullname": req.body.fullname, "pass": req.body.pass, "logo": req.body.img}),
+                    false);
+        }).run(conn)
+                .finally(function () {
+                    conn.close();
+                });
+    }).then(function (output) {
+        res.send(output);
+    }).error(function (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
     });
 };

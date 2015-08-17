@@ -38,11 +38,11 @@ window.EditProfileView = Backbone.View.extend({
         var self = this;
         $("#checkLogin").show();
         $("#checkLogin > div > div > div > div > img , #img-previewProfile").attr("src", $(".imageuser").attr("src"));
-        
+
         // carregar os valores antigos no form
         $("#newemail").val(window.profile.get("email"));
         $("#newfullname").val(window.profile.get("name"));
-        
+
         (function ($, W, D) {
             var JQUERY4U = {};
 
@@ -87,7 +87,7 @@ window.EditProfileView = Backbone.View.extend({
                                     email: "Por favor insira um email válido"
                                 },
                                 submitHandler: function () {
-                                   self.submitProfile();
+                                    //self.submitProfile();
                                 }
                             });
                         }
@@ -150,35 +150,38 @@ window.EditProfileView = Backbone.View.extend({
         $(e.currentTarget).valid();
     },
     submitProfile: function () {
-        
-            modem('POST', "/updateprofile",
-                    function (data) {
-                        if (data.length > 0) {
-                            showmsg(".my-modal", "info", "Account updated!...<br>Please Login Again.", function () {
-//                                app.navigate("", {
-//                                    trigger: true
-//                                });
-                            });
-                        } else {
-                            showmsg(".my-modal", "error", "Something wrong!...<br>This email already existes in database.", function () {});
-                        }
-                    },
-                    function (xhr, ajaxOptions, thrownError) {
-                        var json = JSON.parse(xhr.responseText);
-                        console.log(json.message);
-
-                        app.navigate("", {
-                            trigger: true
+        modem('POST', "/updateprofile",
+                function (data) {
+                    console.log(data);
+                    if (data.length > 0) {
+                        showmsg(".my-modal", "info", "Account updated!...<br>Please Login Again.", function () {
+                                app.navigate("", {
+                                    trigger: true
+                                });
                         });
-                    }, {
-                "newEmail": $("#newfullname").val(),
-                "oldEmail": window.profile.get("email"),
-                "img":$("#img-previewProfile").attr("src"),
-                "email": $("#newemail").val(),
-                "pass": stringToMd5(btoa($("#newpass").val()))
-            });
+                    } else {
+                        showmsg(".my-modal", "error", "Something wrong!...<br>This email already existes in database.", function () {
+                        });
+                    }
+                },
+                function (xhr, ajaxOptions, thrownError) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json.message);
 
-        
+                    app.navigate("", {
+                        trigger: true
+                    });
+                }, {
+            "fullname": $("#newfullname").val(),
+            "newEmail": $("#newemail").val(),
+            "oldEmail": window.profile.get("email"),
+            "img": $("#img-previewProfile").attr("src"),
+            "email": $("#newemail").val(),
+            "pass": stringToMd5(btoa($("#newpass").val())),
+            "id":window.profile.id
+        });
+
+
     },
     check: function (e) {
         e.preventDefault();
