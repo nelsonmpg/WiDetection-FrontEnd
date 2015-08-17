@@ -80,7 +80,7 @@ window.EditProfileView = Backbone.View.extend({
                                         minlength: "A password deve conter, pelo menos, 5 caracteres"
                                     },
                                     password2: {
-                                        required: "Por favor insira a mesma password",
+                                        required: "Insert the same password, please",
                                         minlength: "A password deve conter, pelo menos, 5 caracteres",
                                         equalTo: "Por favor insira a mesma password"
                                     },
@@ -150,9 +150,7 @@ window.EditProfileView = Backbone.View.extend({
         $(e.currentTarget).valid();
     },
     submitProfile: function () {
-        if (!$(this).valid()) {
-            return;
-        } else {
+        
             modem('POST', "/updateprofile",
                     function (data) {
                         if (data.length > 0) {
@@ -180,7 +178,7 @@ window.EditProfileView = Backbone.View.extend({
                 "pass": stringToMd5(btoa($("#newpass").val()))
             });
 
-        }
+        
     },
     check: function (e) {
         e.preventDefault();

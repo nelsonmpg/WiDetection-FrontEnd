@@ -42,6 +42,8 @@ ServerHTTP.prototype.start = function () {
   this.app.use(express.static(__dirname + './../public'));
 
   connectdb.dbData = this.dbData;
+  
+  dbUsers.dbData = this.dbData;
 
   this.app.post("/login", dbUsers.loginUser);
 

@@ -54,42 +54,18 @@
           //Fixed layout
           + "<div class='form-group'>"
           + "<label class='control-sidebar-subheading'>"
-          + "<input type='checkbox' data-layout='fixed' class='pull-right'/> "
+          + "<input type='checkbox' id='fixedlayout' data-layout='fixed' class='pull-right'/> "
           + "Fixed layout"
           + "</label>"
-          + "<p>Activate the fixed layout. You can't use fixed and boxed layouts together</p>"
-          + "</div>"
-          //Boxed layout
-          + "<div class='form-group'>"
-          + "<label class='control-sidebar-subheading'>"
-          + "<input type='checkbox' data-layout='layout-boxed'class='pull-right'/> "
-          + "Boxed Layout"
-          + "</label>"
-          + "<p>Activate the boxed layout</p>"
+          + "<p>Activate the fixed layout.</p>"
           + "</div>"
           //Sidebar Toggle
           + "<div class='form-group'>"
           + "<label class='control-sidebar-subheading'>"
-          + "<input type='checkbox' data-layout='sidebar-collapse' class='pull-right'/> "
+          + "<input type='checkbox' if='collapsemenu' data-layout='sidebar-collapse' class='pull-right'/> "
           + "Toggle Sidebar"
           + "</label>"
           + "<p>Toggle the left sidebar's state (open or collapse)</p>"
-          + "</div>"
-          //Sidebar mini expand on hover toggle
-          + "<div class='form-group'>"
-          + "<label class='control-sidebar-subheading'>"
-          + "<input type='checkbox' data-enable='expandOnHover' class='pull-right'/> "
-          + "Sidebar Expand on Hover"
-          + "</label>"
-          + "<p>Let the sidebar mini expand on hover</p>"
-          + "</div>"
-          //Control Sidebar Toggle
-          + "<div class='form-group'>"
-          + "<label class='control-sidebar-subheading'>"
-          + "<input type='checkbox' data-controlsidebar='control-sidebar-open' class='pull-right'/> "
-          + "Toggle Right Sidebar Slide"
-          + "</label>"
-          + "<p>Toggle between slide over content and push content effects</p>"
           + "</div>"
           //Control Sidebar Skin Toggle
           + "<div class='form-group'>"
@@ -280,13 +256,65 @@
    */
   function setup() {
     var tmp = get('skin');
-    if (tmp && $.inArray(tmp, my_skins))
+    if (tmp && $.inArray(tmp, my_skins)) {
       change_skin(tmp);
+    }
+
+    var tmp2 = get("layoutFix");
+    if (tmp2 && tmp2 != "") {
+      $("body").toggleClass(tmp2);
+      $("#fixedlayout").click();
+    }
+
+    var tmp3 = get("menucolapse");
+    if (tmp3 && tmp3 == "true") {
+      $("[data-layout='sidebar-collapse']").click();
+      $('body').addClass('sidebar-collapse');
+    } else {
+      $("body").removeClass('sidebar-collapse');
+    }
+
+    var tmp4 = get("sidebarskin");
+    if (tmp4 && tmp4 == "true") {
+      $("[data-sidebarskin]").click();
+      $(".control-sidebar").removeClass("control-sidebar-dark");
+      $(".control-sidebar").addClass("control-sidebar-light");
+    } else {
+      $(".control-sidebar").removeClass("control-sidebar-light");
+      $(".control-sidebar").addClass("control-sidebar-dark");
+
+    }
+
+
 
     //Add the change skin listener
     $("[data-skin]").on('click', function (e) {
       e.preventDefault();
       change_skin($(this).data('skin'));
+    });
+
+    $("[data-layout='fixed']").on('click', function () {
+      if ($("[data-layout='fixed']").is(":checked")) {
+        store("layoutFix", "fixed");
+      } else {
+        store("menucolapse", "");
+      }
+    });
+
+    $("[data-layout='sidebar-collapse']").on('click', function () {
+      if ($("[data-layout='sidebar-collapse']").is(":checked")) {
+        store("menucolapse", true);
+      } else {
+        store("menucolapse", false);
+      }
+    });
+
+    $("[data-sidebarskin]").on('click', function () {
+      if ($("[data-sidebarskin]").is(":checked")) {
+        store("sidebarskin", true);
+      } else {
+        store("sidebarskin", false);
+      }
     });
 
     //Add the layout manager
@@ -312,24 +340,25 @@
         sidebar.addClass("control-sidebar-dark")
       }
     });
-    
+
     $("[data-enable='expandOnHover']").on('click', function () {
-      $(this).attr('disabled', true);      
+      $(this).attr('disabled', true);
       AdminLTE.pushMenu.expandOnHover();
-      if(!$('body').hasClass('sidebar-collapse'))
+      if (!$('body').hasClass('sidebar-collapse')) {
         $("[data-layout='sidebar-collapse']").click();
+      }
     });
-    
+
     // Reset options
-    if($('body').hasClass('fixed')) {
+    if ($('body').hasClass('fixed')) {
       $("[data-layout='fixed']").attr('checked', 'checked');
     }
-    if($('body').hasClass('layout-boxed')) {
+    if ($('body').hasClass('layout-boxed')) {
       $("[data-layout='layout-boxed']").attr('checked', 'checked');
     }
-    if($('body').hasClass('sidebar-collapse')) {
+    if ($('body').hasClass('sidebar-collapse')) {
       $("[data-layout='sidebar-collapse']").attr('checked', 'checked');
     }
-    
+
   }
 })(jQuery, $.AdminLTE);

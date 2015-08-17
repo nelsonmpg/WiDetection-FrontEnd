@@ -68,6 +68,12 @@ window.DashboardView = Backbone.View.extend({
   selectsensortochart: function (e) {
     var self = this;
     var sensor = $(e.currentTarget).text();
+    if (self.chartrealtimeMoveis != null) {
+      self.chartrealtimeMoveis.stopIntervalGraph();
+    }
+    if (self.chartrealtimeAp != null) {
+      self.chartrealtimeAp.stopIntervalGraph();
+    }
     if (self.lastSensorselect != sensor) {
       self.lastSensorselect = sensor;
       modem("GET",
