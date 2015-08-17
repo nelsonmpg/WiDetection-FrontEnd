@@ -72,7 +72,7 @@ Server.prototype.start = function () {
   connectdb.dbData = this.dbData;
 
   dbUsers.dbData = this.dbData;
-  
+
   dbUsers.setup();
 
   this.app.get("/getNumDispositivos/:id", pedidos.getNumDispositivos);
@@ -128,13 +128,10 @@ Server.prototype.start = function () {
   ////////////////////////////////
 
 // ----------------------------- Pedidos Users -----------------------------------
-<<<<<<< HEAD
-      this.app.post("/login", dbUsers.loginUser);
-      
-       this.app.post("/updateprofile", dbUsers.updateuser);
-=======
+
   this.app.post("/login", dbUsers.loginUser);
->>>>>>> origin/master
+
+  this.app.post("/updateprofile", dbUsers.updateuser);
 
   this.app.post("/NovoUtilizador", dbUsers.registeruser);
 
