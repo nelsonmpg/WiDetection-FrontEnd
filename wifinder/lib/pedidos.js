@@ -276,12 +276,12 @@ module.exports.getAllOrderbyVendor = function (req, res) {
       return row("disp")("values").contains(function (a) {
         return a("Last_time").contains(function (b) {
           return b.ge(r.ISO8601(min).toEpochTime()).and(b.le(r.ISO8601(max).toEpochTime()));
-        })
-      })
+        });
+      });
     }).group("nameVendor").filter(function (a) {
       return a("disp").contains(function (b) {
-        return b("name").eq(req.params.sensor)
-      })
+        return b("name").eq(req.params.sensor);
+      });
     })
             .coerceTo("ARRAY")
             .run(conn, function (err, result) {
@@ -399,6 +399,29 @@ module.exports.getApFirstTime = function (req, res) {
 };
 
 /**
+ * Retorna a row referente ao device (mac) 
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getDispbyMac = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.id))
+            .table("DispMoveis")
+            .get(req.params.mac)
+            .run(conn, function (err, result) {
+      if (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
+      } else {
+        res.send(result);
+      }
+      conn.close();
+    });
+  });
+};
+
+
+/**
  * 
  * @param {type} req
  * @param {type} res
@@ -501,7 +524,7 @@ module.exports.getLastAllTimes = function (req, res) {
 
 module.exports.getLiveActives = function () {
   return liveActives;
-}
+};
 
 Date.prototype.addMinutes = function (h) {
   this.setMinutes(this.getMinutes() + h);

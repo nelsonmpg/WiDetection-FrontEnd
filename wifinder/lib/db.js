@@ -83,3 +83,20 @@ module.exports.registeruser = function (req, res) {
     console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
+
+module.exports.updateuser
+        = function (req, res) {
+    connectdb.onConnect(function (err, conn) {
+        r.db("user").table("users").filter({"email": req.body.oldEmail}).count().do(function (valor) {
+            return r.branch(valor.eq(0),
+                    r.db("user").table("users").insert({"email": req.body.newEmail, "fullname": req.body.fullname, "pass": req.body.pass, "logo": req.body.img}),
+                    false)
+        }).run(conn, function (err, result) {
+            if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+            } else {
+                res.send(result);
+            }
+        });
+    });
+};
