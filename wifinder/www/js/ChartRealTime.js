@@ -1,10 +1,9 @@
-
 /* global moment */
 
 var ChartRealTime = function (arrayValues, sensor, localChart) {
   this.arrayValues = arrayValues;
   this.sensor = sensor;
-  this.loaclChart = localChart;
+  this.localChart = localChart;
   this.dataLength = 60;
   this.updateInterval = 1000;
   this.timeRemove = 5;
@@ -22,17 +21,15 @@ var ChartRealTime = function (arrayValues, sensor, localChart) {
 };
 
 ChartRealTime.prototype.createAndUpdateListaHostAndValues = function (lista) {
+  var self = this;
   for (var i in lista) {
     if (!this.checkDdiffDates(lista[i].data)) {
       var val = this.listaHostsStartAndUpdateValues[lista[i].macAddress];
       var graphDisp = (typeof val == "undefined") ? this.inicializaArray() : val.listaValues;
-      graphDisp.push({
-        x:  new Date(),
+      graphDisp[self.dataLength - 1] = {
+        x: new Date(),
         y: 1 * lista[i].Power
-      });
-      if (graphDisp.length > this.dataLength) {
-        graphDisp.shift();
-      }
+      };
       this.listaHostsStartAndUpdateValues[lista[i].macAddress] = {
         Power: lista[i].Power,
         data: lista[i].data,
@@ -80,43 +77,19 @@ ChartRealTime.prototype.updatePowerChart = function (values) {
 ChartRealTime.prototype.createUpdateScaleGraph = function () {
   this.valuesToGraph = [];
   var self = this;
-  if (!this.oneGraph) {
-    for (var i in this.listaHostsStartAndUpdateValues) {
-      var val = {
-        type: "line",
-        xValueType: "dateTime",
-        lineThickness: 3,
-        name: i,
-        click: function (e) {
-          self.oneGraph = true;
-          self.showNewGraph = true;
-          self.graphSelect = e.dataSeries.name;
-        },
-        dataPoints: this.listaHostsStartAndUpdateValues[i].listaValues
-      };
-      this.valuesToGraph.push(val);
-    }
-  } else {
-    var powerVal = this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues[this.dataLength - 1].y;
+  for (var i in this.listaHostsStartAndUpdateValues) {
     var val = {
       type: "line",
       xValueType: "dateTime",
       lineThickness: 3,
-      showInLegend: true,
-      legendText: this.graphSelect + " " + powerVal,
-      name: this.graphSelect,
-      toolTipContent: "<span>MacAddress: {name}</span><br>" +
-              "<span>Power: {y}</span><br>" +
-              "<span>Hora: {x}</span><br>" +
-              "<span>Fabricante: " + this.listaHostsStartAndUpdateValues[this.graphSelect].nameVendor + "</span>",
-      click: function (e) {
-        self.oneGraph = false;
-        self.showNewGraph = true;
-        self.graphSelect = "";
-      },
-      dataPoints: this.listaHostsStartAndUpdateValues[this.graphSelect].listaValues
+      name: i,
+//      click: function (e) {
+//        self.oneGraph = true;
+//        self.showNewGraph = true;
+//        self.graphSelect = e.dataSeries.name;
+//      },
+      dataPoints: this.listaHostsStartAndUpdateValues[i].listaValues
     };
-    this.chart.options.data[0].legendText = this.graphSelect + " " + powerVal;
     this.valuesToGraph.push(val);
   }
   if (this.showNewGraph && this.chart != null) {
@@ -142,38 +115,50 @@ ChartRealTime.prototype.updateIntervalGraph = function () {
       self.stopIntervalGraph();
     }
     self.updateGraph();
-    self.chart.render();
+    if ($("#" + self.localChart).length > 0 && self.chart != null) {
+      self.chart.render();
+    } else {
+      self.stopIntervalGraph();
+    }
+
   }, self.updateInterval);
 };
 
 ChartRealTime.prototype.graph = function () {
   var self = this;
-  this.chart = new CanvasJS.Chart(this.loaclChart, {
-    zoomEnabled: true,
-    exportEnabled: true,
-    animationEnabled: true,
-    theme: "theme3",
-    toolTip: {
-      shared: true
-    },
-    axisY: {
-      gridThickness: 0.2,
-      interval: 5,
-      labelFontSize: 12,
-      suffix: " dBm",
-      labelFontFamily: "verdana",
-      labelFontColor: "black"
-    },
-    axisX: {
-      valueFormatString: "H:mm:ss",
-      interval: 10,
-      labelFontSize: 12,
-      labelFontFamily: "verdana",
-      labelFontColor: "black"
-    },
-    data: this.valuesToGraph
-  });
-  this.chart.render();
+  if (this.valuesToGraph.length > 0) {
+    this.chart = new CanvasJS.Chart(this.localChart, {
+      zoomEnabled: true,
+      exportEnabled: true,
+      animationEnabled: true,
+      theme: "theme3",
+      toolTip: {
+        shared: true
+      },
+      axisY: {
+        gridThickness: 0.2,
+        interval: 5,
+        labelFontSize: 12,
+        suffix: " dBm",
+        labelFontFamily: "verdana",
+        labelFontColor: "black"
+      },
+      axisX: {
+        valueFormatString: "H:mm:ss",
+        interval: 10,
+        labelFontSize: 12,
+        labelFontFamily: "verdana",
+        labelFontColor: "black"
+      },
+      data: this.valuesToGraph
+    });
+    this.chart.render();
+  } else {
+    self.stopIntervalGraph();
+    $("#" + this.localChart).html('<div class="overlay text-center">' +
+            '<h1 style="margin-top: 10%"><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
+  }
+
 };
 
 ChartRealTime.prototype.inicializaArray = function () {

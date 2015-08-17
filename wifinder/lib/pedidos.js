@@ -209,7 +209,7 @@ module.exports.changeTableAnt = function (database, socket, table, nemedisp) {
 module.exports.changeActiveAnt = function (database, socket) {
   connectdb.onConnect(function (err, conn) {
     r.db(database).table("ActiveAnt")
-            .changes()('new_val').withFields("cpu", "disc", "memory", "data").run(conn)
+            .changes()('new_val').withFields("nomeAntena","cpu", "disc", "memory", "data").run(conn)
             .then(function (cursor) {
               cursor.each(function (err, item) {
 //                console.log(item);

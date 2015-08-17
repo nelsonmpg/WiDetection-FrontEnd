@@ -101,16 +101,9 @@ module.exports.savesettings = function (req, res) {
 };
 
 module.exports.startmonitor = function (req, res) {
-//  cp.execFile('sh', ['-c', "./clientSend >> /dev/null &"], {stdio: 'inherit'}, function (err, data) {
-//    res.json("Start Monitor");
-//    console.log("Start Monitor");
-//  });
-//  cp.execFile('sh', ['-c', "node ./lib/mainSKT.js"], {stdio: 'inherit'}, function (err, data) {
-    res.json("Start Monitor");
-    console.log("Start Monitor");
-//  });
-
-cp.fork('./lib/mainSKT.js');
+  cp.fork('./lib/mainSKT.js');
+  res.json("Start Monitor");
+  console.log("Start Monitor");
 };
 
 module.exports.stoptmonitor = function (req, res) {
@@ -119,6 +112,27 @@ module.exports.stoptmonitor = function (req, res) {
     res.json(stdout);
 //    console.log(stdout);
 //    console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+  });
+};
+
+
+module.exports.restartsystem = function (req, res) {
+  res.json("reboot");
+  console.log("System Reboot");
+  cp.exec("sudo reboot", function (error, stdout, stderr) {
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+  });
+};
+
+module.exports.poweroffsystem = function (req, res) {
+  res.json("PowerOff");
+  console.log("System Poweroff");
+  cp.exec("sudo poweroff", function (error, stdout, stderr) {
     if (error !== null) {
       console.log('exec error: ' + error);
     }

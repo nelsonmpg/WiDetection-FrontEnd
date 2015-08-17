@@ -1,5 +1,6 @@
 /* global module */
-require('colors');
+
+var c = require('colors');
 var cp = require('child_process');
 var http = require('http');
 var fs = require('fs');

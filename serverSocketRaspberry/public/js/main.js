@@ -13,11 +13,11 @@ var Router = Backbone.Router.extend({
   contentheader: undefined,
   contentnav: undefined,
   content: undefined,
-  footer: undefined,    
-  configform : undefined,
+  footer: undefined,
+  configform: undefined,
   loginform: undefined,
   initialize: function () {
-    
+
   },
   showView: function (view, elem, sub) {
     elem.show();
@@ -35,7 +35,6 @@ var Router = Backbone.Router.extend({
   routes: {
     //Default Page
     "": "login",
-//    "": "configsite",    
     //Pagina Inicial
     "Inicio": "inicio",
     "ConfigSite": "configsite",
@@ -91,7 +90,7 @@ var Router = Backbone.Router.extend({
       $('footer').html(self.footer.render().el);
     });
   },
-  configsite : function (){
+  configsite: function () {
     var self = this;
     self.verificaLogin(function () {
       self.configform = new ConfigSiteView({});
@@ -102,13 +101,19 @@ var Router = Backbone.Router.extend({
   },
   verificaLogin: function (loggedFunction) {
     var self = this;
-    if (!getKeyo()) {
+    if (window.profile == undefined) {
       app.navigate('', {
         trigger: true
       });
     } else {
-      window.logged = true;
-      loggedFunction();
+      if (!getKeyo()) {
+        app.navigate('', {
+          trigger: true
+        });
+      } else {
+        window.logged = true;
+        loggedFunction();
+      }
     }
   }
 });

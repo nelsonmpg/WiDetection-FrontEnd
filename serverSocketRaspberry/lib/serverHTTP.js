@@ -61,7 +61,11 @@ ServerHTTP.prototype.start = function () {
   
   this.app.get("/checkmonitorstart", osquerys.checkmonitorstart);
   
+  this.app.get("/restartsystem", osquerys.restartsystem);
 
+  this.app.get("/poweroffsystem", osquerys.poweroffsystem);
+  
+  
   console.log('Server HTTP Wait %d'.green.bold, 8080);
 };
 
