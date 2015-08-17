@@ -91,6 +91,9 @@ window.DetailView = Backbone.View.extend({
         }
       }
     });
+    
+    //Initialize Select2 Elements
+    $(".select2").select2();
     $.AdminLTE.boxWidget.activate();
   },
   selectSensor: function (e) {
@@ -104,7 +107,9 @@ window.DetailView = Backbone.View.extend({
             function (data) {
               for (var i in data) {
                 $("#SensorSelect").append("<option data-log='" + data[i].longitude + "' data-lat='" + data[i].latitude + "' data-city='" + data[i].local + "' data-date='" + data[i].data + "' >" + data[i].nomeAntena + "</option>");
-              }
+              }                        
+              $("#SensorSelectt > option:first").attr("selected", "selected");
+              $("#SensorSelect").trigger('change');
               self.setsensor();
             },
             function (xhr, ajaxOptions, thrownError) {
