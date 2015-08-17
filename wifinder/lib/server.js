@@ -128,6 +128,8 @@
 
 // ----------------------------- Pedidos Users -----------------------------------
       this.app.post("/login", dbUsers.loginUser);
+      
+       this.app.post("/updateprofile", dbUsers.updateuser);
 
       this.app.post("/NovoUtilizador", dbUsers.registeruser);
 

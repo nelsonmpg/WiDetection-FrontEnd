@@ -1,31 +1,36 @@
-<div id="editProfileDiv" style="display: none">
-    <form role="form">
-        <div class="box-body">
-            <div class="col-md-8">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                </div>
-                
-            </div>
-
-            <div class="col-md-4 center-block">
-                <div style="display: block">                    
-                 <input id="inputFile" type="file" class="" accept="image/*" style="display:none"/>
-                <img id="img-previewProfile" class="converteFiles" style="display: block; margin: auto;" src="./img/user.png" class="img-circle imageuser" alt="User Image" />
-                </div>
-            </div>
-        </div><!-- /.box-body -->
-
-        <div class="box-footer">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </form>
+<div id="editProfileDiv" style="display: none"><div style="display: block">                    
+        <input id="inputFile" type="file" class="" accept="image/*" style="display:none"/>
+        <img id="img-previewProfile" class="converteFiles img-circle imageuser" style="display: block; margin: auto;" src="./img/user.png" alt="User Image" />
+    </div>
 </div>
+
+<form id="formPro" role="form">
+    <div class="box-body">
+        <div class="row row-centered">
+            <div class="col-md-8 center-block col-centered">
+                <div class="form-group has-feedback">
+                    <input name="name" type="text" id="newfullname" class="form-control" placeholder="Full name" />
+                    <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                </div>
+                <div class="form-group has-feedback">
+                    <input name="email"  type="email" id="newemail" class="form-control" placeholder="Email" />
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                </div>
+                <div class="form-group has-feedback">
+                    <input name="password"   type="password" class="form-control" placeholder="Password" />
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                </div>
+                <div class="form-group has-feedback">
+                    <input type="password" name="password2" id="newpass" class="form-control" placeholder="Retype password" />
+                    <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+                </div>
+                <div class="box-footer">
+                    <button id="submitProfile" type="submit" class="btn btn-primary pull-right">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.box-body -->
+</form>
 
 
 <div id="checkLogin" style="display: none">

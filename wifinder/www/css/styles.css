@@ -13,38 +13,38 @@
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
 
 #div-login-page {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10000;
-  background-color: #d2d6de;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    background-color: #d2d6de;
 }
 
 .login-box-body, .register-box-body, .register-box > form  {
-  box-shadow: 5px 5px 5px black;
+    box-shadow: 5px 5px 5px black;
 }
 
 .height400 {
-  height: 400px;
+    height: 400px;
 }
 
 .height500 {
-  height: 500px;
+    height: 500px;
 }
 
 .height600 {
-  height: 600px;
+    height: 600px;
 }
 
 .navbar {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .bg-status-user {
-  background-color: #d2d6de;
-  width: 100%;
+    background-color: #d2d6de;
+    width: 100%;
 }
 
 ///////////////////
@@ -52,19 +52,19 @@
 ///////////////////
 
 .rounded-corners {
-  -moz-border-radius: 40px;
-  -webkit-border-radius: 40px;
-  -khtml-border-radius: 40px;
-  border-radius: 40px;
+    -moz-border-radius: 40px;
+    -webkit-border-radius: 40px;
+    -khtml-border-radius: 40px;
+    border-radius: 40px;
 }
 .rounded-corners-top {
-  -moz-border-top-radius: 40px;
-  -webkit-border-radius: 40px;
-  -khtml-border-radius: 40px;
-  border-radius: 40px;
+    -moz-border-top-radius: 40px;
+    -webkit-border-radius: 40px;
+    -khtml-border-radius: 40px;
+    border-radius: 40px;
 }
 .right {
-  float: right;
+    float: right;
 }
 .scrolldown { padding-left:20px; color:#EDECE8; font-size:40px; font-weight:bold; vertical-align:middle;
               text-shadow: #6374AB 2px 2px 2px;
@@ -75,184 +75,198 @@
 
 /* example styles for validation form demo */
 #register-form {
-  background: url("../img/form-fieldset.gif") repeat-x scroll left bottom #F8FDEF;
-  border: 1px solid #DFDCDC;
-  border-radius: 15px 15px 15px 15px;
-  display: inline-block;
-  margin-bottom: 30px;
-  margin-left: 20px;
-  margin-top: 10px;
-  padding-top:10px;
-  width: 350px;
-  display: block;
+    background: url("../img/form-fieldset.gif") repeat-x scroll left bottom #F8FDEF;
+    border: 1px solid #DFDCDC;
+    border-radius: 15px 15px 15px 15px;
+    display: inline-block;
+    margin-bottom: 30px;
+    margin-left: 20px;
+    margin-top: 10px;
+    padding-top:10px;
+    width: 350px;
+    display: block;
 }
 
 #register-form .fieldgroup {
-  background: url("../img/form-divider.gif") repeat-x scroll left top transparent;
-  display: inline-block;
-  padding: 8px 10px;
-  width: 340px;
+    background: url("../img/form-divider.gif") repeat-x scroll left top transparent;
+    display: inline-block;
+    padding: 8px 10px;
+    width: 340px;
 }
 
 #register-form .fieldgroup label {
-  float: left;
-  padding: 15px 0 0;
-  text-align: right;
-  width: 110px;
+    float: left;
+    padding: 15px 0 0;
+    text-align: right;
+    width: 110px;
 }
 
 #register-form .fieldgroup input, #register-form .fieldgroup textarea, #register-form .fieldgroup select {
-  float: right;
-  margin: 10px 0;
-  height: 25px;
+    float: right;
+    margin: 10px 0;
+    height: 25px;
 }
 
 #register-form .submit {
-  padding: 10px;
-  width: 220px;
-  height: 40px !important;
+    padding: 10px;
+    width: 220px;
+    height: 40px !important;
 }
 
 #register-form .fieldgroup label.error {
-  color: #FB3A3A;
-  display: inline-block;
-  margin: 4px 0 5px 125px;
-  padding: 0;
-  text-align: left;
-  width: 220px;
+    color: #FB3A3A;
+    display: inline-block;
+    margin: 4px 0 5px 125px;
+    padding: 0;
+    text-align: left;
+    width: 220px;
 }
 
 .my-modal {
-  display: none;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 100000;
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100000;
 }
 
 .my-modal:before {
-  content:'';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;   
-  background-color: black;
-  filter: alpha(opacity=50);
-  -moz-opacity: 0.5;
-  -khtml-opacity: 0.5;
-  opacity: 0.5;   
+    content:'';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;   
+    background-color: black;
+    filter: alpha(opacity=50);
+    -moz-opacity: 0.5;
+    -khtml-opacity: 0.5;
+    opacity: 0.5;   
 }
 
 .my-modal > div {
-  left: 20%;
-  top: 20%;
-  width: 60%;
-  background-color: transparent;
+    left: 20%;
+    top: 20%;
+    width: 60%;
+    background-color: transparent;
 }
 
 .my-model-hide {
-  display: none;
+    display: none;
 }
 
 #div-login-page {    
-  background: -webkit-linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* Chrome 10+, Saf5.1+ */
-  background:    -moz-linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* FF3.6+ */
-  background:     -ms-linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* IE10 */
-  background:      -o-linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* Opera 11.10+ */
-  background:         linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* W3C */
+    background: -webkit-linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* Chrome 10+, Saf5.1+ */
+    background:    -moz-linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* FF3.6+ */
+    background:     -ms-linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* IE10 */
+    background:      -o-linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* Opera 11.10+ */
+    background:         linear-gradient(90deg, #8e9eab 10%, #eef2f3 90%); /* W3C */
 }
 
 .form-signin {
-  max-width: 330px;
-  padding: 15px;
-  margin: 0 auto;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
 }
 .form-signin .form-signin-heading, .form-signin .checkbox {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 } 
 .form-signin .checkbox {
-  font-weight: normal;
+    font-weight: normal;
 }
 
 .form-signin .form-control {
-  position: relative;
-  font-size: 16px;
-  height: auto;
-  padding: 10px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .form-signin .form-control:focus {
-  z-index: 2;
+    z-index: 2;
 }
 .form-signin input[type="text"] {
-  margin-bottom: -1px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 .form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 .account-wall {
-  margin-top: 20px;
-  padding: 40px 0px 20px 0px;
-  background-color: #f7f7f7;
-  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    margin-top: 20px;
+    padding: 40px 0px 20px 0px;
+    background-color: #f7f7f7;
+    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
 }
 .login-title {
-  color: #555;
-  font-size: 18px;
-  font-weight: 400;
-  display: block;
+    color: #555;
+    font-size: 18px;
+    font-weight: 400;
+    display: block;
 }
 .profile-img {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 10px;
-  display: block;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 10px;
+    display: block;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
 }
 .need-help {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 .new-account {
-  display: block;
-  margin-top: 10px;
+    display: block;
+    margin-top: 10px;
 }
 
 #checkLogin {
-  position: absolute;
-  left: 0px;
-  top:0px;
-  bottom: 0;
-  z-index: 1030;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.40)
+    position: absolute;
+    left: 0px;
+    top:0px;
+    bottom: 0;
+    z-index: 1030;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.40)
 }
 
 input.error{
-  border:1px solid #FF0000 !important; 
+    border:1px solid #FF0000 !important; 
 }
 
 label.error,div.error{
-  font-weight:normal;
-  color:#FF0000 !important;
+    font-weight:normal;
+    color:#FF0000 !important;
 }
 
 .col-centered{
-  float: none;
-  margin: 0 auto;
+    float: none;
+    margin: 0 auto;
 }
+
+/* centered columns styles */
+.row-centered {
+    text-align:center;
+}
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+
 
 .top5 { margin-top:5px; }
 .top7 { margin-top:7px; }
