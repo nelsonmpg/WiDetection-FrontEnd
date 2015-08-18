@@ -126,7 +126,7 @@ Server.prototype.start = function () {
 
     this.app.get("/getDispConnectedtoAp/:id/:mac", pedidos.getDispConnectedtoAp);
 
-    this.app.get("/getApFirstTime/:id/:mac", pedidos.getApFirstTime);
+    this.app.get("/getApFirstTime/:id/:mac", pedidos.getApFirstTime);    
     ////////////////////////////////
 
 // ----------------------------- Pedidos Users -----------------------------------
@@ -136,8 +136,11 @@ Server.prototype.start = function () {
     this.app.post("/updateprofile", dbUsers.updateuser);
 
     this.app.post("/NovoUtilizador", dbUsers.registeruser);
-
-
+    
+    this.app.get("/getDispMacbyVendor/:id", pedidos.getDispMacbyVendor);
+    
+    this.app.get("/getDispbyMac/:id/:mac", pedidos.getDispbyMac);
+    
 //----------------------------------------------------------------------------------
 
 

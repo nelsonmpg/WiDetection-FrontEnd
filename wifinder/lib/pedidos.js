@@ -322,6 +322,32 @@ module.exports.getDispMoveisbySensor = function (req, res) {
 };
 
 /**
+ * Devolve os mac dos clientes organizados pelo fabricante
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getDispMacbyVendor = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.id))
+            .table("DispMoveis")
+            .group("nameVendor")("macAddress")
+            .coerceTo("ARRAY")
+            .run(conn, function (err, result) {
+              if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                res.send(result);
+              }
+              conn.close();
+            });
+  });
+};
+
+
+
+
+/**
  * Devolve todos os ap organizados por macaddress e essid 
  * @param {type} req
  * @param {type} res
@@ -413,7 +439,7 @@ module.exports.getDispbyMac = function (req, res) {
       if (err) {
         console.log("ERROR: %s:%s", err.name, err.msg);
       } else {
-        res.send(result);
+        res.send(JSON.stringify(result));
       }
       conn.close();
     });

@@ -84,6 +84,7 @@ var Router = Backbone.Router.extend({
         "EditProfile": "editProfile",
         "Detail": "detail",
         "DetailAP": "detaialap",
+        "DetailDevice":"detaildevice",
         '*notFound': 'login'
     },
     login: function () {
@@ -160,6 +161,15 @@ var Router = Backbone.Router.extend({
             $('#content').html(self.detailap.render().el);
         });
     },
+    detaildevice: function () {
+        var self = this;
+        self.verificaLogin(function () {
+            self.detaildevice = new DetailDeviceView();
+            self.contentnav.setView("Device");
+            self.detaildevice.init();
+            $('#content').html(self.detaildevice.render().el);
+        });
+    },
     dashboardSetup: function () {
         var self = this;
         self.verificaLogin(function () {
@@ -219,7 +229,8 @@ templateLoader.load([
     "ContentNavView",
     "EditProfileView",
     "DetailView",
-    "DetailAPView"],
+    "DetailAPView",
+    "DetailDeviceView"],
         function () {
             app = new Router();
             Backbone.history.start();
