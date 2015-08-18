@@ -3,7 +3,11 @@ window.DetailDeviceView = Backbone.View.extend({
     deviceDetails: undefined,
     events: {
         "click a.selectSensor": "selectSensor",
-        "click .deviceSearch": "selectDevice"
+        "click .deviceSearch": "selectDevice",
+        "click #selectDropdownFabricante > li > a": function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        }
     },
     initialize: function () {
         //this.render();
