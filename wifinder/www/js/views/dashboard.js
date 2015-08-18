@@ -10,14 +10,14 @@ window.DashboardView = Backbone.View.extend({
   self: this,
   events: {
     "click #teste": "testeMap",
-    "click .select-sensor-lst": "selectsensortochart"
+//    "click .select-sensor-lst": "selectsensortochart"
+    "change #select-chart-sensor": "selectsensortochart"    
   },
   initialize: function (opt) {
     this.socketDashboard = opt.socket;
   },
   init: function () {
     var self = this;
-    $('.selectpicker').selectpicker();
 
     self.requestNumDisps();
     self.createChart2Bar();
@@ -26,6 +26,8 @@ window.DashboardView = Backbone.View.extend({
     self.MapSensors();
     self.carregarNetwork();
 
+    //Initialize Select2 Elements
+    $(".select2").select2();
     $.AdminLTE.boxWidget.activate();
   },
   requestNumDisps: function () {
@@ -51,13 +53,14 @@ window.DashboardView = Backbone.View.extend({
               for (var i in data) {
                 sensorList += '<option class="select-sensor-lst">' + data[i].AP.nome + '</option>';
               }
-              $("#select-chart-sensor > select").html(sensorList).selectpicker('refresh');
-              var scroll = $(window).scrollTop();
-              $("#select-chart-sensor div.dropdown-menu ul.dropdown-menu li.selected a").trigger('click');
+              
+              $("#select-chart-sensor").html(sensorList);              
+              $("#select-chart-sensor > option:first").attr("selected", "selected");
+              $("#select-chart-sensor").trigger('change');
+              
               self.graph2Bar = new ArrayToGraph(data, "", "", "chart2bars", "column");
               // para aparecer a div com os resultados
               self.graph2Bar.createArrayToGraphTwoBar();
-              $(window).scrollTop(scroll);
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
@@ -67,7 +70,7 @@ window.DashboardView = Backbone.View.extend({
   },
   selectsensortochart: function (e) {
     var self = this;
-    var sensor = $(e.currentTarget).text();
+    var sensor = $('#select-chart-sensor').find(":selected").text();
     if (self.chartrealtimeMoveis != null) {
       self.chartrealtimeMoveis.stopIntervalGraph();
     }
