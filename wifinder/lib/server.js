@@ -71,13 +71,9 @@ Server.prototype.start = function () {
 
     connectdb.dbData = this.dbData;
 
-<<<<<<< HEAD
     dbUsers.dbData = this.dbData;
-=======
-  dbUsers.dbData = this.dbData;
 
-  dbUsers.setup();
->>>>>>> origin/master
+    dbUsers.setup();
 
     dbUsers.setup();
 
@@ -135,7 +131,7 @@ Server.prototype.start = function () {
 
 // ----------------------------- Pedidos Users -----------------------------------
 
-  this.app.post("/login", dbUsers.loginUser);
+    this.app.post("/login", dbUsers.loginUser);
 
     this.app.post("/updateprofile", dbUsers.updateuser);
 
