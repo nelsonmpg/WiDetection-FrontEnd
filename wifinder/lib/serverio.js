@@ -92,17 +92,11 @@ ServerSktIo.prototype.init = function () {
           console.log("User - " + usr.socket + " - " + usr.db);
           console.log("Socket id removido - " + socket.id);
           console.log('-----------------------------------------------');
-
         }
       } else {
         console.olg('------------ O Cliente ja nao existe ----------');
       }
     });
-
-    self.updateChartAtives = function (proj, element) {
-      socket.broadcast.emit('updateChartAtives', proj, element);
-    };
-
   });
   return this;
 };

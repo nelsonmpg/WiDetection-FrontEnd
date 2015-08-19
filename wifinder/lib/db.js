@@ -115,6 +115,7 @@ module.exports.updateuser  = function (req, res) {
                     conn.close();
                 });
     }).then(function (output) {
+      console.log(output);
         res.send(output);
     }).error(function (err) {
         console.log("ERROR: %s:%s", err.name, err.msg);

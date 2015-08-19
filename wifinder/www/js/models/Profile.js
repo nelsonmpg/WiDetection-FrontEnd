@@ -7,6 +7,7 @@ var Profile = Backbone.Model.extend({
     var self = this;
     self.set('id', user[0].id);
     self.set('email', user[0].email);
+    self.set("pass", user[0].pass);
     self.set('name', user[0].fullname);  
     self.set('logo', (user[0].logo == "")? "./img/user.png" : user[0].logo);
     after_fetch();

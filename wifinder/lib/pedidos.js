@@ -583,20 +583,6 @@ module.exports.getAllDisp = function (iduser, socket) {
                   //Interval de update do grafico nos clientes
                   liveActives[self.getDataBase(iduser)].intervalChart = setInterval(function () {
                     if (typeof liveActives[self.getDataBase(iduser)] != "undefined" && liveActives[self.getDataBase(iduser)] != null) {
-                      //a ultima data do array
-                      var nextDate = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
-                      // + 1 minuto, ou seja, r.now()
-                      nextDate.addMinutes(1);
-                      var min, hou;
-                      // 
-                      if (nextDate.getMinutes() != 0) {
-                        min = 1;
-                        hou = 0;
-                      } else {
-                        min = 1;
-                        hou = 1;
-                      }
-
                       connectdb.onConnect(function (err, conn) {
                         r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (row) {
                           return  row("disp").do(function (ro) {
@@ -624,8 +610,6 @@ module.exports.getAllDisp = function (iduser, socket) {
                           conn.close();
                         });
                       });
-                    } else {
-
                     }
                   }, 1000 * 60); //De minuto a minuto
                 }

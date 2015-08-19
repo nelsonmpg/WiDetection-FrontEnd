@@ -54,9 +54,11 @@ window.LoginView = Backbone.View.extend({
     });
   },
   loginuser: function (data) {
+    data[0].pass = btoa($("#login-form input[type='password']").val());
     window.profile = new Profile();
     window.profile.fetch(data, function () {
       window.logged = true;
+      window.localStorage.setItem("logged", true);
       app.navigate("/Inicio", {
         trigger: true
       });
