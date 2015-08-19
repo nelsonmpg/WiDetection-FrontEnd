@@ -1,4 +1,4 @@
-/* global module, require, process, connection */
+/* global module, require, process, connection, __dirname */
 
 var c = require('colors');
 var express = require('express');
@@ -15,8 +15,8 @@ var dbUsers = require('./db.js');
 
 /**
  * 
- * @param {type} port
- * @param {type} configdb
+ * @param {type} port Porta de escuta do servidor
+ * @param {type} configdb configuracoes de ligacaoa base de dados
  * @returns {Server}
  */
 var Server = function (port, configdb) {
@@ -36,7 +36,7 @@ var Server = function (port, configdb) {
   };
 };
 /**
- *
+ * Inica o servidor
  * @returns {undefined}
  */
 Server.prototype.start = function () {
@@ -61,6 +61,9 @@ Server.prototype.start = function () {
   // fornece ao cliente a pagina index.html
   this.app.use(express.static(__dirname + './../www'));
 
+  /**
+   * envio da configuracao da base de dados como os metodos necessarios para a selecao do site selecionado
+   */
   pedidos.dbData = this.dbData;
   pedidos.getDataBase = this.getDataBase;
   pedidos.clientArray = this.clientArray;
@@ -69,14 +72,19 @@ Server.prototype.start = function () {
 
   this.liveActives = pedidos.liveActives;
 
+  // envio da configuracao da ligacao a base de dados para fazer a coneccao
   connectdb.dbData = this.dbData;
 
+  // envio da configuracao da ligacao a base de dados para o acesso aos utilzadores
   dbUsers.dbData = this.dbData;
 
+  // Inicia a a tabela dos utilizadores
   dbUsers.setup();
 
-  dbUsers.setup();
-
+//************************************* Page DashBoard *************************************
+  /**
+   * Devolvee um objecto com a quantidade de dispositivos encontrados no site selecionado
+   */
   this.app.get("/getNumDispositivos/:id", pedidos.getNumDispositivos);
 
   /**
@@ -85,16 +93,12 @@ Server.prototype.start = function () {
   this.app.get("/getAllAntenasAndDisps/:sock", pedidos.getAllSensorAndisp);
 
   /**
-   * Retorna o numero de Disp nas antenasna ultima hora
-   */
-//    this.app.get("/getAllDisp/:sock", pedidos.getAllDisp);
-  /**
    * Retorna os tempos das visitas dos DispMoveis
    */
   this.app.get("/getAllTimes/:sock", pedidos.getAllTimes);
 
   /**
-   * Retorna o numero de Disp nas antenas
+   * Retorna o numero de Disp nos sensores por fabricante 
    */
   this.app.get("/getFabricantesinMin/:min/:sock", pedidos.getFabricantes);
 
@@ -103,45 +107,74 @@ Server.prototype.start = function () {
    */
   this.app.get("/getAllDataBase", pedidos.getDataBases);
 
+  /**
+   * Devolve os sensores do site selecionado
+   */
   this.app.get("/getSensors/:id", pedidos.getSensors);
 
-  this.app.get("/getNameVendor/:mac/:sock", pedidos.getNameVendorByMac);
+  /**
+   * Devolve o fabricante do dispositivo com o mac adderess encontrado no site selecionado
+   */
+  this.app.get("/getNameVendor/:mac/:id", pedidos.getNameVendorByMac);
 
+  /**
+   * 
+   */
   this.app.get("/getLastAllTimes/:id", pedidos.getLastAllTimes);
 
+  /**
+   * Devolve a lista de dispositivos ativos por tipo e por sensor
+   */
   this.app.get("/getpowerlistdisps/:id/:sensor/:table", pedidos.getActiveDisps);
 
-  this.app.get("/getLastAllTimes/:id", pedidos.getLastAllTimes);
 
+//************************************* Page Details *************************************
 
-  ///////// Page Detail //////////
-
+  /**
+   * 
+   */
   this.app.get("/getAllOrderbyVendor/:id/:table/:sensor/:max/:min", pedidos.getAllOrderbyVendor);
 
+  /**
+   * 
+   */
   this.app.get("/getDispMoveisbySensor/:id/:sensor", pedidos.getDispMoveisbySensor);
 
-  ///////// Page DetailAP //////////
 
+//************************************* Page DetailAP *************************************
+
+  /**
+   * Devolve todos os ap organizados por macaddress e essid
+   */
   this.app.get("/getAllAP/:id", pedidos.getAllAP);
 
+  /**
+   * retorna os dispositivos que estiveram ligados a um determinado ap
+   */
   this.app.get("/getDispConnectedtoAp/:id/:mac", pedidos.getDispConnectedtoAp);
 
-
+  /**
+   * Retorna a data ISO8060 da primeira vez que um AP foi visto
+   */
   this.app.get("/getApFirstTime/:id/:mac", pedidos.getApFirstTime);
-  ////////////////////////////////
 
+  /**
+   * Devolve os mac dos clientes organizados pelo fabricante
+   */
+  this.app.get("/getDispMacbyVendor/:id", pedidos.getDispMacbyVendor);
 
-// ----------------------------- Pedidos Users -----------------------------------
+  /**
+   * 
+   */
+  this.app.get("/getDispbyMac/:id/:mac", pedidos.getDispbyMac);
 
-    this.app.post("/login", dbUsers.loginUser);
+// //************************************* Pedidos Users *************************************
+
+  this.app.post("/login", dbUsers.loginUser);
 
   this.app.post("/updateprofile", dbUsers.updateuser);
 
-    this.app.post("/NovoUtilizador", dbUsers.registeruser);
-    
-    this.app.get("/getDispMacbyVendor/:id", pedidos.getDispMacbyVendor);
-    
-    this.app.get("/getDispbyMac/:id/:mac", pedidos.getDispbyMac);
+  this.app.post("/NovoUtilizador", dbUsers.registeruser);
 
 //----------------------------------------------------------------------------------
 
@@ -149,10 +182,20 @@ Server.prototype.start = function () {
   console.log('Server HTTP Wait %d'.green, this.port);
 };
 
+/**
+ * Recebe as configuracoes para a ligacao ao servidor dos varios sites
+ * @param {type} param1
+ * @param {type} param2
+ */
 process.on("message", function (data) {
   new Server(data.port, data.configdb).start();
 });
 
+/**
+ * Coloca o novo nuser no array dos useres
+ * @param {type} iduser
+ * @returns {undefined}
+ */
 Server.prototype.setUserServer = function (iduser) {
   this.clientArray[iduser] = {
     socket: iduser,
@@ -161,6 +204,11 @@ Server.prototype.setUserServer = function (iduser) {
   };
 };
 
+/**
+ * Devolce o site selecionado pelo user
+ * @param {type} iduser
+ * @returns {Server.prototype@arr;clientArray@pro;db}
+ */
 Server.prototype.getDataBase = function (iduser) {
   if (typeof this.clientArray[iduser] == "undefined") {
     this.setUserServer(iduser);
@@ -168,18 +216,38 @@ Server.prototype.getDataBase = function (iduser) {
   return this.clientArray[iduser].db;
 };
 
+/**
+ * Atualiza o site selecionado pleo user
+ * @param {type} iduser
+ * @param {type} database
+ * @returns {undefined}
+ */
 Server.prototype.setDataBase = function (iduser, database) {
   this.clientArray[iduser].db = database;
 };
 
+/**
+ * Devolve o objecto do user
+ * @param {type} iduser
+ * @returns {Array}
+ */
 Server.prototype.getUserServer = function (iduser) {
   return this.clientArray[iduser];
 };
 
+/**
+ * Devolve todos os useres do server
+ * @returns {Array}
+ */
 Server.prototype.getAllUserServer = function () {
   return this.clientArray;
 };
 
+/**
+ * Remove o user da lista do useres do servidor
+ * @param {type} iduser
+ * @returns {Boolean}
+ */
 Server.prototype.removeUser = function (iduser) {
   if (this.clientArray[iduser] != undefined) {
     this.clientArray[iduser].state = false;
@@ -188,6 +256,7 @@ Server.prototype.removeUser = function (iduser) {
   //this.clientArray.splice(iduser,1);
   return true;
 };
+
 /**
  * Passar uma data new Date("15/07/2015") e devolvolve um array com os MacAddress Ativos nessa data
  * @param {type} date

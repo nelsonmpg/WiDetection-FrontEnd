@@ -1,92 +1,84 @@
 <div class="row">
-    <div class="col-md-12">
-        <div class="box">
-            <div  class="box-header with-border">
-                <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Details </h3>
-                <div class="box-tools pull-right">
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-            </div><!-- /.box-header -->
-
-
-            <div class="box-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="dropdown">
-                            <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-default" data-target="#" href="">
-                                Dropdown <span class="caret"></span>
-                            </a>
-                            <ul id="selectDropdownFabricante" class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-                                <!-- <li class="divider"></li> -->
-                            </ul>                   
-                        </div><!-- /.box-body -->
-                    </div><!-- /.box -->
-                    <div class="col-md-6"> <label id="label-info-device"></label></div>
-                   
-                </div> <!-- row -->
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.row -->
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="box">
-                <div  class="box-header with-border">
-                    <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Chart </h3>
-                    <div class="box-tools pull-right">
-                        <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                        <button class="btn btn-box-tool" data-toggle="tooltip" title="Remove" data-widget="remove">
-                            <i class="fa fa-times"></i>
-                        </button>
-                    </div>
-                </div><!-- /.box-header -->
-
-
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div id="chartContainer" class="height400 col-md-12">                            
-                            </div><!-- /#mynetwork -->
-                        </div><!-- /.box-body -->
-                    </div><!-- /.box -->
-                </div> <!-- row -->
-
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.row -->
-
-    <div class="row" id="div-row-table-device-info">
-        <div class="col-md-12">
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">Device information</h3>
-                    <div class="box-tools pull-right">
-                        <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                </div><!-- /.box-header -->
-                <div class="box-body">
-                    <table id="tblDetailsDevice" class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>MAC address</th>
-                                <th>Manufacturer</th>
-                                <th>Probes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div><!-- /.box-body -->
-            </div><!-- /.box -->
+  <div class="col-md-12">
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Details </h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="dropdown">
+              <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-default" data-target="#" href="">
+                Dropdown <span class="caret"></span>
+              </a>
+              <ul id="selectDropdownFabricante" class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                <!-- <li class="divider"></li> -->
+              </ul>                   
+            </div><!-- /.box-body -->
+          </div><!-- /.box -->
+          <div class="col-md-6"> 
+            <label id="label-info-device"></label>
+          </div>
         </div> <!-- row -->
-    </div>
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.row -->
+</div><!-- /.row -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Chart </h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div id="chartContainer" class="height400 col-md-12">                            
+            </div><!-- /#mynetwork -->
+          </div><!-- /.box-body -->
+        </div><!-- /.box -->
+      </div> <!-- row -->
+
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+</div><!-- /.row -->
+
+<div class="row" id="div-row-table-device-info">
+  <div class="col-md-12">
+    <div class="box">
+      <div class="box-header">
+        <h3 class="box-title">Device information</h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <table id="tblDetailsDevice" class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>MAC address</th>
+              <th>Manufacturer</th>
+              <th>Probes</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div><!-- /.box-body -->
+    </div><!-- /.box -->
+  </div> <!-- row -->
+</div>
 

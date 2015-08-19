@@ -10,7 +10,6 @@ window.DashboardView = Backbone.View.extend({
   self: this,
   events: {
     "click #teste": "testeMap",
-//    "click .select-sensor-lst": "selectsensortochart"
     "change #select-chart-sensor": "selectsensortochart"    
   },
   initialize: function (opt) {
@@ -58,7 +57,7 @@ window.DashboardView = Backbone.View.extend({
               $("#select-chart-sensor > option:first").attr("selected", "selected");
               $("#select-chart-sensor").trigger('change');
               
-              self.graph2Bar = new ArrayToGraph(data, "", "", "chart2bars", "column");
+              self.graph2Bar = new ArrayToGraph(data, "chart2bars", "column");
               // para aparecer a div com os resultados
               self.graph2Bar.createArrayToGraphTwoBar();
             },

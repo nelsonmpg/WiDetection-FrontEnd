@@ -7,6 +7,10 @@ var fs = require('fs');
 var ini = require('ini');
 var crypto = require('crypto');
 
+/**
+ * 
+ * @returns {Main}
+ */
 var Main = function () {
   this.portHTTP = 0;
   this.dbConfig = {
@@ -17,6 +21,10 @@ var Main = function () {
   };
 };
 
+/**
+ * Faz a leitura do ficheiro de configuracao e carrega as variaveis para inicias o servidor HTTP
+ * @returns {undefined}
+ */
 Main.prototype.start = function () {
   this.config = ini.parse(fs.readFileSync('./ConfigHTTP.ini', 'utf-8'));
   this.dbConfig = {
@@ -25,11 +33,14 @@ Main.prototype.start = function () {
     authKey: crypto.createHash('sha1').update(this.config.database.projectname).digest('hex')
   };
 
-
   this.portHTTP = this.config.server_http.port;
   this.startHTTPServer();
 };
 
+/**
+ * Inicia o servidor HTTP
+ * @returns {undefined}
+ */
 Main.prototype.startHTTPServer = function () {
   var args = {
     port: this.portHTTP,

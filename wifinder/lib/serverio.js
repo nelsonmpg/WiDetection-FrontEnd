@@ -6,6 +6,11 @@ var connectdb = require("./ConnectDb");
 var Worker = require('workerjs');
 var r = require('rethinkdb');
 
+/**
+ * Class do Socket
+ * @param {type} options
+ * @returns {ServerSktIo}
+ */
 var ServerSktIo = function (options) {
   var updateChartAtives;
   this.server = options.server;
@@ -13,6 +18,10 @@ var ServerSktIo = function (options) {
   this.liveActives;
 };
 
+/**
+ * Inicia a criacao do socket para cada cliente
+ * @returns {ServerSktIo.prototype}
+ */
 ServerSktIo.prototype.init = function () {
   var self = this;
 
@@ -26,19 +35,25 @@ ServerSktIo.prototype.init = function () {
     console.log("User - " + socket.id);
     console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
+    // Novo cliente conectado e adicionado a lista de useres do server
     socket.on("userid", function (id) {
       iduser = id;
       self.server.setUserServer(id);
     });
 
+    // Devolve o numero de visitas por minuto dos clientes e faz a atualizacao a cada minuto
     socket.on("getAllDisp", function (id) {
       pedidos.getAllDisp(id, socket);
     });
-//
+    
+    // Atualiza o site selecionado pelo user
     socket.on("changesite", function (iduser, data) {
       self.server.setDataBase(iduser, data);
     });
 
+    // Consulta o servidor para saber os sites disponiveis e 
+    // coloca a escotas as varias tabelas para receber as vaias 
+    // alteracoens dos dados em realtime
     pedidos.getAllDataBases(function (err, data) {
       for (var i = 0; i < data.length; i++) {
         console.log(data[i].db);
@@ -51,6 +66,7 @@ ServerSktIo.prototype.init = function () {
       }
     });
 
+    // deteta quando o cliente se desconecta do servidor e e removido da lista do servidor
     socket.on('disconnect', function () {
       socket.broadcast.emit('diconnected', socket.id);
       var usr = self.server.getUserServer(iduser);
@@ -71,7 +87,6 @@ ServerSktIo.prototype.init = function () {
             self.liveActives[a] = null;
           }
         }
-
         if (usr != undefined) {
           console.log('------------------- REMOVE --------------------');
           console.log("User - " + usr.socket + " - " + usr.db);
@@ -79,7 +94,6 @@ ServerSktIo.prototype.init = function () {
           console.log('-----------------------------------------------');
 
         }
-
       } else {
         console.olg('------------ O Cliente ja nao existe ----------');
       }
