@@ -316,6 +316,10 @@ label.error,div.error{
     border-radius: 6px 0 6px 6px;
 }
 
+#tblDetailsDevice > tbody > tr > td {
+    text-align: center;
+}
+
 .top5 { margin-top:5px; }
 .top7 { margin-top:7px; }
 .top10 { margin-top:10px; }
