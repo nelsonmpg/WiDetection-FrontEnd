@@ -49,6 +49,12 @@ module.exports.setup = function () {
   });
 };
 
+/**
+ * Query para o login do user 
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.loginUser = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db("user").table("users")
@@ -67,6 +73,12 @@ module.exports.loginUser = function (req, res) {
   });
 };
 
+/**
+ * Register de new user na base de dados
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.registeruser = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db("user").table("users").filter({"email": req.body.email}).count().do(function (valor) {
@@ -84,6 +96,12 @@ module.exports.registeruser = function (req, res) {
   });
 };
 
+/**
+ * Update do user na dase de dados
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.updateuser  = function (req, res) {
       console.log(req.body.oldEmail, req.body.newEmail,req.body.fullname,req.body.pass,req.body.id);
       var mail = (req.body.newEmail == req.body.oldEmail) ? true : req.body.newEmail;
@@ -97,6 +115,7 @@ module.exports.updateuser  = function (req, res) {
                     conn.close();
                 });
     }).then(function (output) {
+      console.log(output);
         res.send(output);
     }).error(function (err) {
         console.log("ERROR: %s:%s", err.name, err.msg);

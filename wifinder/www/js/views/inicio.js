@@ -5,7 +5,7 @@ window.InicioView = Backbone.View.extend({
   },
   render: function () {
     var self = this;
-    var controlo = window.localStorage.getItem("Logged");
+    var controlo = window.localStorage.getItem("logged");
     var user = window.localStorage.getItem("User");
     if (controlo) {
       $(this.el).html(this.template());

@@ -42,6 +42,9 @@ window.EditProfileView = Backbone.View.extend({
         // carregar os valores antigos no form
         $("#newemail").val(window.profile.get("email"));
         $("#newfullname").val(window.profile.get("name"));
+        $("#newpass").val(atob(window.profile.get("pass")));
+        $("#newpass").val(atob(window.profile.get("pass")));
+        $("input[name='password2']").val(atob(window.profile.get("pass")));
 
         (function ($, W, D) {
             var JQUERY4U = {};
@@ -153,8 +156,8 @@ window.EditProfileView = Backbone.View.extend({
         modem('POST', "/updateprofile",
                 function (data) {
                     console.log(data);
-                    if (data.length > 0) {
-                        showmsg(".my-modal", "info", "Account updated!...<br>Please Login Again.", function () {
+                    if (data.replaced > 0) {
+                        showmsg(".my-modal", "success", "Account updated!...<br>Please Login Again.", function () {
                                 app.navigate("", {
                                     trigger: true
                                 });

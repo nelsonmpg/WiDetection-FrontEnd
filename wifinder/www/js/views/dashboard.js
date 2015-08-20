@@ -10,7 +10,6 @@ window.DashboardView = Backbone.View.extend({
     self: this,
     events: {
         "click #teste": "testeMap",
-//    "click .select-sensor-lst": "selectsensortochart"
         "change #select-chart-sensor": "selectsensortochart"
     },
     initialize: function (opt) {

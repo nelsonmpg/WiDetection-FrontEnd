@@ -10,25 +10,70 @@ var connectdb = require("./ConnectDb");
 
 var self = this;
 var liveActives = {};
-//var intervalChart; // interval de update do gráfico dispositivos ativos
 
-module.exports.getNameVendorByMac = function (req, res) {
+//************************************* Page DashBoard *************************************
+/**
+ * Devolvee um objecto com a quantidade de dispositivos encontrados no site selecionado
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getNumDispositivos = function (req, res) {
   connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.sock))
-            .table("DispMoveis")
-            .get(req.params.mac)("nameVendor")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                console.log(result);
-                res.send(result);
-              }
-              conn.close();
-            });
+    r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().do(function (val) {
+      return {"sensor": val,
+        "moveis": r.db(self.getDataBase(req.params.id)).table("DispMoveis").count(),
+        "ap": r.db(self.getDataBase(req.params.id)).table("DispAp").count()};
+    }).run(conn, function (err, result) {
+      if (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
+      } else {
+        res.send(result);
+      }
+      conn.close();
+    });
   });
 };
 
+/**
+ * Devolve o sensor com o numero dos varios dispositivos encontrados
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getAllSensorAndisp = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
+      return [{
+          "nome": row("nomeAntena"),
+          "count": row("host").count()
+        }];
+    }).map(function (row2) {
+      return {
+        "AP": row2.nth(0),
+        "DISP": {
+          "nome": row2("nome").nth(0),
+          "count": r.db(self.getDataBase(req.params.sock)).table('AntDisp').filter({
+            "nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)
+        }
+      };
+    }).coerceTo('array').run(conn, function (err, result) {
+      if (err) {
+        console.log("ERROR: %s:%s", err.name, err.msg);
+      } else {
+        res.send(result);
+      }
+      conn.close();
+    });
+  });
+};
+
+/**
+ * Retorna os tempos das visitas dos DispMoveis
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.getAllTimes = function (req, res) {
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (a) {
@@ -78,22 +123,12 @@ module.exports.getAllTimes = function (req, res) {
   });
 };
 
-module.exports.getDataBases = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.dbList().map({"db": r.row})
-            .filter(r.row("db").ne("rethinkdb"))
-            .filter(r.row("db").ne("user"))
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
-              conn.close();
-            });
-  });
-}
-
+/**
+ * Retorna o numero de Disp nos sensores por fabricante
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.getFabricantes = function (req, res) {
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.sock))
@@ -110,115 +145,34 @@ module.exports.getFabricantes = function (req, res) {
   });
 };
 
-module.exports.getAllSensorAndisp = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
-      return [{
-          "nome": row("nomeAntena"),
-          "count": row("host").count()
-        }];
-    }).map(function (row2) {
-      return {
-        "AP": row2.nth(0),
-        "DISP": {
-          "nome": row2("nome").nth(0),
-          "count": r.db(self.getDataBase(req.params.sock)).table('AntDisp').filter({
-            "nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)
-        }
-      };
-    }).coerceTo('array').run(conn, function (err, result) {
-      if (err) {
-        console.log("ERROR: %s:%s", err.name, err.msg);
-      } else {
-        res.send(result);
-      }
-      conn.close();
-    });
-  });
-};
-
-module.exports.getNumDispositivos = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().do(function (val) {
-      return {"sensor": val,
-        "moveis": r.db(self.getDataBase(req.params.id)).table("DispMoveis").count(),
-        "ap": r.db(self.getDataBase(req.params.id)).table("DispAp").count()};
-    }).run(conn, function (err, result) {
-      if (err) {
-        console.log("ERROR: %s:%s", err.name, err.msg);
-      } else {
-        res.send(result);
-      }
-      conn.close();
-    });
-  });
-};
-
-module.exports.getAllDataBases = function (callback) {
+/**
+ * Retorna as bases de dados dos varios sites
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getDataBases = function (req, res) {
   connectdb.onConnect(function (err, conn) {
     r.dbList().map({"db": r.row})
             .filter(r.row("db").ne("rethinkdb"))
             .filter(r.row("db").ne("user"))
             .run(conn, function (err, result) {
               if (err) {
-                callback(err.msg, null);
                 console.log("ERROR: %s:%s", err.name, err.msg);
               } else {
-                callback(null, result);
+                res.send(result);
               }
-//              conn.close();
+              conn.close();
             });
   });
 };
 
-module.exports.changeTablesDisps = function (database, socket, table, nemedisp) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(database).table(table)
-            .changes()
-            .filter(function (row) {
-              return row('old_val').eq(null);
-            }).run(conn)
-            .then(function (cursor) {
-              cursor.each(function (err, item) {
-//                console.log(item);
-                socket.emit("newDisp", item, nemedisp, database);
-              });
-            });
-  });
-};
-
-module.exports.changeTableAnt = function (database, socket, table, nemedisp) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(database).table(table)
-            .changes()('new_val')
-            .map(function (v) {
-              return {"sensor": v("nomeAntena"), "hosts": v("host").do(function (row) {
-                  return row.filter(function (o) {
-                    return o("data").ge(r.now().toEpochTime().sub(60));
-                  }).withFields("macAddress", "nameVendor", "Power", "data");
-                })};
-            }).run(conn)
-            .then(function (cursor) {
-              cursor.each(function (err, item) {
-                socket.emit("updateRealTimeChart", item, nemedisp, database);
-              });
-            });
-  });
-};
-
-module.exports.changeActiveAnt = function (database, socket) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(database).table("ActiveAnt")
-            .changes()('new_val').withFields("nomeAntena","cpu", "disc", "memory", "data").run(conn)
-            .then(function (cursor) {
-              cursor.each(function (err, item) {
-//                console.log(item);
-                socket.emit("changeActiveAnt", item, database);
-              });
-            });
-  });
-};
-
+/**
+ * Devolve os sensores do site selecionado
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.getSensors = function (req, res) {
   connectdb.onConnect(function (err, conn) {
     r.db(self.getDataBase(req.params.id)).table("ActiveAnt")
@@ -234,8 +188,51 @@ module.exports.getSensors = function (req, res) {
   });
 };
 
+/**
+ * Devolve o fabricante do dispositivo com o mac adderess encontrado no site selecionado
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getNameVendorByMac = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.id))
+            .table("DispMoveis")
+            .get(req.params.mac)("nameVendor")
+            .run(conn, function (err, result) {
+              if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                console.log(result);
+                res.send(result);
+              }
+              conn.close();
+            });
+  });
+};
+
+/**
+ * 
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getLastAllTimes = function (req, res) {
+  if (liveActives[self.getDataBase(req.params.id)] != undefined) {
+    var last = _.last(liveActives[self.getDataBase(req.params.id)].array);
+    res.json(last);
+  }
+};
+
+/**
+ * Devolve a lista de dispositivos ativos por tipo e por sensor
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.getActiveDisps = function (req, res) {
   var table = "";
+  // seleciona a tabela de acordo com o tipo do dispositivo
   if (req.params.table == "disp") {
     table = "AntDisp";
   } else if (req.params.table == "ap") {
@@ -245,11 +242,14 @@ module.exports.getActiveDisps = function (req, res) {
     return;
   }
   connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id)).table(table).get(req.params.sensor)("host").do(function (row) {
-      return row.filter(function (a) {
-        return a("data").ge(r.now().toEpochTime().sub(60));
-      }).withFields("macAddress", "nameVendor", "Power", "data");
-    }).coerceTo("ARRAY")
+    r.db(self.getDataBase(req.params.id))
+            .table(table)
+            .get(req.params.sensor)("host")
+            .do(function (row) {
+              return row.filter(function (a) {
+                return a("data").ge(r.now().toEpochTime().sub(60));
+              }).withFields("macAddress", "nameVendor", "Power", "data");
+            }).coerceTo("ARRAY")
             .run(conn, function (err, result) {
               if (err) {
                 console.log("ERROR: %s:%s", err.name, err.msg);
@@ -260,6 +260,10 @@ module.exports.getActiveDisps = function (req, res) {
             });
   });
 };
+
+// ------------------------------------ Fim Page DashBoard ------------------------------------
+
+//************************************* Page Details *************************************
 
 /**
  * 
@@ -321,31 +325,9 @@ module.exports.getDispMoveisbySensor = function (req, res) {
   });
 };
 
-/**
- * Devolve os mac dos clientes organizados pelo fabricante
- * @param {type} req
- * @param {type} res
- * @returns {undefined}
- */
-module.exports.getDispMacbyVendor = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id))
-            .table("DispMoveis")
-            .group("nameVendor")("macAddress")
-            .coerceTo("ARRAY")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
-              conn.close();
-            });
-  });
-};
+// ------------------------------------ Fim Page Details ------------------------------------
 
-
-
+//************************************* Page DetailAP *************************************
 
 /**
  * Devolve todos os ap organizados por macaddress e essid 
@@ -425,6 +407,29 @@ module.exports.getApFirstTime = function (req, res) {
 };
 
 /**
+ * Devolve os mac dos clientes organizados pelo fabricante
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getDispMacbyVendor = function (req, res) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(self.getDataBase(req.params.id))
+            .table("DispMoveis")
+            .group("nameVendor")("macAddress")
+            .coerceTo("ARRAY")
+            .run(conn, function (err, result) {
+              if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                res.send(result);
+              }
+              conn.close();
+            });
+  });
+};
+
+/**
  * Retorna a row referente ao device (mac) 
  * @param {type} req
  * @param {type} res
@@ -436,16 +441,111 @@ module.exports.getDispbyMac = function (req, res) {
             .table("DispMoveis")
             .get(req.params.mac)
             .run(conn, function (err, result) {
-      if (err) {
-        console.log("ERROR: %s:%s", err.name, err.msg);
-      } else {
-        res.send(JSON.stringify(result));
-      }
-      conn.close();
-    });
+              if (err) {
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                res.send(JSON.stringify(result));
+              }
+              conn.close();
+            });
   });
 };
 
+// ------------------------------------ Fim Page DetailAP ------------------------------------
+
+//************************************* Pedidos do Socket *************************************
+
+/**
+ * Devolve alista de bases de dados para o socket
+ * @param {type} callback
+ * @returns {undefined}
+ */
+module.exports.getAllDataBases = function (callback) {
+  connectdb.onConnect(function (err, conn) {
+    r.dbList().map({"db": r.row})
+            .filter(r.row("db").ne("rethinkdb"))
+            .filter(r.row("db").ne("user"))
+            .run(conn, function (err, result) {
+              if (err) {
+                callback(err.msg, null);
+                console.log("ERROR: %s:%s", err.name, err.msg);
+              } else {
+                callback(null, result);
+              }
+            });
+  });
+};
+
+/**
+ * Cria a ligacao e fica a escuta de alteracoes nas varias tabelas passadas por 
+ * parametro de cada site passado por parametro
+ * @param {type} database   Site 
+ * @param {type} socket     Socket para comunicacao das alteracoes
+ * @param {type} table      Tabela em escuta de alteracoes
+ * @param {type} nemedisp   Tipo do dispositivo
+ * @returns {undefined}
+ * 
+ */
+module.exports.changeTablesDisps = function (database, socket, table, nemedisp) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table(table)
+            .changes()
+            .filter(function (row) {
+              return row('old_val').eq(null);
+            }).run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+                socket.emit("newDisp", item, nemedisp, database);
+              });
+            });
+  });
+};
+
+/**
+ * escuta de alteracoes para a criacao do grafico em realtime do power dos 
+ * varios dispositivos a tivos no ultimo minuto 
+ * @param {type} database   Site
+ * @param {type} socket     Socker de comunicacao
+ * @param {type} table      Tabela em escuta de alteracoes
+ * @param {type} nomedisp   Tipo do dispositivo 
+ * @returns {undefined}
+ */
+module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table(table)
+            .changes()('new_val')
+            .map(function (v) {
+              return {"sensor": v("nomeAntena"), "hosts": v("host").do(function (row) {
+                  return row.filter(function (o) {
+                    return o("data").ge(r.now().toEpochTime().sub(60));
+                  }).withFields("macAddress", "nameVendor", "Power", "data");
+                })};
+            }).run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+                socket.emit("updateRealTimeChart", item, nomedisp, database);
+              });
+            });
+  });
+};
+
+/**
+ * Escuta de novo sensor adicionado ao site
+ * @param {type} database Site
+ * @param {type} socket   Socket de comunicacao
+ * @returns {undefined}
+ */
+module.exports.changeActiveAnt = function (database, socket) {
+  connectdb.onConnect(function (err, conn) {
+    r.db(database).table("ActiveAnt")
+            .changes()('new_val').withFields("nomeAntena", "cpu", "disc", "memory", "data").run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+                socket.emit("changeActiveAnt", item, database);
+              });
+            });
+  });
+};
 
 /**
  * 
@@ -483,20 +583,6 @@ module.exports.getAllDisp = function (iduser, socket) {
                   //Interval de update do grafico nos clientes
                   liveActives[self.getDataBase(iduser)].intervalChart = setInterval(function () {
                     if (typeof liveActives[self.getDataBase(iduser)] != "undefined" && liveActives[self.getDataBase(iduser)] != null) {
-                      //a ultima data do array
-                      var nextDate = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
-                      // + 1 minuto, ou seja, r.now()
-                      nextDate.addMinutes(1);
-                      var min, hou;
-                      // 
-                      if (nextDate.getMinutes() != 0) {
-                        min = 1;
-                        hou = 0;
-                      } else {
-                        min = 1;
-                        hou = 1;
-                      }
-
                       connectdb.onConnect(function (err, conn) {
                         r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (row) {
                           return  row("disp").do(function (ro) {
@@ -524,8 +610,6 @@ module.exports.getAllDisp = function (iduser, socket) {
                           conn.close();
                         });
                       });
-                    } else {
-                        
                     }
                   }, 1000 * 60); //De minuto a minuto
                 }
@@ -534,19 +618,8 @@ module.exports.getAllDisp = function (iduser, socket) {
     });
   }
 };
+// --------------------------------- Fim dos pedidos do socket ---------------------------------
 
-/**
- * 
- * @param {type} req
- * @param {type} res
- * @returns {undefined}
- */
-module.exports.getLastAllTimes = function (req, res) {
-  if (liveActives[self.getDataBase(req.params.id)] != undefined) {
-    var last = _.last(liveActives[self.getDataBase(req.params.id)].array);
-    res.json(last);
-  }
-};
 
 module.exports.getLiveActives = function () {
   return liveActives;
