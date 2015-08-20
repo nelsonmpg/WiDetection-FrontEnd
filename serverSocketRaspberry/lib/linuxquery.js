@@ -27,9 +27,6 @@ module.exports.getdispmon = function (req, res) {
 module.exports.checkmonitorstart = function (req, res) {
   cp.exec("ps aux | grep 'air' | grep -v 'color' | grep -v 'grep'", function (error, stdout, stderr) {
     res.json(stdout);
-//    if (error !== null) {
-//      console.log('exec error: ' + error);
-//    }
   });
 };
 
@@ -46,6 +43,7 @@ module.exports.getinifileparams = function (req, res) {
       databasehost: config.database.host,
       databaseport: config.database.port,
       databasepass: config.database.projectname,
+      autostart : config.global.autostart,
       localsensormorada: config.localsensor.morada,
       localsensornomeSensor: config.localsensor.nomeSensor,
       localsensorlatitude: config.localsensor.latitude,
@@ -73,6 +71,7 @@ module.exports.createmonitor = function (req, res) {
 module.exports.savesettings = function (req, res) {
   var fini = "; isto e um comentario\n[global]" +
           "\nconfig = true" +
+          "\nautostart = " + req.body.data.autostart +
           "\n\n; definicao da base de dados\n[database]" +
           "\nsitename= " + req.body.data.sitename +
           "\nhost = " + req.body.data.host +

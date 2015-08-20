@@ -27,9 +27,6 @@ module.exports.getdispmon = function (req, res) {
 module.exports.checkmonitorstart = function (req, res) {
   cp.exec("ps aux | grep 'air' | grep -v 'color' | grep -v 'grep'", function (error, stdout, stderr) {
     res.json(stdout);
-//    if (error !== null) {
-//      console.log('exec error: ' + error);
-//    }
   });
 };
 
@@ -46,6 +43,7 @@ module.exports.getinifileparams = function (req, res) {
       databasehost: config.database.host,
       databaseport: config.database.port,
       databasepass: config.database.projectname,
+      autostart : config.global.autostart,
       localsensormorada: config.localsensor.morada,
       localsensornomeSensor: config.localsensor.nomeSensor,
       localsensorlatitude: config.localsensor.latitude,
@@ -73,6 +71,7 @@ module.exports.createmonitor = function (req, res) {
 module.exports.savesettings = function (req, res) {
   var fini = "; isto e um comentario\n[global]" +
           "\nconfig = true" +
+          "\nautostart = " + req.body.data.autostart +
           "\n\n; definicao da base de dados\n[database]" +
           "\nsitename= " + req.body.data.sitename +
           "\nhost = " + req.body.data.host +
@@ -101,16 +100,9 @@ module.exports.savesettings = function (req, res) {
 };
 
 module.exports.startmonitor = function (req, res) {
-//  cp.execFile('sh', ['-c', "./clientSend >> /dev/null &"], {stdio: 'inherit'}, function (err, data) {
-//    res.json("Start Monitor");
-//    console.log("Start Monitor");
-//  });
-//  cp.execFile('sh', ['-c', "node ./lib/mainSKT.js"], {stdio: 'inherit'}, function (err, data) {
-    res.json("Start Monitor");
-    console.log("Start Monitor");
-//  });
-
-cp.fork('./lib/mainSKT.js');
+  cp.fork('./lib/mainSKT.js');
+  res.json("Start Monitor");
+  console.log("Start Monitor");
 };
 
 module.exports.stoptmonitor = function (req, res) {
@@ -119,6 +111,27 @@ module.exports.stoptmonitor = function (req, res) {
     res.json(stdout);
 //    console.log(stdout);
 //    console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+  });
+};
+
+
+module.exports.restartsystem = function (req, res) {
+  res.json("reboot");
+  console.log("System Reboot");
+  cp.exec("sudo reboot", function (error, stdout, stderr) {
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+  });
+};
+
+module.exports.poweroffsystem = function (req, res) {
+  res.json("PowerOff");
+  console.log("System Poweroff");
+  cp.exec("sudo poweroff", function (error, stdout, stderr) {
     if (error !== null) {
       console.log('exec error: ' + error);
     }

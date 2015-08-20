@@ -1,4 +1,4 @@
-/* global Backbone, normalizeString */
+/* global Backbone, normalizeString, app */
 
 window.ConfigSiteView = Backbone.View.extend({
   location: "http://maps.google.com/maps/api/geocode/json?address=",
@@ -13,9 +13,11 @@ window.ConfigSiteView = Backbone.View.extend({
     "click #save-settings": "savesettings",
     "click #start_monitor": "startmonitor",
     "click #stop-monitor": "stopmonitor",
-    "click #Check-Position": "fistposition",
+    "click #Check-Position": "firstposition",
     "click #refresh-values": "refresh",
-    "click .btn-modal": "checksave"
+    "click .btn-modal": "checksave",
+    "click #btn_restartSO": "restartso",
+    "click #btn_poweroffSO": "poweroffso"
   },
   initialize: function () {
   },
@@ -88,6 +90,7 @@ window.ConfigSiteView = Backbone.View.extend({
                 $("#sensor-longitude").val(data.localsensorlongitude);
                 $("#sensor-posx").val(data.localsensorposx);
                 $("#sensor-posy").val(data.localsensorposy);
+                $("#myonoffswitch").attr("checked", data.autostart);
                 carregarmapa([["<h4>" + $("#sensor-name").val() + "</h4>", $("#sensor-latitude").val(), $("#sensor-longitude").val()]], $("#map-google")[0], self.selectnewposition);
                 self.validinifile = true;
               } else {
@@ -221,7 +224,9 @@ window.ConfigSiteView = Backbone.View.extend({
   savesettings: function (callback) {
     var self = this;
     if (self.checkImputs()) {
+      self.inputchanged = false;
       var settings = {
+        autostart : $("#myonoffswitch").is(":checked"),
         sitename: $("#site-name").val(),
         host: $("#server-ip").val(),
         port: $("#server-port").val() * 1,
@@ -299,7 +304,7 @@ window.ConfigSiteView = Backbone.View.extend({
   },
   stopmonitor: function () {
     var self = this;
-    console.log("Strt stop Monitor!");
+    console.log("Start stop Monitor!");
     showInfoMsg(true, '.my-modal', "Stop Monitor.<br>Wait... <i class='fa fa-refresh fa-spin'></i>");
     modem("POST",
             "/stopmonitor",
@@ -313,7 +318,7 @@ window.ConfigSiteView = Backbone.View.extend({
             }, {}
     );
   },
-  fistposition: function () {
+  firstposition: function () {
     var self = this;
     $.getJSON(self.location + normalizeString($("#sensor-local").val()).toLowerCase() + self.keyloc, function (data) {
       $("#sensor-local").val(data.results[0].formatted_address);
@@ -321,6 +326,63 @@ window.ConfigSiteView = Backbone.View.extend({
       $("#sensor-longitude").val(data.results[0].geometry.location.lng);
       self.inputchanged = true;
       carregarmapa([["<h4>" + $("#sensor-name").val() + "</h4>", $("#sensor-latitude").val(), $("#sensor-longitude").val()]], $("#map-google")[0], self.selectnewposition);
+    });
+  },
+  restartso: function () {
+    var self = this;
+    showInfoMsg(true, '.my-modal', "The system is going down for reboot NOW!<br>Wait for system responding... <i class='fa fa-refresh fa-spin'></i>");
+    modem("GET",
+            "/restartsystem",
+            function (data) {
+              setTimeout(function () {
+                self.serverResponse();
+              }, 10000);
+              console.log(data);
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
+    );
+  },
+  poweroffso: function () {
+    var self = this;
+    showInfoMsg(true, '.my-modal', "The system is going poweroff NOW!<br>See you latter!");
+    modem("GET",
+            "/poweroffsystem",
+            function (data) {
+              console.log(data);
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
+    );
+
+  },
+  serverResponse: function () {
+    var self = this;
+    $.ajax({url: window.location.href.split("#")[0],
+      type: "HEAD",
+      timeout: 1000,
+      statusCode: {
+        200: function (response) {
+          showInfoMsg(false, '.my-modal');
+          window.location.reload();
+        },
+        400: function (response) {
+          setTimeout(function () {
+            self.serverResponse();
+          }, 1000);
+          console.log('Not working!');
+        },
+        0: function (response) {
+          setTimeout(function () {
+            self.serverResponse();
+          }, 1000);
+          console.log('Not working!');
+        }
+      }
     });
   },
   render: function () {
