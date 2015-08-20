@@ -1,22 +1,23 @@
 window.DashboardView = Backbone.View.extend({
-    socketDashboard: null,
-    graph2Bar: undefined,
-    chart: undefined,
-    interval_chart: null,
-    countChart: undefined,
-    lastSensorselect: "",
-    chartrealtimeMoveis: null,
-    chartrealtimeAp: null,
-    self: this,
-    events: {
-        "click #teste": "testeMap",
-        "change #select-chart-sensor": "selectsensortochart"
-    },
-    initialize: function (opt) {
-        this.socketDashboard = opt.socket;
-    },
-    init: function () {
-        var self = this;
+  socketDashboard: null,
+  graph2Bar: undefined,
+  chart: undefined,
+  interval_chart: null,
+  countChart: undefined,
+  lastSensorselect: "",
+  chartrealtimeMoveis: null,
+  chartrealtimeAp: null,
+  self: this,
+  events: {
+    "click #teste": "testeMap",
+    "change #select-chart-sensor": "selectsensortochart"    
+  },
+  initialize: function (opt) {
+    this.socketDashboard = opt.socket;
+  },
+  init: function () {
+    var self = this;
+    
 
         self.requestNumDisps();
         self.createChart2Bar();
