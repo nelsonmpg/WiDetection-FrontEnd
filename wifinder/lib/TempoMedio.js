@@ -30,9 +30,10 @@ self.onmessage = function (e) {
   
   for (var a in teste) {
     for (var b in teste[a].sensores) {
-      ini = new Date(teste[a].sensores[b].values[0].Last_time);
+      ini = new Date(teste[a].sensores[b].values[0].Last_time*1000);
       fin = ini;
       for (var c in teste[a].sensores[b].values) {
+          console.log(teste[a].sensores[b].values[c]);
         var sensorLastTime = new Date(teste[a].sensores[b].values[c].Last_time*1000);
         if (sensorLastTime > fin) {
           if (sensorLastTime < fin.addMinutes(5)) {
