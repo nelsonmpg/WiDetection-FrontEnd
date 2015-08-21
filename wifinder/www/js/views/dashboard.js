@@ -1,23 +1,22 @@
 window.DashboardView = Backbone.View.extend({
-  socketDashboard: null,
-  graph2Bar: undefined,
-  chart: undefined,
-  interval_chart: null,
-  countChart: undefined,
-  lastSensorselect: "",
-  chartrealtimeMoveis: null,
-  chartrealtimeAp: null,
-  self: this,
-  events: {
-    "click #teste": "testeMap",
-    "change #select-chart-sensor": "selectsensortochart"    
-  },
-  initialize: function (opt) {
-    this.socketDashboard = opt.socket;
-  },
-  init: function () {
-    var self = this;
-    
+    socketDashboard: null,
+    graph2Bar: undefined,
+    chart: undefined,
+    interval_chart: null,
+    countChart: undefined,
+    lastSensorselect: "",
+    chartrealtimeMoveis: null,
+    chartrealtimeAp: null,
+    self: this,
+    events: {
+        "click #teste": "testeMap",
+        "change #select-chart-sensor": "selectsensortochart"
+    },
+    initialize: function (opt) {
+        this.socketDashboard = opt.socket;
+    },
+    init: function () {
+        var self = this;
 
         self.requestNumDisps();
         self.createChart2Bar();
@@ -58,7 +57,7 @@ window.DashboardView = Backbone.View.extend({
                 $("#select-chart-sensor > option:first").attr("selected", "selected");
                 $("#select-chart-sensor").trigger('change');
 
-                self.graph2Bar = new ArrayToGraph(data, "", "", "chart2bars", "column");
+                self.graph2Bar = new ArrayToGraph(data, "chart2bars", "column");
                 // para aparecer a div com os resultados
                 self.graph2Bar.createArrayToGraphTwoBar();
             },
@@ -284,7 +283,29 @@ window.DashboardView = Backbone.View.extend({
                         }
                     }
                     if (data[1] == macs[a].bssid) { //se for o ultimo ap
-                        self.fazergrafico(xedges, xnodes);
+
+                        //getDispMacbyVendor
+
+                        modem("GET",
+                            "/getDispMacbyVendor/" + window.profile.id,
+                            function (data) {
+                                console.log(data);
+                                for (var c in data) {
+                                    for (var d in data[c].reduction) {
+                                        if (devices.indexOf((data[c].reduction[d]).trim()) < 0) {
+                                            devices.push((data[c].reduction[d]).trim());
+                                            xnodes.push({id: devices.indexOf((data[c].reduction[d]).trim()) + 1, label: data[c].group + "\n" + data[c].reduction[d], group: "device"});
+                                        }
+                                    }
+                                }
+
+                                self.fazergrafico(xedges, xnodes);
+                            },
+                            function (xhr, ajaxOptions, thrownError) {
+                                var json = JSON.parse(xhr.responseText);
+                                error_launch(json.message);
+                            }, {}
+                        );
                     }
 
                 },
