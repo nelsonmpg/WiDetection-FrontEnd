@@ -90,6 +90,7 @@ window.ConfigSiteView = Backbone.View.extend({
                 $("#sensor-longitude").val(data.localsensorlongitude);
                 $("#sensor-posx").val(data.localsensorposx);
                 $("#sensor-posy").val(data.localsensorposy);
+                $("#myonoffswitch").attr("checked", data.autostart);
                 carregarmapa([["<h4>" + $("#sensor-name").val() + "</h4>", $("#sensor-latitude").val(), $("#sensor-longitude").val()]], $("#map-google")[0], self.selectnewposition);
                 self.validinifile = true;
               } else {
@@ -225,6 +226,7 @@ window.ConfigSiteView = Backbone.View.extend({
     if (self.checkImputs()) {
       self.inputchanged = false;
       var settings = {
+        autostart : $("#myonoffswitch").is(":checked"),
         sitename: $("#site-name").val(),
         host: $("#server-ip").val(),
         port: $("#server-port").val() * 1,
