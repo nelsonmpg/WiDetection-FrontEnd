@@ -317,8 +317,21 @@ label.error,div.error{
 }
 
 #tblDetailsDevice > tbody > tr > td {
-    text-align: center;
+/*  height:100%;
+  width:100%;*/
+
+  text-align: center;  /* align the inline(-block) elements horizontally */
+  /*font: 0/0 a;          remove the gap between inline(-block) elements */
 }
+
+#tblDetailsDevice > tbody > tr > td:before {    /* create a full-height inline block pseudo=element */
+  /*display: inline-block;*/
+  vertical-align: middle;    /* vertical alignment of the inline element */
+  /*height: 100%;*/
+}
+
+/*.vertical-center > .container {
+  max-width: 100%;*/
 
 .top5 { margin-top:5px; }
 .top7 { margin-top:7px; }

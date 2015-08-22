@@ -137,40 +137,6 @@ window.DetailView = Backbone.View.extend({
             '<tr><th style="width:50%">Last Active:</th><td>' + moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
 //          this.tableload();
   },
-  tableload: function () {
-//          modem("GET",
-//              "/getDispMoveisbySensor/" + window.profile.id + "/" + $('#SensorSelect').find(":selected").text(),
-//              function (data) {
-//                  var dataSet = [];
-//                  for (var i in data) {
-//                      for (var a in data[i].reduction) {
-//                          dataSet.push([data[i].reduction[a].macAddress, data[i].group,
-//                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-//                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
-//                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID == "(notassociated)") ? "" : data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID
-//                          ]);
-//                      }
-//                  }
-//                  if (data.length == 0) {
-//                      $('#tblDetailsDevices').append('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
-//                  } else {
-//                      $('#tblDetailsDevices').DataTable({
-//                          "data": dataSet,
-//                          "paging": true,
-//                          "lengthChange": false,
-//                          "searching": false,
-//                          "ordering": true,
-//                          "info": true,
-//                          "autoWidth": true
-//                      });
-//                  }
-//              },
-//              function (xhr, ajaxOptions, thrownError) {
-//                  var json = JSON.parse(xhr.responseText);
-//                  error_launch(json.message);
-//              }, {}
-//          );
-  },
   changedate: function (ev, picker) {
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
   },
