@@ -263,16 +263,6 @@ var displayCoordinates = function (pnt) {
     };
 };
 
-var checkTimeInterval = function (val1, val2) {
-    if (moment(val1.inicio) >= moment(val2.inicio)) {
-        if (val1.fim >= val2.fim) {
-            return true;
-        }
-    }
-    return false;
-};
-
-
 window.modem = function (type, url, sucess, error, data) {
     $.ajax({
         async: true,
