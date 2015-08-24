@@ -102,7 +102,7 @@ module.exports.getAllTimes = function (req, res) {
         var resposta = {};
         //[macAddress] = numero de visitas
         for (var i in result) {
-          resposta[i.toString()] = result[i];
+          resposta[i.toString()] = _.sortBy(result[i], "inicio");
         }
         console.log(resposta);
         //devolve a resposta ao cliente
