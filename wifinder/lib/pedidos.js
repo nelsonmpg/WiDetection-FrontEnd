@@ -104,6 +104,7 @@ module.exports.getAllTimes = function (req, res) {
         for (var i in result) {
           resposta[i.toString()] = result[i];
         }
+        console.log(resposta);
         //devolve a resposta ao cliente
         res.json(resposta);
       } else {
@@ -624,7 +625,6 @@ module.exports.getAllDisp = function (iduser, socket) {
                             liveActives[self.getDataBase(iduser)].array.push(x);
                             //Envia para os clientes
                             socket.emit("updateChart", x, self.getDataBase(iduser));
-                            clearInterval(liveActives[self.getDataBase(iduser)].intervalChart);
                           }
                           conn.close();
                         });
