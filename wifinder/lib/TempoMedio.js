@@ -29,7 +29,7 @@ self.onmessage = function (e) {
   var ini, fin;
   
   for (var a in teste) {
-    for (var b in teste[a].sensores) {
+    for (var b in teste[a].sensores) { // cada sensor
       ini = new Date(teste[a].sensores[b].values[0].Last_time*1000);
       fin = ini;
       for (var c in teste[a].sensores[b].values) {
