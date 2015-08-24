@@ -200,7 +200,7 @@ window.DetailView = Backbone.View.extend({
                 var dataSet = [];
 
                 for (var i in data) {
-                  for (var a in data[i].reduction) {
+                  for (var a in data[i].reduction) { //anda nos elementos
                     dataSet.push([data[i].group,
                       "<a href='#' class='APjump' data-mac='" + data[i].reduction[a].ESSID + "'>" + data[i].reduction[a].ESSID + "</a>",
                       data[i].reduction[a].Authentication,
@@ -264,7 +264,7 @@ window.DetailView = Backbone.View.extend({
                     "data": dataSet,
                     "paging": true,
                     "lengthChange": false,
-                    "searching": false,
+                    "searching": true,
                     "ordering": true,
                     "info": true,
                     "autoWidth": true,
