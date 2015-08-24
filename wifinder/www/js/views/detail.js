@@ -176,8 +176,8 @@ window.DetailView = Backbone.View.extend({
                 });
                 $("#imgsensor").css({
                   display: "block",
-                  left: $('#SensorSelect').find(":selected").data("posx"),
-                  top: $('#SensorSelect').find(":selected").data("posy")
+                  left: $('#SensorSelect').find(":selected").data("posx") + "%",
+                  top: $('#SensorSelect').find(":selected").data("posy") + "%"
                 });
               }
             },

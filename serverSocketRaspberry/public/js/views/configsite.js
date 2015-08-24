@@ -81,8 +81,8 @@ window.ConfigSiteView = Backbone.View.extend({
             containment: $('body'),
             stop: function () {
               var finalOffset = $(this).offset();
-              var finalxPos = finalOffset.left - $('#posiSensor').offset().left;
-              var finalyPos = finalOffset.top - $('#posiSensor').offset().top;
+              var finalxPos = (finalOffset.left - $('#posiSensor').offset().left) * 100 / $('#posiSensor').width();
+              var finalyPos = (finalOffset.top - $('#posiSensor').offset().top) * 100 / $('#posiSensor').height();
               if (finalxPos >= 0 && finalyPos >= 0) {
                 $('#sensor-posx').val(finalxPos);
                 $('#sensor-posy').val(finalyPos);
@@ -159,8 +159,8 @@ window.ConfigSiteView = Backbone.View.extend({
       containment: $('body'),
       stop: function () {
         var finalOffset = $(this).offset();
-        var finalxPos = finalOffset.left - $('#posiSensor').offset().left;
-        var finalyPos = finalOffset.top - $('#posiSensor').offset().top;
+        var finalxPos = (finalOffset.left - $('#posiSensor').offset().left) * 100 / $('#posiSensor').width();
+        var finalyPos = (finalOffset.top - $('#posiSensor').offset().top) * 100 / $('#posiSensor').height();
         if (finalxPos >= 0 && finalyPos >= 0) {
           $('#sensor-posx').val(finalxPos);
           $('#sensor-posy').val(finalyPos);
@@ -328,9 +328,11 @@ window.ConfigSiteView = Backbone.View.extend({
         "display": "block"
       });
       if ($("#plantlocalsensor").css("background-image") != "none") {
+        var xx = ($("#plantlocalsensor").width() * $("#sensor-posx").val() * 1) / 100;
+        var yy = ($("#plantlocalsensor").height() * $("#sensor-posy").val() * 1) / 100;
         $("#imgsensor").css({
-          top: (($("#plantlocalsensor").offset().top - $("#addimagesensor").offset().top) + $("#sensor-posy").val() * 1) - $("#addimagesensor").css("padding").replace("px", "") * 1 + "px",
-          left: (($("#plantlocalsensor").offset().left - $("#addimagesensor").offset().left) + $("#sensor-posx").val() * 1) - $("#addimagesensor").css("padding").replace("px", "") * 1 + "px"
+          top: (($("#plantlocalsensor").offset().top - $("#addimagesensor").offset().top) + yy) - $("#addimagesensor").css("padding").replace("px", "") * 1 + "px",
+          left: (($("#plantlocalsensor").offset().left - $("#addimagesensor").offset().left) + xx) - $("#addimagesensor").css("padding").replace("px", "") * 1 + "px"
         });
       }
       $("#sensor-posx, #sensor-posy").attr("disabled", false);
