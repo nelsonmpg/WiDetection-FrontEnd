@@ -3,6 +3,13 @@
 var r = require('rethinkdb');
 var connectdb = require("./ConnectDb");
 var self = this;
+
+/**
+ * Insere ou atualiza a tabela que tem todos os Dispositivos wireless detetados
+ * @param {type} valsHost
+ * @param {type} client
+ * @returns {undefined}
+ */
 module.exports.insertDispMovel = function (valsHost, client) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db).table("DispMoveis").get(valsHost[0]).replace(function (row) {

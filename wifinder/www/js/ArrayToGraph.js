@@ -19,7 +19,7 @@ ArrayToGraph.prototype.changeAnguloX = function (angulo) {
   this.anguloX = angulo;
 };
 
-ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
+ArrayToGraph.prototype.createArrayToGraphLine = function () {
   var self = this;
   for (var i in this.array.disp) { // por sensor
     var datapoint = [];
@@ -39,10 +39,20 @@ ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
       showInLegend: true,
       dataPoints: datapoint
     });
-
   }
-
   this.createAndShowGraphLine(this.dataTograph);
+};
+
+ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
+  var datapoint = [];
+  for (var i in this.array) {
+    datapoint.push({y: this.array[i].reduction.length, label: this.array[i].group});
+  }
+  this.dataTograph.push({
+    type: this.type,
+    dataPoints: datapoint
+  });
+  this.createAndShowGraphOneBar(this.dataTograph);
 };
 
 ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
@@ -200,4 +210,32 @@ ArrayToGraph.prototype.createAndShowGraphLine = function (dataValues) {
     data: dataValues
   });
   self.chart.render();
+};
+
+ArrayToGraph.prototype.createAndShowGraphOneBar = function (dataValues) {
+  var self = this;
+  this.chart = new CanvasJS.Chart(this.local, {
+    animationEnabled: true,
+    theme: "theme3",
+    axisX: {
+      interval: 1,
+      labelAngle: -70,
+      labelFontSize: 12,
+      labelFontFamily: "verdana",
+      labelFontColor: "black"
+    },
+    axisY: {
+      gridThickness: 1,
+      interval: 1,
+      labelFontSize: 12,
+      labelFontFamily: "verdana",
+      labelFontColor: "black"
+    },
+    legend: {
+      verticalAlign: "bottom",
+      horizontalAlign: "center"
+    },
+    data: dataValues
+  });
+  this.chart.render();
 };

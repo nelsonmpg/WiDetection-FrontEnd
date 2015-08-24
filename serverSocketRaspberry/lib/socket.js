@@ -37,6 +37,7 @@ var ServerSocket = function (port, configdb, sensorcfg) {
   this.local = sensorcfg.loc;
   this.posx = sensorcfg.posx;
   this.posy = sensorcfg.posy;
+  this.plant = sensorcfg.plant;
   this.scanStart = false;
   this.dbConfig = configdb;
 
@@ -99,7 +100,8 @@ var ServerSocket = function (port, configdb, sensorcfg) {
 ServerSocket.prototype.start = function () {
   var self = this;
   activeant.insertActiveAnt(self.clienteSend, self.lati, self.long, self.local, self.posx, self.posy);
-  this.serverSck.listen(this.port);
+  activeant.insertPlant(self.clienteSend, self.plant);
+  this.serverSck.listen();
 
   watcher.on('change', function (path) {
     lineReader.eachLine(fileRead, function (line) {

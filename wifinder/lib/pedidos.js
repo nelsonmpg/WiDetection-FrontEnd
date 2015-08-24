@@ -19,19 +19,19 @@ var liveActives = {};
  * @returns {undefined}
  */
 module.exports.getNumDispositivos = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().do(function (val) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().do(function (val) {
       return {"sensor": val,
         "moveis": r.db(self.getDataBase(req.params.id)).table("DispMoveis").count(),
         "ap": r.db(self.getDataBase(req.params.id)).table("DispAp").count()};
-    }).run(conn, function (err, result) {
-      if (err) {
-        console.log("ERROR: %s:%s", err.name, err.msg);
-      } else {
-        res.send(result);
-      }
-      conn.close();
-    });
+    }).run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -42,8 +42,8 @@ module.exports.getNumDispositivos = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getAllSensorAndisp = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
       return [{
           "nome": row("nomeAntena"),
           "count": row("host").count()
@@ -57,14 +57,14 @@ module.exports.getAllSensorAndisp = function (req, res) {
             "nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)
         }
       };
-    }).coerceTo('array').run(conn, function (err, result) {
-      if (err) {
-        console.log("ERROR: %s:%s", err.name, err.msg);
-      } else {
-        res.send(result);
-      }
-      conn.close();
-    });
+    }).coerceTo('array').run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -75,8 +75,8 @@ module.exports.getAllSensorAndisp = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getAllTimes = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (a) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (a) {
       return {"row": a, "state": a("disp").contains(function (b) {
           return b("values").contains(function (c) {
             return c("Last_time").ge(r.now().toEpochTime().sub(3600));
@@ -84,42 +84,42 @@ module.exports.getAllTimes = function (req, res) {
         })};
     }).filter({"state": true}).without("state")("row")
             .coerceTo("array")
-            .run(conn, function (err, result2) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                var tempo = new Worker('./lib/TempoMedio.js');
-                var result = [];
-
-                //Na resposta do webworker
-                tempo.onmessage = function (msg) {
-                  // se a mensagem for "stop" e' para parar
-                  if (msg.data == "stop") {
-                    //termina o webworker
-                    tempo.terminate();
-                    //array para construir a resposta
-                    var resposta = {};
-                    //[macAddress] = numero de visitas
-                    for (var i in result) {
-                      resposta[i.toString()] = result[i];
-                    }
-                    //devolve a resposta ao cliente
-                    res.json(resposta);
-                  } else {
-                    //verifica se a posição do array esta' indefinida e inicializa-a
-                    if (typeof result[msg.data.macAddress] == "undefined") {
-                      result[msg.data.macAddress] = [];
-                    }
-                    //guarda no array das visitas [macAddress] = [{visita},{visita}]
-                    result[msg.data.macAddress].push(msg.data.visita);
-                  }
-                };
-
-                //worker start
-                tempo.postMessage(result2);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result2) {
+    var tempo = new Worker('./lib/TempoMedio.js');
+    var result = [];
+
+    //Na resposta do webworker
+    tempo.onmessage = function (msg) {
+      // se a mensagem for "stop" e' para parar
+      if (msg.data == "stop") {
+        //termina o webworker
+        tempo.terminate();
+        //array para construir a resposta
+        var resposta = {};
+        //[macAddress] = numero de visitas
+        for (var i in result) {
+          resposta[i.toString()] = result[i];
+        }
+        //devolve a resposta ao cliente
+        res.json(resposta);
+      } else {
+        //verifica se a posição do array esta' indefinida e inicializa-a
+        if (typeof result[msg.data.macAddress] == "undefined") {
+          result[msg.data.macAddress] = [];
+        }
+        //guarda no array das visitas [macAddress] = [{visita},{visita}]
+        result[msg.data.macAddress].push(msg.data.visita);
+      }
+    };
+
+    //worker start
+    tempo.postMessage(result2);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -130,18 +130,18 @@ module.exports.getAllTimes = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getFabricantes = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.sock))
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.sock))
             .table('DispMoveis')
             .coerceTo("array")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(getMACInDate(req.params.min, result));
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(getMACInDate(req.params.min, result));
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -152,18 +152,18 @@ module.exports.getFabricantes = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getDataBases = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.dbList().map({"db": r.row})
+  r.connect(self.dbData).then(function (conn) {
+    return r.dbList().map({"db": r.row})
             .filter(r.row("db").ne("rethinkdb"))
             .filter(r.row("db").ne("user"))
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -174,17 +174,17 @@ module.exports.getDataBases = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getSensors = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id)).table("ActiveAnt")
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id)).table("ActiveAnt")
             .coerceTo("ARRAY")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -195,19 +195,18 @@ module.exports.getSensors = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getNameVendorByMac = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id))
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
             .table("DispMoveis")
             .get(req.params.mac)("nameVendor")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                console.log(result);
-                res.send(result);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -241,8 +240,8 @@ module.exports.getActiveDisps = function (req, res) {
     res.send("erro");
     return;
   }
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id))
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
             .table(table)
             .get(req.params.sensor)("host")
             .do(function (row) {
@@ -250,14 +249,14 @@ module.exports.getActiveDisps = function (req, res) {
                 return a("data").ge(r.now().toEpochTime().sub(60));
               }).withFields("macAddress", "nameVendor", "Power", "data");
             }).coerceTo("ARRAY")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -275,8 +274,8 @@ module.exports.getAllOrderbyVendor = function (req, res) {
   var min = req.params.min;//new Date(req.params.min).toJSON();
   var max = req.params.max;//new Date(req.params.max).toJSON();
   var table = ((req.params.table).toString().toUpperCase() == "AP") ? "DispAp" : "DispMoveis";
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
       return row("disp")("values").contains(function (a) {
         return a("Last_time").contains(function (b) {
           return b.ge(r.ISO8601(min).toEpochTime()).and(b.le(r.ISO8601(max).toEpochTime()));
@@ -286,16 +285,15 @@ module.exports.getAllOrderbyVendor = function (req, res) {
       return a("disp").contains(function (b) {
         return b("name").eq(req.params.sensor);
       });
-    })
-            .coerceTo("ARRAY")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
+    }).coerceTo("ARRAY")
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -306,22 +304,43 @@ module.exports.getAllOrderbyVendor = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getDispMoveisbySensor = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id)).table("DispMoveis").filter(function (row) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id)).table("DispMoveis").filter(function (row) {
       return row("disp")("name").contains(function (a) {
         return a.match("^" + req.params.sensor + "$");
       });
-    })
-            .group("nameVendor")
+    }).group("nameVendor")
             .coerceTo("ARRAY")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
+};
+
+/**
+ * Decolve a planta do local onde  o sensor de encontra
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getPlantSite = function (req, res) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
+            .table("plantSite")
+            .get(req.params.sensor)("img")
+            .run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.json(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -336,18 +355,18 @@ module.exports.getDispMoveisbySensor = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getAllAP = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id))
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
             .table("AntAp")("host")
             .group("macAddress", "ESSID")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -358,8 +377,8 @@ module.exports.getAllAP = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getDispConnectedtoAp = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id))
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
             .table("DispMoveis")
             .filter(function (row) {
               return row("disp")("values").contains(function (a) {
@@ -368,14 +387,14 @@ module.exports.getDispConnectedtoAp = function (req, res) {
                 });
               });
             }).coerceTo("array")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send([result, req.params.mac]);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send([result, req.params.mac]);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -386,8 +405,8 @@ module.exports.getDispConnectedtoAp = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getApFirstTime = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id))
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
             .table("DispAp")
             .get(req.params.mac)("disp")("First_time")
             .min().do(function (result) {
@@ -395,14 +414,14 @@ module.exports.getApFirstTime = function (req, res) {
                 .table("DispAp")
                 .get(req.params.mac)("disp")("values")
                 .nth(0)("Last_time").max()];
-    }).run(conn, function (err, result) {
-      if (err) {
-        console.log("ERROR: %s:%s", err.name, err.msg);
-      } else {
-        res.send(result);
-      }
-      conn.close();
-    });
+    }).run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -413,19 +432,19 @@ module.exports.getApFirstTime = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getDispMacbyVendor = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id))
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
             .table("DispMoveis")
             .group("nameVendor")("macAddress")
             .coerceTo("ARRAY")
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(result);
-              }
+            .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -436,18 +455,18 @@ module.exports.getDispMacbyVendor = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getDispbyMac = function (req, res) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(self.getDataBase(req.params.id))
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
             .table("DispMoveis")
             .get(req.params.mac)
-            .run(conn, function (err, result) {
-              if (err) {
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                res.send(JSON.stringify(result));
-              }
+    .run(conn)
+            .finally(function () {
               conn.close();
             });
+  }).then(function (result) {
+                res.send(JSON.stringify(result));
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 

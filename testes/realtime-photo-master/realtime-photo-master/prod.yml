@@ -1,0 +1,8 @@
+server:
+  build: .
+  ports:
+   - "10200:80"
+  environment:
+    NODE_ENV: production
+    PORT: 80
+  command: npm start

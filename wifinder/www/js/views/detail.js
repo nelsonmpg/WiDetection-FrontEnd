@@ -1,9 +1,12 @@
+/* global moment */
+
 window.DetailView = Backbone.View.extend({
   sensor: undefined,
   events: {
     "click a.selectSensor": "selectSensor",
     "change #SensorSelect": "setsensor",
-    "click .APjump": "openDetailAp"
+    "click .APjump": "openDetailAp",
+    "click .select-source": "selectSource"
   },
   initialize: function () {
     //this.render();
@@ -51,7 +54,7 @@ window.DetailView = Backbone.View.extend({
         return value + '%';
       },
       change: function (value) {
-        console.log("change : " + value);
+//        console.log("change : " + value);
       },
       draw: function () {
         // "tron" case
@@ -91,7 +94,7 @@ window.DetailView = Backbone.View.extend({
         }
       }
     });
-    
+
     //Initialize Select2 Elements
     $(".select2").select2();
     $.AdminLTE.boxWidget.activate();
@@ -106,8 +109,14 @@ window.DetailView = Backbone.View.extend({
             "/getSensors/" + window.profile.id,
             function (data) {
               for (var i in data) {
-                $("#SensorSelect").append("<option data-log='" + data[i].longitude + "' data-lat='" + data[i].latitude + "' data-city='" + data[i].local + "' data-date='" + data[i].data + "' >" + data[i].nomeAntena + "</option>");
-              }                        
+                $("#SensorSelect").append("<option data-log='" + data[i].longitude +
+                        "' data-lat='" + data[i].latitude +
+                        "' data-city='" + data[i].local +
+                        "' data-date='" + data[i].data +
+                        "' data-posx='" + data[i].posX +
+                        "' data-posy='" + data[i].posY +
+                        "' >" + data[i].nomeAntena + "</option>");
+              }
               $("#SensorSelectt > option:first").attr("selected", "selected");
               $("#SensorSelect").trigger('change');
               self.setsensor();
@@ -119,6 +128,7 @@ window.DetailView = Backbone.View.extend({
     );
   },
   setsensor: function () {
+    var self = this;
     $('#chartCpu').val(0).trigger('change');
     $('#chartMem').val(0).trigger('change');
     $('#chartDisc').val(0).trigger('change');
@@ -132,44 +142,50 @@ window.DetailView = Backbone.View.extend({
     addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
         value: 1
       }]);
-    $("#tblSensor").html('<tr><th style="width:50%">Latitude:</th><td>' + $('#SensorSelect').find(":selected").data("lat") + '</td></tr>' +
-            '<tr><th style="width:50%">Longitude:</th><td>' + $('#SensorSelect').find(":selected").data("log") + '</td></tr>' +
-            '<tr><th style="width:50%">Last Active:</th><td>' + moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
-//          this.tableload();
-  },
-  tableload: function () {
-//          modem("GET",
-//              "/getDispMoveisbySensor/" + window.profile.id + "/" + $('#SensorSelect').find(":selected").text(),
-//              function (data) {
-//                  var dataSet = [];
-//                  for (var i in data) {
-//                      for (var a in data[i].reduction) {
-//                          dataSet.push([data[i].reduction[a].macAddress, data[i].group,
-//                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-//                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
-//                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID == "(notassociated)") ? "" : data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID
-//                          ]);
-//                      }
-//                  }
-//                  if (data.length == 0) {
-//                      $('#tblDetailsDevices').append('<div class="overlay text-center" style="margin-top: 40%;"><h1><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
-//                  } else {
-//                      $('#tblDetailsDevices').DataTable({
-//                          "data": dataSet,
-//                          "paging": true,
-//                          "lengthChange": false,
-//                          "searching": false,
-//                          "ordering": true,
-//                          "info": true,
-//                          "autoWidth": true
-//                      });
-//                  }
-//              },
-//              function (xhr, ajaxOptions, thrownError) {
-//                  var json = JSON.parse(xhr.responseText);
-//                  error_launch(json.message);
-//              }, {}
-//          );
+    $("#tblSensor").html(
+            '<tr><th style="width:50%">Latitude:</th><td>' +
+            $('#SensorSelect').find(":selected").data("lat") +
+            '</td></tr>' +
+            '<tr><th style="width:50%">Longitude:</th><td>' +
+            $('#SensorSelect').find(":selected").data("log") +
+            '</td></tr>' +
+            '<tr><th style="width:50%">PosX:</th><td>' +
+            $('#SensorSelect').find(":selected").data("posx") +
+            '</td></tr>' +
+            '<tr><th style="width:50%">PosY:</th><td>' +
+            $('#SensorSelect').find(":selected").data("posy") +
+            '</td></tr>' +
+            '<tr><th style="width:50%">Last Active:</th><td>' +
+            moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
+
+    modem("GET",
+            "/getPlantSite/" + window.profile.id + "/" + self.sensor,
+            function (data) {
+              var img = atob(data);
+              if (img != "none") {
+                $('#plantlocalsensor').css({
+                  'border': "2px solid black",
+                  "-webkit-box-shadow": "none",
+                  "-moz-box-shadow": "none",
+                  "box-shadow": "none",
+                  "background-image": img,
+                  "background-size": "100% 100%",
+                  "background-repeat": "no-repeat",
+                  "background-position": "center center"
+                });
+                $("#imgsensor").css({
+                  display: "block",
+                  left: $('#SensorSelect').find(":selected").data("posx"),
+                  top: $('#SensorSelect').find(":selected").data("posy")
+                });
+              }
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
+    );
+
   },
   changedate: function (ev, picker) {
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
@@ -181,9 +197,9 @@ window.DetailView = Backbone.View.extend({
       modem("GET",
               "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
               function (data) {
-                var values = [], dataSet = [];
+                var dataSet = [];
+
                 for (var i in data) {
-                  values.push({y: data[i].reduction.length, label: data[i].group});
                   for (var a in data[i].reduction) {
                     dataSet.push([data[i].group,
                       "<a href='#' class='APjump' data-mac='" + data[i].reduction[a].ESSID + "'>" + data[i].reduction[a].ESSID + "</a>",
@@ -200,6 +216,9 @@ window.DetailView = Backbone.View.extend({
                 if (data.length == 0) {
                   self.toggleContentors(false);
                 } else {
+                  var chartap = new ArrayToGraph(data, "chartAccessPoint", "column");
+                  chartap.createArrayToGraphOneBar();
+
                   self.toggleContentors(true);
                   $('#tblDetailsAp').DataTable({
                     "data": dataSet,
@@ -211,38 +230,6 @@ window.DetailView = Backbone.View.extend({
                     "autoWidth": true,
                     "destroy": true
                   });
-                  var chart = new CanvasJS.Chart("chartAccessPoint",
-                          {
-                            animationEnabled: true,
-                            axisX: {
-                              labelMaxWidth: 100,
-                              labelWrap: false,
-                              interval: 1,
-                              labelAngle: -70,
-                              labelFontSize: 12,
-                              labelFontFamily: "verdana",
-                              labelFontColor: "black"
-                            },
-                            axisY: {
-                              gridThickness: 1,
-                              interval: 1,
-                              labelFontSize: 12,
-                              labelFontFamily: "verdana",
-                              labelFontColor: "black"
-                            },
-                            legend: {
-                              verticalAlign: "bottom",
-                              horizontalAlign: "center"
-                            },
-                            theme: "theme2",
-                            data: [
-                              {
-                                type: "column",
-                                dataPoints: values
-                              }
-                            ]
-                          });
-                  chart.render();
                 }
               },
               function (xhr, ajaxOptions, thrownError) {
@@ -268,6 +255,10 @@ window.DetailView = Backbone.View.extend({
                 if (data.length == 0) {
                   self.toggleContentors(false);
                 } else {
+
+                  var chartdisp = new ArrayToGraph(data, "chartDispMoveis", "column");
+                  chartdisp.createArrayToGraphOneBar();
+
                   self.toggleContentors(true);
                   $('#tblDetailsDevices').DataTable({
                     "data": dataSet,
@@ -279,38 +270,6 @@ window.DetailView = Backbone.View.extend({
                     "autoWidth": true,
                     "destroy": true
                   });
-                  var chart = new CanvasJS.Chart("chartDispMoveis",
-                          {
-                            animationEnabled: true,
-                            axisX: {
-                              labelMaxWidth: 100,
-                              labelWrap: false,
-                              interval: 1,
-                              labelAngle: -70,
-                              labelFontSize: 12,
-                              labelFontFamily: "verdana",
-                              labelFontColor: "black"
-                            },
-                            axisY: {
-                              gridThickness: 1,
-                              interval: 1,
-                              labelFontSize: 12,
-                              labelFontFamily: "verdana",
-                              labelFontColor: "black"
-                            },
-                            legend: {
-                              verticalAlign: "bottom",
-                              horizontalAlign: "center"
-                            },
-                            theme: "theme2",
-                            data: [
-                              {
-                                type: "column",
-                                dataPoints: values
-                              }
-                            ]
-                          });
-                  chart.render();
                 }
               },
               function (xhr, ajaxOptions, thrownError) {
@@ -335,16 +294,18 @@ window.DetailView = Backbone.View.extend({
       $("#div-charts-details").hide();
     }
   },
-  render: function () {
-    $(this.el).html(this.template());
-    return this;
-  },
   updateDataSensor: function (data) {
     if (data.nomeAntena == this.sensor) {
       $('#chartCpu').val(data.cpu).trigger('change');
       $('#chartMem').val((data.memory.used / data.memory.total) * 100).trigger('change');
       $('#chartDisc').val(data.disc.use.toString().replace(/%/g, "")).trigger('change');
     }
+  },
+  selectSource: function (e) {
+    var self = this;
+    e.preventDefault();
+    $(".tab-pane").removeClass("active");
+    $("." + $(e.currentTarget).children().attr("href")).addClass("active");
   },
   render: function () {
     $(this.el).html(this.template());

@@ -1,8 +1,4 @@
-// A fork of the [node.js chat app](https://github.com/eiriksm/chat-test-2k) 
-// by [@orkj](https://twitter.com/orkj) using socket.io, rethinkdb, passport and bcrypt on an express app.
-//
-// See the [GitHub README](https://github.com/rethinkdb/rethinkdb-example-nodejs-chat/blob/master/README.md)
-// for details of the complete stack, installation, and running the app.
+/* global module */
 
 var r = require('rethinkdb');
 var connectdb = require('./ConnectDb.js');
@@ -19,10 +15,8 @@ var dbConfig = {
 var self = this;
 
 /**
- * Connect to RethinkDB instance and perform a basic database setup:
- *
- * - create the `RDB_DB` database (defaults to `chat`)
- * - create tables `messages`, `cache`, `users` in this database
+ * Verfica se existe a base de dados e as tabelas se não cronstroi-as
+ * @returns {undefined}
  */
 module.exports.setup = function () {
   r.connect(self.dbData).then(function (connection) {
@@ -47,6 +41,13 @@ module.exports.setup = function () {
     });
   });
 };
+
+/**
+ * Consultsa a base dedados se o utilizador existe e se e o correto
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.loginUser = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db("user").table("users")
@@ -65,6 +66,12 @@ module.exports.loginUser = function (req, res) {
   });
 };
 
+/**
+ * Regista o novo utili<zador
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.registeruser = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db("user").table("users").filter({"email": req.body.email}).count().do(function (valor) {
