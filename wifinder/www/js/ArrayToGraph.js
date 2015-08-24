@@ -13,6 +13,7 @@ var ArrayToGraph = function (array, local, type) {
   this.dataTograph = [];
   this.click = null;
   this.anguloX = 0;
+  this.theme = "theme3";
 };
 
 ArrayToGraph.prototype.changeAnguloX = function (angulo) {
@@ -40,19 +41,61 @@ ArrayToGraph.prototype.createArrayToGraphLine = function () {
       dataPoints: datapoint
     });
   }
-  this.createAndShowGraphLine(this.dataTograph);
+  this.createAndShowGraphLine();
+};
+
+ArrayToGraph.prototype.createArrayToGraphSimpleLine = function () {
+  var self = this;
+  var datapoint = [];
+  for (var i in this.array) {
+    datapoint.push({
+      x: new Date(this.array[i].x),
+      y: this.array[i].y
+    });
+  }
+  self.dataTograph.push({
+    type: this.type,
+    lineThickness: 3,
+    dataPoints: datapoint
+  });
+  this.createAndShowGraphSimpleLine();
+};
+
+ArrayToGraph.prototype.updateGraphSimpleLine = function (data) {
+  var self = this;
+  self.chart.options.data[0].dataPoints.push({
+    x: new Date(data.x),
+    y: data.y * 1
+  });
+  self.chart.options.data[0].dataPoints.shift();
+  self.chart.render();
 };
 
 ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
   var datapoint = [];
   for (var i in this.array) {
-    datapoint.push({y: this.array[i].reduction.length, label: this.array[i].group});
+    datapoint.push({
+      y: this.array[i].reduction.length,
+      label: (this.array[i].group == "") ? "Unknown" : this.array[i].group
+    });
   }
   this.dataTograph.push({
     type: this.type,
     dataPoints: datapoint
   });
-  this.createAndShowGraphOneBar(this.dataTograph);
+  this.createAndShowGraphOneBar();
+};
+
+ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
+  var datapoint = [];
+  for (var i in this.array) {
+    datapoint.push({label: i, y: this.array[i].length * 1});
+  }
+  this.dataTograph.push({
+    type: this.type,
+    dataPoints: datapoint
+  });
+  this.createAndShowGraphOneBar();
 };
 
 ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
@@ -84,12 +127,10 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
       showInLegend: true,
       dataPoints: pointsAp
     }];
-  this.createAndShowGraphTwoBars(this.dataTograph);
+  this.createAndShowGraphTwoBars();
 };
 
 ArrayToGraph.prototype.updateNumDisp = function (data) {
-  console.log("Disp");
-  console.log(data);
   for (var j in this.dataTograph[0].dataPoints) {
     for (var i in data.new_val.disp) {
       if (data.new_val.disp[i].name == this.dataTograph[0].dataPoints[j].label) {
@@ -101,8 +142,6 @@ ArrayToGraph.prototype.updateNumDisp = function (data) {
 };
 
 ArrayToGraph.prototype.updateNumAp = function (data) {
-  console.log("Ap");
-  console.log(data);
   for (var j in this.dataTograph[0].dataPoints) {
     for (var i in data.new_val.disp) {
       if (data.new_val.disp[i].name == this.dataTograph[1].dataPoints[j].label) {
@@ -114,7 +153,6 @@ ArrayToGraph.prototype.updateNumAp = function (data) {
 };
 
 ArrayToGraph.prototype.updateSensor = function (data) {
-  console.log(this.dataTograph);
   this.dataTograph[0].dataPoints.push({
     label: data.new_val.nomeAntena,
     y: 0
@@ -128,7 +166,7 @@ ArrayToGraph.prototype.updateSensor = function (data) {
   this.chart.render();
 };
 
-ArrayToGraph.prototype.createAndShowGraphTwoBars = function (dataVelues) {
+ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
   var self = this;
   if (this.array.length > 4) {
     this.anguloX = -30;
@@ -136,7 +174,7 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function (dataVelues) {
   this.chart = new CanvasJS.Chart(this.local, {
     zoomEnabled: true,
     exportEnabled: true,
-    theme: "theme2",
+    theme: self.theme,
     animationEnabled: true,
     toolTip: {
       shared: true
@@ -159,7 +197,7 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function (dataVelues) {
       labelFontColor: "black",
       titleFontColor: "black"
     },
-    data: dataVelues,
+    data: self.dataTograph,
     legend: {
       cursor: "pointer", itemclick: function (e) {
         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
@@ -175,13 +213,13 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function (dataVelues) {
   this.chart.render();
 };
 
-ArrayToGraph.prototype.createAndShowGraphLine = function (dataValues) {
+ArrayToGraph.prototype.createAndShowGraphLine = function () {
   var self = this;
   this.chart = new CanvasJS.Chart(this.local, {
     zoomEnabled: true,
     exportEnabled: true,
     animationEnabled: true,
-    theme: "theme3",
+    theme: self.theme,
     legend: {
       verticalAlign: "center",
       horizontalAlign: "right",
@@ -207,19 +245,24 @@ ArrayToGraph.prototype.createAndShowGraphLine = function (dataValues) {
       gridColor: "Silver",
       tickColor: "silver"
     },
-    data: dataValues
+    data: self.dataTograph
   });
   self.chart.render();
 };
 
-ArrayToGraph.prototype.createAndShowGraphOneBar = function (dataValues) {
-  var self = this;
+ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
+  var self = this;  
+  if (this.array.length > 4) {
+    this.anguloX = -60;
+  }
   this.chart = new CanvasJS.Chart(this.local, {
     animationEnabled: true,
-    theme: "theme3",
+    theme: self.theme,
     axisX: {
+      labelMaxWidth: 150,
+      labelWrap: false,
       interval: 1,
-      labelAngle: -70,
+      labelAngle: this.anguloX,
       labelFontSize: 12,
       labelFontFamily: "verdana",
       labelFontColor: "black"
@@ -235,7 +278,31 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function (dataValues) {
       verticalAlign: "bottom",
       horizontalAlign: "center"
     },
-    data: dataValues
+    data: self.dataTograph
   });
   this.chart.render();
+};
+
+ArrayToGraph.prototype.createAndShowGraphSimpleLine = function () {
+  var self = this;
+  self.chart = new CanvasJS.Chart(self.local, {
+    theme: self.theme,
+    animationEnabled: true,
+    axisX: {
+      valueFormatString: "HH:mm",
+      labelFontSize: 12,
+      labelFontFamily: "verdana",
+      labelFontColor: "black"
+    },
+    axisY: {
+      includeZero: false,
+      gridThickness: 1,
+      interval: 1,
+      labelFontSize: 12,
+      labelFontFamily: "verdana",
+      labelFontColor: "black"
+    },
+    data: self.dataTograph
+  });
+  self.chart.render();
 };

@@ -142,7 +142,7 @@ window.DetailView = Backbone.View.extend({
     addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
         value: 1
       }]);
-    
+
     $("#tblSensor").html(
             '<tr><th style="width:50%">Latitude:</th><td>' +
             $('#SensorSelect').find(":selected").data("lat") +
@@ -193,7 +193,7 @@ window.DetailView = Backbone.View.extend({
   loadcharts: function (min, max) {
     var self = this;
     $("#div-loading").show();
-    if (window.profile.id != undefined && self.sensor != undefined) {
+    if (window.profile.id != undefined && self.sensor != undefined) {      
       modem("GET",
               "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
               function (data) {
