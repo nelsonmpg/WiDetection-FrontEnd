@@ -25,22 +25,22 @@ window.DetailAPView = Backbone.View.extend({
     carregarSelect: function () {
         var self = this;
         modem("GET",
-                "/getAllAP/" + window.profile.id,
-                function (data) {
-                    var values = [];
-                    for (var ssid in data[0].group[0]) {
-                        values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
-                    }
-                    self.allap = values;
-                    for (var i in values) {
-                        $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
-                    }
-                    $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
-                },
-                function (xhr, ajaxOptions, thrownError) {
-                    var json = JSON.parse(xhr.responseText);
-                    error_launch(json.message);
-                }, {}
+            "/getAllAP/" + window.profile.id,
+            function (data) {
+                var values = [];
+                for (var ssid in data[0].group[0]) {
+                    values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
+                }
+                self.allap = values;
+                for (var i in values) {
+                    $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
+                }
+                $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
+            },
+            function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+            }, {}
         );
     },
     getDisps: function (mac) {
@@ -78,14 +78,14 @@ window.DetailAPView = Backbone.View.extend({
 
 
             modem("GET",
-                    "/getDispConnectedtoAp/" + window.profile.id + "/" + mac,
-                    function (data) {
-                        self.network(data[0]);
-                    },
-                    function (xhr, ajaxOptions, thrownError) {
-                        var json = JSON.parse(xhr.responseText);
-                        error_launch(json.message);
-                    }, {}
+                "/getDispConnectedtoAp/" + window.profile.id + "/" + mac,
+                function (data) {
+                    self.network(data[0]);
+                },
+                function (xhr, ajaxOptions, thrownError) {
+                    var json = JSON.parse(xhr.responseText);
+                    error_launch(json.message);
+                }, {}
             );
         }
     },
@@ -153,26 +153,46 @@ window.DetailAPView = Backbone.View.extend({
             }
 
             modem("GET",
-                    "/getDispConnectedtoAp/" + window.profile.id + "/" + macs[a].bssid,
-                    function (data) {
-                        for (var i in data[0]) {
-                            if (devices.indexOf((data[0][i].macAddress).trim()) < 0) {
-                                devices.push((data[0][i].macAddress).trim());
-                                xnodes.push({id: devices.indexOf((data[0][i].macAddress).trim()) + 1, label: data[0][i].nameVendor + "\n" + data[0][i].macAddress, group: "device"});
-                            }
-                            if (_.where(xedges, {from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1}) == 0) {
-                                xedges.push({from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1});
-                            }
+                "/getDispConnectedtoAp/" + window.profile.id + "/" + macs[a].bssid,
+                function (data) {
+                    for (var i in data[0]) {
+                        if (devices.indexOf((data[0][i].macAddress).trim()) < 0) {
+                            devices.push((data[0][i].macAddress).trim());
+                            xnodes.push({id: devices.indexOf((data[0][i].macAddress).trim()) + 1, label: data[0][i].nameVendor + "\n" + data[0][i].macAddress, group: "device"});
                         }
-                        if (data[1] == macs[a].bssid) { //se for o ultimo ap
-                            self.fazergrafico(xedges, xnodes);
+                        if (_.where(xedges, {from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1}) == 0) {
+                            xedges.push({from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1});
                         }
+                    }
+                    if (data[1] == macs[a].bssid) { //se for o ultimo ap
 
-                    },
-                    function (xhr, ajaxOptions, thrownError) {
-                        var json = JSON.parse(xhr.responseText);
-                        error_launch(json.message);
-                    }, {}
+                        modem("GET",
+                            "/getDispMacbyVendor/" + window.profile.id,
+                            function (data) {
+                                console.log(data);
+                                for (var c in data) {
+                                    for (var d in data[c].reduction) {
+                                        if (devices.indexOf((data[c].reduction[d]).trim()) < 0) {
+                                            devices.push((data[c].reduction[d]).trim());
+                                            xnodes.push({id: devices.indexOf((data[c].reduction[d]).trim()) + 1, label: data[c].group + "\n" + data[c].reduction[d], group: "device"});
+                                        }
+                                    }
+                                }
+
+                                self.fazergrafico(xedges, xnodes);
+                            },
+                            function (xhr, ajaxOptions, thrownError) {
+                                var json = JSON.parse(xhr.responseText);
+                                error_launch(json.message);
+                            }, {}
+                        );
+                    }
+
+                },
+                function (xhr, ajaxOptions, thrownError) {
+                    var json = JSON.parse(xhr.responseText);
+                    error_launch(json.message);
+                }, {}
             );
         }
 
@@ -228,48 +248,48 @@ window.DetailAPView = Backbone.View.extend({
     ApHourChart: function (mac) {
         self = this;
         modem("GET",
-                "/getApFirstTime/" + window.profile.id + "/" + mac,
-                function (data) {
-                    var first = moment(data[0] * 1000);
-                    var last = moment(data[1] * 1000);
-                    self.makeChart(first, last, mac);
-                },
-                function (xhr, ajaxOptions, thrownError) {
-                    var json = JSON.parse(xhr.responseText);
-                    error_launch(json.message);
-                }, {}
+            "/getApFirstTime/" + window.profile.id + "/" + mac,
+            function (data) {
+                var first = moment(data[0] * 1000);
+                var last = moment(data[1] * 1000);
+                self.makeChart(first, last, mac);
+            },
+            function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+            }, {}
         );
     },
     makeChart: function (first, last, mac) {
         modem("GET",
-                "/getDispConnectedtoAp/" + window.profile.id + "/" + mac,
-                function (data) {
-                    var count, tmp = [], yes = false;
-                    while (first < last) {
-                        count = 0, yes = false;
-                        for (var a in data) {
-                            for (var b in data[a].disp) {
-                                for (var c in data[a].disp[b].values) {
-                                    if (first.startOf("hour") <= moment(data[a].disp[b].values[c].Last_time * 1000) <= first.endOf("hour")) {
-                                        count++;
-                                        yes = true;
-                                        break;
-                                    }
-                                }
-                                if (yes) {
+            "/getDispConnectedtoAp/" + window.profile.id + "/" + mac,
+            function (data) {
+                var count, tmp = [], yes = false;
+                while (first < last) {
+                    count = 0, yes = false;
+                    for (var a in data) {
+                        for (var b in data[a].disp) {
+                            for (var c in data[a].disp[b].values) {
+                                if (first.startOf("hour") <= moment(data[a].disp[b].values[c].Last_time * 1000) <= first.endOf("hour")) {
+                                    count++;
+                                    yes = true;
                                     break;
                                 }
                             }
+                            if (yes) {
+                                break;
+                            }
                         }
-                        tmp.push({hour: first.startOf("hour"), value: count});
-                        first.add(1, "h");
                     }
-                    console.log(tmp);
-                },
-                function (xhr, ajaxOptions, thrownError) {
-                    var json = JSON.parse(xhr.responseText);
-                    error_launch(json.message);
-                }, {}
+                    tmp.push({hour: first.startOf("hour"), value: count});
+                    first.add(1, "h");
+                }
+                console.log(tmp);
+            },
+            function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+            }, {}
         );
     },
     render: function () {

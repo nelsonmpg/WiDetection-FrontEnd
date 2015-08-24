@@ -142,6 +142,7 @@ window.DetailView = Backbone.View.extend({
     addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
         value: 1
       }]);
+    
     $("#tblSensor").html(
             '<tr><th style="width:50%">Latitude:</th><td>' +
             $('#SensorSelect').find(":selected").data("lat") +
@@ -185,7 +186,6 @@ window.DetailView = Backbone.View.extend({
               error_launch(json.message);
             }, {}
     );
-
   },
   changedate: function (ev, picker) {
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
