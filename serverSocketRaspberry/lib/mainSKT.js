@@ -7,10 +7,18 @@ var r = require('rethinkdb');
 var fs = require('fs');
 var ini = require('ini');
 var crypto = require('crypto');
-var url = "http://web.stanford.edu/dept/its/projects/desktop/snsr/nmap-mac-prefixes.txt";
+//var url = "http://web.stanford.edu/dept/its/projects/desktop/snsr/nmap-mac-prefixes.txt";
+//var url = "http://sid.ethz.ch/debian/bugs/oui/arp-scan-1.6/ieee-oui.txt";
+//var url = "http://uci.narod.ru/mac.html";
+var url = "https://code.wireshark.org/review/gitweb?p=wireshark.git;a=blob_plain;f=manuf";
 
+/**
+ * Servidor que envia as informacoes para a base de dados
+ * @returns {MainSKT}
+ */
 var MainSKT = function () {
 
+// Estrutura das varias tabelas do site
   this.dbConfig = {
     host: '',
     port: 0,
@@ -22,24 +30,34 @@ var MainSKT = function () {
       "AntDisp": "nomeAntena",
       "AntAp": "nomeAntena",
       "ActiveAnt": "nomeAntena",
-      "tblPrefix": "prefix"
+      "tblPrefix": "prefix",
+      "plantSite": "nomeAntena"
     }
   };
 
+// Configuracoa de coneccao com a base de dados 
   this.dbData = {
     host: 0,
     port: 0,
     authKey: ''
   };
 
+// Configuracoes do sensor
   this.sensorCfg = {
     name: "",
     loc: "",
     lati: 0,
-    long: 0
+    long: 0,
+    posx: 0,
+    posy: 0,
+    plant: ""
   };
 };
 
+/**
+ * Carrega as configuracoes do ficheiro INI para as variaveis
+ * @returns {undefined}
+ */
 MainSKT.prototype.carregarConfig = function () {
   this.config = ini.parse(fs.readFileSync('./ConfigSKT.ini', 'utf-8'));
   this.dbConfig.host = this.config.database.host;
@@ -59,32 +77,17 @@ MainSKT.prototype.carregarConfig = function () {
     lati: this.config.localsensor.latitude,
     long: this.config.localsensor.longitude,
     posx: this.config.localsensor.posx,
-    posy: this.config.localsensor.posy
+    posy: this.config.localsensor.posy,
+    plant: this.config.localsensor.plant
   };
 
-  var urlLoc = "https://maps.googleapis.com/maps/api/geocode/json?address=" + this.sensorCfg.loc + "&key=AIzaSyAy2HwVO_Gh9f9JLrtdON77gNQWrn4TQ9U";
-
-  var self = this;
-
-  if (this.config.localsensor.checkposition) {
-    self.getLoc(urlLoc, function (data) {
-      var location = JSON.parse(data);
-      if (location.status == "OK") {
-        self.sensorCfg.loc = location.results[0].formatted_address;
-        self.sensorCfg.lati = location.results[0].geometry.location.lat;
-        self.sensorCfg.long = location.results[0].geometry.location.lng;
-//        console.log(self.loc, self.lati, self.long);
-      } else {
-        self.sensorCfg.loc = self.sensorCfg.loc.replace(/\+/g, ' ');
-      }
-      self.startDb();
-    });
-  } else {
-    this.sensorCfg.loc = this.sensorCfg.loc.replace(/\+/g, ' ');
-    this.startDb();
-  }
+  this.startDb();
 };
 
+/**
+ * Verifica se o site e a estrutura das tabelas existe se nao controi-as
+ * @returns {undefined}
+ */
 MainSKT.prototype.startDb = function () {
   var self = this;
   r.connect(self.dbData, function (err, connection) {
@@ -113,6 +116,11 @@ MainSKT.prototype.startDb = function () {
   });
 };
 
+/**
+ * Verifica se as tabelas e base de dados estao prontas para receber dados
+ * Enaauanto nao estiverem disponiveis espera cerca de 1/2 segundo
+ * @returns {undefined}
+ */
 MainSKT.prototype.waitDbAndTableOk = function () {
   var self = this;
   r.connect(self.dbData).then(function (conn) {
@@ -134,9 +142,14 @@ MainSKT.prototype.waitDbAndTableOk = function () {
   });
 };
 
+/**
+ * Carrega os preficos dos fabricantes na base de dados
+ * @returns {undefined}
+ */
 MainSKT.prototype.carregarPrefixos = function () {
   var self = this;
 
+// Verifica se a tabela dos prefixos ja possuem dados
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db).table("tblPrefix").coerceTo("array").count().run(conn)
             .finally(function () {
@@ -145,29 +158,61 @@ MainSKT.prototype.carregarPrefixos = function () {
   }).then(function (resul) {
     // teste se a tabela dos prefixos esta vazia
     if (!(resul > 0) || typeof resul == "undefined") {
+      // fas o download da pagina com os prefixos e constroi o array de objectos 
+      // para inserir na base de dados
       self.download(url, function (data) {
         if (data) {
           var lines = data.split("\n");
           var docsInsert = [];
           for (var i in lines) {
             var line = lines[i].trim();
-            if (line[0] != "#" && line.length > 5) {
-              var prefix = line.substring(0, 6);
-              var vendor = line.substring(7, line.length);
-              var keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
-              docsInsert.push({
-                "prefix": keyPrefix,
-                "vendor": vendor
-              });
+            if (line[0] != "#" && line.length > 5 && self.numberIsHex(line[0])) {
+              var prefix = "";
+              var vendor = "";
+              var keyPrefix = "";
+              var cardinal = line.split("#");
+              var a = line.replace(/\s+/g, " ").split(" ");
+              var p = a[0];
+              if (p[2] == ":") {
+                if (p.length < 9) {
+                  vendor = a[1];
+                  keyPrefix = p;
+                  docsInsert.push({
+                    "prefix": keyPrefix,
+                    "vendor": (typeof cardinal[1] == "undefined") ? vendor : cardinal[1].trim()
+                  });
+                }
+              } else if (p[2] == "-") {
+                var b = p.split("/");
+                if (b[0].length < 9) {
+                  vendor = a[1];
+                  keyPrefix = b[0].replace(/-/g, ":");
+                  docsInsert.push({
+                    "prefix": keyPrefix,
+                    "vendor": (typeof cardinal[1] == "undefined") ? vendor : cardinal[1].trim()
+                  });
+                }
+              } else {
+                if (line.trim() != "") {
+                  prefix = line.substring(0, 6);
+                  vendor = line.substring(7, line.length);
+                  keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
+                  docsInsert.push({
+                    "prefix": keyPrefix,
+                    "vendor": vendor
+                  });
+                }
+              }
             }
           }
+          // Insere de uma vez todos os prefixos na base de dados
           r.connect(self.dbData).then(function (conn) {
             return r.db(self.dbConfig.db).table("tblPrefix").insert(docsInsert).run(conn)
                     .finally(function () {
                       conn.close();
                     });
           }).then(function (output) {
-            console.log("Query output:", output);
+//            console.log("Query output:", output);
             self.startServers();
           }).error(function (err) {
             console.log("Failed:", err);
@@ -184,21 +229,30 @@ MainSKT.prototype.carregarPrefixos = function () {
   });
 };
 
+/**
+ * Inicia o servidor para inserir os dados da monitorizacao da interfaces monitor
+ * @returns {undefined}
+ */
 MainSKT.prototype.startServers = function () {
   var self = this;
 
   var args = {
-    port: self.config.airmon_cfg.tag2port,
+    port: "",
     configdb: self.dbConfig,
     sensorcfg: self.sensorCfg
   };
-
+// inicia  o script do servidor
   var child = cp.fork('./lib/socket');
   child.send(args);
 
   console.log("****************** Server SoKeT Start ******************");
 };
 
+/**
+ * Normaliza uma string
+ * @param {type} str
+ * @returns {unresolved}
+ */
 MainSKT.prototype.normalizeString = function (str) {
   var defaultDiacriticsRemovalMap = [
     {'base': 'A', 'letters': /[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g},
@@ -293,21 +347,13 @@ MainSKT.prototype.normalizeString = function (str) {
   return str;
 };
 
+/**
+ * Fazo download da pagina passada por parametro
+ * @param {type} url
+ * @param {type} callback
+ * @returns {undefined}
+ */
 MainSKT.prototype.download = function (url, callback) {
-  http.get(url, function (res) {
-    var data = "";
-    res.on('data', function (chunk) {
-      data += chunk;
-    });
-    res.on("end", function () {
-      callback(data);
-    });
-  }).on("error", function () {
-    callback(null);
-  });
-};
-
-MainSKT.prototype.getLoc = function (url, callback) {
   request(url, function (err, res, body) {
     var data = body;
     callback(data);
@@ -316,6 +362,24 @@ MainSKT.prototype.getLoc = function (url, callback) {
   });
 };
 
+/**
+ * Verifica se o carater passado por parametro e um carater hexadecimal
+ * @param {type} char
+ * @returns {Boolean}
+ */
+MainSKT.prototype.numberIsHex = function (char) {
+  var hex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']
+  var result = false;
+  for (var i in hex) {
+    if (hex[i] == char) {
+      result = true;
+      break;
+    }
+  }
+  return result;
+};
+
+// inicia  
 var mainSkt = new MainSKT();
 mainSkt.carregarConfig();
 

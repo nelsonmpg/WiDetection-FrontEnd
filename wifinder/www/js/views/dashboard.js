@@ -157,7 +157,6 @@ window.DashboardView = Backbone.View.extend({
         modem("GET",
             "/getAllTimes/" + window.profile.id,
             function (data) {
-                console.log(data);
                 var arrayToChart = [];
                 for (var i in data) {
                     console.log(data);

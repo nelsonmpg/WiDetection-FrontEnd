@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="box">
       <div  class="box-header with-border">
         <h3 class="box-title"><i class="fa fa-info-circle fa-fw"></i> Details </h3>
@@ -10,20 +10,20 @@
         </div>
       </div><!-- /.box-header -->
 
-
       <div class="box-body">
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
             <div class="form-group">
-              <div class="col-md-4">
+              <div class="row">
                 <label>Sensor</label>
                 <select class="form-control select2" id="SensorSelect">
                 </select>
               </div>
-              <div class="col-md-8">
+              <div class="row">
                 <div class="input-group">                                
                   <label>Date range:</label>
-                  <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                  <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%;">
                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
                     <span></span> <b class="caret"></b>
                   </div>
@@ -108,7 +108,7 @@
     </div><!-- /.col -->
   </div><!-- /.row -->
 
-  <div class="col-md-6">
+  <div class="col-md-8">
     <div class="box">
       <div  class="box-header with-border">
         <h3 class="box-title"><i class="fa fa-map fa-fw"></i> Geolocation </h3>
@@ -120,17 +120,31 @@
       </div><!-- /.box-header -->
       <div class="box-body">
         <div class="row">
-          <div class="col-md-12 height400">
-            <div class="chart">
-              <!-- Sales Chart Canvas -->
-              <div id="mapSensor"  class="height400">                                
-                <div class="overlay text-center">
-                  <h1><i class="fa fa-refresh fa-spin"></i> Select a sensor</h1>
+          <div class="col-md-12">
+            <div class="nav-tabs-custom">
+              <!-- Tabs within a box -->
+              <ul class="nav nav-tabs pull-right">
+                <li class="select-source"><a href="tab2" data-toggle="tab"> Planta</a></li>
+                <li class="select-source active"><a href="tab1" data-toggle="tab">Google Maps</a></li>
+              </ul>
+              <div id="posiSensor" class="tab-content no-padding">
+                <div class="tab-pane active height600 tab1" id="map-google">
+                  <div class="chart">
+                    <!-- Sales Chart Canvas -->
+                    <div id="mapSensor" class="height600">                                
+                      <div class="overlay text-center">
+                        <h1><i class="fa fa-refresh fa-spin"></i> Select a sensor</h1>
+                      </div>
+                    </div>
+                  </div><!-- /.chart-responsive -->
+                </div>
+                <div class="tab-pane height600 tab2" id="plantlocalsensor">
+                  <div id="imgsensor"></div>
                 </div>
               </div>
-            </div><!-- /.chart-responsive -->
-          </div><!-- /.col -->
-        </div><!-- /.row -->
+            </div><!-- /.nav-tabs-custom -->
+          </div>
+        </div>
       </div><!-- ./box-body -->
     </div><!-- /.box -->
 
@@ -138,33 +152,6 @@
 </div><!-- /.row -->
 
 <div class="row" id="div-charts-details" style="display: none">
-  <div class="col-md-6">
-    <div class="box">
-      <div  class="box-header with-border">
-        <h3 class="box-title"><i class="fa fa-info"></i> Access Point </h3>
-        <div class="box-tools pull-right">
-          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
-            <i class="fa fa-minus"></i>
-          </button>
-        </div>
-      </div><!-- /.box-header -->
-      <div class="box-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="chart">
-              <!-- Sales Chart Canvas -->
-              <div id="chartAccessPoint"  class="height400">
-                <div class="overlay text-center">
-                  <h1><i class="fa fa-refresh fa-spin"></i> Select a date range</h1>
-                </div>
-              </div>
-            </div><!-- /.chart-responsive -->
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- ./box-body -->
-    </div><!-- /.box -->
-  </div><!-- /.col -->
-
   <div class="col-md-6">
     <div class="box">
       <div  class="box-header with-border">
@@ -180,7 +167,34 @@
           <div class="col-md-12">
             <div class="chart">
               <!-- Sales Chart Canvas -->
-              <div id="chartDispMoveis"  class="height400">
+              <div id="chartDispMoveis"  class="height500">
+                <div class="overlay text-center">
+                  <h1><i class="fa fa-refresh fa-spin"></i> Select a date range</h1>
+                </div>
+              </div>
+            </div><!-- /.chart-responsive -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- ./box-body -->
+    </div><!-- /.box -->
+  </div><!-- /.col -->
+
+  <div class="col-md-6">
+    <div class="box">
+      <div  class="box-header with-border">
+        <h3 class="box-title"><i class="fa fa-info"></i> Access Point </h3>
+        <div class="box-tools pull-right">
+          <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
+            <i class="fa fa-minus"></i>
+          </button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="chart">
+              <!-- Sales Chart Canvas -->
+              <div id="chartAccessPoint"  class="height500">
                 <div class="overlay text-center">
                   <h1><i class="fa fa-refresh fa-spin"></i> Select a date range</h1>
                 </div>

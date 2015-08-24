@@ -47,7 +47,7 @@ window.DetailDeviceView = Backbone.View.extend({
             function (data) {
               console.log(data);
               var chart = new ArrayToGraph(data, "chartContainer", "line");
-              chart.createArrayToGraphOneBar();
+              chart.createArrayToGraphLine();
               var dataSet = [], probes = "";
               for (var a in data.Probed_ESSIDs) {
                 probes = probes + "</br>" + data.Probed_ESSIDs[a]

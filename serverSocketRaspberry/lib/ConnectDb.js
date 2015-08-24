@@ -4,6 +4,11 @@ var r = require('rethinkdb');
 
 var self = this;
 
+/**
+ * Conecta com a base de dados
+ * @param {type} callback
+ * @returns {undefined}
+ */
 module.exports.onConnect = function (callback) {
   r.connect(self.dbData, function (err, conn) {
     if (err) {

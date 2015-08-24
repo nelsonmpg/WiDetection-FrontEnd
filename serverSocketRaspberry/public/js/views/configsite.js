@@ -17,7 +17,93 @@ window.ConfigSiteView = Backbone.View.extend({
     "click #refresh-values": "refresh",
     "click .btn-modal": "checksave",
     "click #btn_restartSO": "restartso",
-    "click #btn_poweroffSO": "poweroffso"
+    "click #btn_poweroffSO": "poweroffso",
+    "click #add-plant": "addimagenplant",
+    'change #selectplant': "imagePlant",
+    'dragenter #plantlocalsensor': function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      $(e.currentTarget).css({
+        'border': '2px solid #0B85A1',
+        "-webkit-box-shadow": "5px 5px 2px #888888",
+        "-moz-box-shadow": "5px 5px 2px #888888",
+        "box-shadow": "5px 5px 2px #888888"
+      });
+    },
+    'dragleave #plantlocalsensor': function (e) {
+      $(e.currentTarget).css({
+        'border': '2px dotted #0B85A1',
+        "-webkit-box-shadow": "2px 2px 1px #888888",
+        "-moz-box-shadow": "2px 2px 1px #888888",
+        "box-shadow": "2px 2px 1px #888888"
+      });
+    },
+    'drop #plantlocalsensor': 'imagePlantDiv',
+    'dragover #plantlocalsensor': function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    },
+    "contextmenu #imgsensor, #plantlocalsensor": function (event) {
+      if ($('#sensor-posx').val() != 0 || $('#sensor-posy').val() != 0 || $(event.currentTarget).attr("id") == "plantlocalsensor") {
+        // Avoid the real one
+        event.preventDefault();
+        // Show contextmenu
+        $(".custom-menu").finish().toggle(100).
+                // In the right position (the mouse)
+                css({
+                  top: event.pageY + "px",
+                  left: event.pageX + "px"
+                });
+      }
+    },
+    "mousedown #imgsensor, #plantlocalsensor": function (e) {
+      // If the clicked element is not the menu
+      if (!$(e.target).parents(".custom-menu").length > 0) {
+        // Hide it
+        $(".custom-menu").hide(100);
+      }
+    },
+    "click .custom-menu li": function (e) {
+      // This is the triggered action name
+      switch ($(e.currentTarget).attr("data-action")) {
+        // A case for each action. Your actions here
+        case "remove":
+          //alert("first");  
+          var elem = $('#imgsensor').clone();
+          $("#addimagesensor").html("");
+          $("#addimagesensor").append(elem);
+          $('#sensor-posx').val(0);
+          $('#sensor-posy').val(0);
+          $("#imgsensor").animate({
+            top: 0,
+            left: 0
+          }).draggable({
+            containment: $('body'),
+            stop: function () {
+              var finalOffset = $(this).offset();
+              var finalxPos = (finalOffset.left - $('#posiSensor').offset().left) * 100 / $('#posiSensor').width();
+              var finalyPos = (finalOffset.top - $('#posiSensor').offset().top) * 100 / $('#posiSensor').height();
+              if (finalxPos >= 0 && finalyPos >= 0) {
+                $('#sensor-posx').val(finalxPos);
+                $('#sensor-posy').val(finalyPos);
+              }
+            },
+            revert: 'invalid'
+          });
+          break;
+        case "removeplant":
+          $('#plantlocalsensor').css({
+            'border': "none",
+            "-webkit-box-shadow": "none",
+            "-moz-box-shadow": "none",
+            "box-shadow": "none",
+            "background-image": "none"
+          });
+          break;
+      }
+      // Hide it AFTER the action was triggered
+      $(".custom-menu").hide(100);
+    }
   },
   initialize: function () {
   },
@@ -68,6 +154,27 @@ window.ConfigSiteView = Backbone.View.extend({
     self.checkmonitorstarted();
     showInfoMsg(false, '.my-modal');
     $.AdminLTE.boxWidget.activate();
+
+    $('#imgsensor').draggable({
+      containment: $('body'),
+      stop: function () {
+        var finalOffset = $(this).offset();
+        var finalxPos = (finalOffset.left - $('#posiSensor').offset().left) * 100 / $('#posiSensor').width();
+        var finalyPos = (finalOffset.top - $('#posiSensor').offset().top) * 100 / $('#posiSensor').height();
+        if (finalxPos >= 0 && finalyPos >= 0) {
+          $('#sensor-posx').val(finalxPos);
+          $('#sensor-posy').val(finalyPos);
+        }
+      },
+      revert: 'invalid'
+    });
+
+    $('#plantlocalsensor').droppable({
+      accept: '#imgsensor',
+      over: function (event, ui) {
+        $('#imgsensor').draggable('option', 'containment', $(this));
+      }
+    });
   },
   refresh: function () {
     var self = this;
@@ -90,6 +197,18 @@ window.ConfigSiteView = Backbone.View.extend({
                 $("#sensor-longitude").val(data.localsensorlongitude);
                 $("#sensor-posx").val(data.localsensorposx);
                 $("#sensor-posy").val(data.localsensorposy);
+                if (atob(data.localsensorplant) != "none") {
+                  $('#plantlocalsensor').css({
+                    'border': "2px solid black",
+                    "-webkit-box-shadow": "none",
+                    "-moz-box-shadow": "none",
+                    "box-shadow": "none",
+                    "background-image": atob(data.localsensorplant),
+                    "background-size": "100% 100%",
+                    "background-repeat": "no-repeat",
+                    "background-position": "center center"
+                  });
+                }
                 $("#myonoffswitch").attr("checked", data.autostart);
                 carregarmapa([["<h4>" + $("#sensor-name").val() + "</h4>", $("#sensor-latitude").val(), $("#sensor-longitude").val()]], $("#map-google")[0], self.selectnewposition);
                 self.validinifile = true;
@@ -196,7 +315,118 @@ window.ConfigSiteView = Backbone.View.extend({
   selectSource: function (e) {
     var self = this;
     e.preventDefault();
-    console.log($(e.currentTarget).text());
+    $(".tab-pane").removeClass("active");
+    $("." + $(e.currentTarget).children().attr("href")).addClass("active");
+    if ($(".tab1").hasClass("active")) {
+      $("#add-plant").attr("disabled", "disabled");
+      $("#imgsensor").css("display", "none");
+      $("#Check-Position, #sensor-local, #sensor-name, #sensor-latitude, #sensor-longitude").attr("disabled", false);
+      $("#sensor-posx, #sensor-posy").attr("disabled", "disabled");
+    } else {
+      $("#add-plant").attr("disabled", false);
+      $("#imgsensor").css({
+        "display": "block"
+      });
+      if ($("#plantlocalsensor").css("background-image") != "none") {
+        var xx = ($("#plantlocalsensor").width() * $("#sensor-posx").val() * 1) / 100;
+        var yy = ($("#plantlocalsensor").height() * $("#sensor-posy").val() * 1) / 100;
+        $("#imgsensor").css({
+          top: (($("#plantlocalsensor").offset().top - $("#addimagesensor").offset().top) + yy) - $("#addimagesensor").css("padding").replace("px", "") * 1 + "px",
+          left: (($("#plantlocalsensor").offset().left - $("#addimagesensor").offset().left) + xx) - $("#addimagesensor").css("padding").replace("px", "") * 1 + "px"
+        });
+      }
+      $("#sensor-posx, #sensor-posy").attr("disabled", false);
+      $("#Check-Position, #sensor-local, #sensor-name, #sensor-latitude, #sensor-longitude").attr("disabled", "disabled");
+    }
+  },
+  addimagenplant: function () {
+    $("#selectplant").click();
+  },
+  imagePlant: function (e) {
+    var file = e.originalEvent.target.files[0];
+    var reader = new FileReader(file);
+    var image = new Image();
+    var bgsize = "100% 100%";
+    reader.onload = function (evt) {
+      image.src = evt.target.result;
+      image.onload = function () {
+        var w = this.width;
+        var h = this.height;
+        if (w > h) {
+          bgsize = "100% auto";
+        } else if (w < h) {
+          bgsize = "auto 100%";
+        }
+        $('#plantlocalsensor').css({
+          'border': "2px solid black",
+          "-webkit-box-shadow": "none",
+          "-moz-box-shadow": "none",
+          "box-shadow": "none",
+          "background-image": 'url(' + thumbnail(evt.target.result, 500, 500) + ')',
+          "background-size": bgsize,
+          "background-repeat": "no-repeat",
+          "background-position": "center center"
+        });
+      }
+      ;
+    };
+    reader.readAsDataURL(file);
+  },
+  imagePlantDiv: function (e) {
+    e.preventDefault();
+    if (e.originalEvent.dataTransfer) {
+      var files = e.originalEvent.dataTransfer.files;
+      var errMessage = 0;
+      $.each(files, function (index, file) {
+        // Some error messaging
+        if (!files[index].type.match('image.*')) {
+          if (errMessage === 0) {
+            alert('Hey! Images only');
+            ++errMessage
+          }
+          else if (errMessage === 1) {
+            alert('Stop it! Images only!');
+            ++errMessage
+          }
+          else if (errMessage === 2) {
+            alert("Can't you read?! Images only!");
+            ++errMessage
+          }
+          else if (errMessage === 3) {
+            alert("Fine! Keep dropping non-images.");
+            errMessage = 0;
+          }
+          return false;
+        }
+
+        var reader = new FileReader(file);
+        var image = new Image();
+        var bgsize = "100% 100%";
+        reader.onload = function (evt) {
+          image.src = evt.target.result;
+          image.onload = function () {
+            var w = this.width;
+            var h = this.height;
+            if (w > h) {
+              bgsize = "100% auto";
+            } else if (w < h) {
+              bgsize = "auto 100%";
+            }
+            $('#plantlocalsensor').css({
+              'border': "2px solid black",
+              "-webkit-box-shadow": "none",
+              "-moz-box-shadow": "none",
+              "box-shadow": "none",
+              "background-image": 'url(' + thumbnail(evt.target.result, 500, 500) + ')',
+              "background-size": bgsize,
+              "background-repeat": "no-repeat",
+              "background-position": "center center"
+            });
+          };
+        };
+        reader.readAsDataURL(file);
+      });
+    }
   },
   selectnewposition: function (data) {
     var self = this;
@@ -226,7 +456,7 @@ window.ConfigSiteView = Backbone.View.extend({
     if (self.checkImputs()) {
       self.inputchanged = false;
       var settings = {
-        autostart : $("#myonoffswitch").is(":checked"),
+        autostart: $("#myonoffswitch").is(":checked"),
         sitename: $("#site-name").val(),
         host: $("#server-ip").val(),
         port: $("#server-port").val() * 1,
@@ -236,7 +466,8 @@ window.ConfigSiteView = Backbone.View.extend({
         latitude: $("#sensor-latitude").val() * 1,
         longitude: $("#sensor-longitude").val() * 1,
         posx: $("#sensor-posx").val() * 1,
-        posy: $("#sensor-posy").val() * 1
+        posy: $("#sensor-posy").val() * 1,
+        plant: btoa($("#plantlocalsensor").css("background-image"))
       };
       modem("POST",
               "/savesettings",

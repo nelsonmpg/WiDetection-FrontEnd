@@ -140,6 +140,11 @@ Server.prototype.start = function () {
    */
   this.app.get("/getDispMoveisbySensor/:id/:sensor", pedidos.getDispMoveisbySensor);
 
+  /**
+   * Decolve a planta do local onde  o sensor de encontra
+   */
+  this.app.get("/getPlantSite/:id/:sensor", pedidos.getPlantSite);
+  
 
 //************************************* Page DetailAP *************************************
 

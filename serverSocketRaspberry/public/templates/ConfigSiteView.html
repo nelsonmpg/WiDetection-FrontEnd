@@ -165,14 +165,22 @@
                       </tr>  
                       <tr>
                         <td><label>PosX</label></td>
-                        <td><input id="sensor-posx" class=" width100" type="text" value="0.0" readonly><br></td>
+                        <td><input id="sensor-posx" class=" width100" type="text" value="0.0" disabled="" readonly><br></td>
                         <td class="whith10p"></td>
                       </tr>
                       <tr>
                         <td><label>PosY</label></td>
-                        <td><input id="sensor-posy" class=" width100" type="text" value="0.0" readonly><br></td>
+                        <td><input id="sensor-posy" class=" width100" type="text" value="0.0" disabled="" readonly><br></td>
                         <td class="whith10p"></td>
-                      </tr>                    
+                      </tr> 
+                      <tr>
+                        <td id="addimagesensor">
+                          <div id="imgsensor"></div>
+                        </td>
+                        <td>
+                          <button id="add-plant" type="button" class="btn btn-default width100" disabled="disabled">Add Plant</button>
+                        </td>
+                      </tr>                   
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->                
@@ -255,22 +263,26 @@
             <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
               <i class="fa fa-minus"></i>
             </button>
-            <div class="btn-group open">
-              <button class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                <i class="fa fa-wrench"></i></button>
-              <ul class="dropdown-menu" role="menu">
-                <li class="select-source"><a href="#">Google Maps</a></li>
-                <li class="select-source"><a href="#">Insert Plant</a></li>
-              </ul>
-            </div>
           </div>
         </div><!-- /.box-header -->
         <div class="box-body">
           <div class="row">
-            <div id="map-google" class="col-md-12 height600">
-
-            </div><!-- /.row -->            
-          </div><!-- ./box-body -->
+            <div class="col-md-12">
+              <div class="nav-tabs-custom">
+                <!-- Tabs within a box -->
+                <ul class="nav nav-tabs pull-right">
+                  <li class="select-source"><a href="tab2" data-toggle="tab"> Plant</a></li>
+                  <li class="select-source active"><a href="tab1" data-toggle="tab">Google Maps</a></li>
+                </ul>
+                <div id="posiSensor" class="tab-content no-padding">
+                  <div class="tab-pane active height600 tab1" id="map-google"></div>
+                  <div class="tab-pane height600 tab2" id="plantlocalsensor">
+                    <input type="file" id="selectplant" style="display: none">
+                  </div>
+                </div>
+              </div><!-- /.nav-tabs-custom -->
+            </div>
+          </div>
         </div><!-- /.box -->
       </div><!-- /.col -->
     </div><!-- /.row -->
@@ -296,3 +308,8 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div>
+
+<ul class='custom-menu'>
+  <li data-action="remove">Remove Sensor</li>
+  <li data-action="removeplant">Remove Plant</li>
+</ul>
