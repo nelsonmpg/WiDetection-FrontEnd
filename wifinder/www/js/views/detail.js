@@ -304,8 +304,8 @@ window.DetailView = Backbone.View.extend({
   selectSource: function (e) {
     var self = this;
     e.preventDefault();
-    $(".tab-pane").removeClass("active");
-    $("." + $(e.currentTarget).children().attr("href")).addClass("active");
+    $("#posiSensor .tab-pane").removeClass("active");
+    $("#posiSensor ." + $(e.currentTarget).children().attr("href")).addClass("active");
   },
   render: function () {
     $(this.el).html(this.template());
