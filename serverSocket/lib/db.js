@@ -1,10 +1,8 @@
-// A fork of the [node.js chat app](https://github.com/eiriksm/chat-test-2k) 
-// by [@orkj](https://twitter.com/orkj) using socket.io, rethinkdb, passport and bcrypt on an express app.
-//
-// See the [GitHub README](https://github.com/rethinkdb/rethinkdb-example-nodejs-chat/blob/master/README.md)
-// for details of the complete stack, installation, and running the app.
+/* global module */
 
 var r = require('rethinkdb');
+var ini = require('ini');
+var fs = require('fs');
 var connectdb = require('./ConnectDb.js');
 // #### Connection details
 
@@ -19,10 +17,8 @@ var dbConfig = {
 var self = this;
 
 /**
- * Connect to RethinkDB instance and perform a basic database setup:
- *
- * - create the `RDB_DB` database (defaults to `chat`)
- * - create tables `messages`, `cache`, `users` in this database
+ * Verfica se existe a base de dados e as tabelas se não cronstroi-as
+ * @returns {undefined}
  */
 module.exports.setup = function () {
   r.connect(self.dbData).then(function (connection) {
@@ -47,6 +43,13 @@ module.exports.setup = function () {
     });
   });
 };
+
+/**
+ * Consultsa a base dedados se o utilizador existe e se e o correto
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.loginUser = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db("user").table("users")
@@ -65,6 +68,12 @@ module.exports.loginUser = function (req, res) {
   });
 };
 
+/**
+ * Regista o novo utili<zador
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.registeruser = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db("user").table("users").filter({"email": req.body.email}).count().do(function (valor) {
@@ -77,6 +86,30 @@ module.exports.registeruser = function (req, res) {
             });
   }).then(function (output) {
     res.send(output);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
+};
+
+module.exports.getsitelist = function (req, res) {
+  var cfg = ini.parse(fs.readFileSync('./MainConfig.ini', 'utf-8'));
+  // carrega as configuracoes do ficheiro ini para as variaveis
+  r.connect(self.dbData).then(function (conn) {
+    return r.dbList().map({"db": r.row})
+            .filter(r.row("db").ne("rethinkdb"))
+            .filter(r.row("db").ne("user"))
+            .run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    var val = {
+      host: cfg.database.host,
+      port: cfg.database.port,
+      authKey: cfg.database.projectname,
+      dblist: result
+    };
+    res.send(val);
   }).error(function (err) {
     console.log("ERROR: %s:%s", err.name, err.msg);
   });

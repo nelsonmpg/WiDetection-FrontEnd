@@ -23,7 +23,7 @@
     "line-reader": "^0.2.4",
     "request": "^2.60.0",
     "rethinkdb": "*",
-    "shell-interval": "^1.0.0",
+	"shell-interval": "*",
     "socket.io": "*",
     "underscore": "*",
     "workerjs": "*"

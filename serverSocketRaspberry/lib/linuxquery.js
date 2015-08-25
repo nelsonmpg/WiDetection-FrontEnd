@@ -79,6 +79,7 @@ module.exports.getinifileparams = function (req, res) {
     var config = ini.parse(fs.readFileSync(fileconfig, 'utf-8'));
     datavals = {
       globalconfig: config.global.config,
+      filemonitor: config.global.filemonitor,
       databasesitename: config.database.sitename,
       databasehost: config.database.host,
       databaseport: config.database.port,
@@ -107,6 +108,7 @@ module.exports.getinifileparams = function (req, res) {
 module.exports.savesettings = function (req, res) {
   var fini = "; isto e um comentario\n[global]" +
           "\nconfig = true" +
+          "\nfilemonitor = " + req.body.data.filemonitor +
           "\nautostart = " + req.body.data.autostart +
           "\n\n; definicao da base de dados\n[database]" +
           "\nsitename= " + req.body.data.sitename +

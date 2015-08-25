@@ -5,6 +5,12 @@ var connectdb = require("./ConnectDb");
 
 var self = this;
 
+/**
+ * Insere ou atualiza a tabela que tem o sensor com os AP que detectou
+ * @param {type} valuesAp
+ * @param {type} client
+ * @returns {undefined}
+ */
 module.exports.insertAntAp = function (valuesAp, client) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db).table("AntAp").get(client).replace(function (row) {

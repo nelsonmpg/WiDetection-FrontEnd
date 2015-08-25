@@ -1,27 +1,19 @@
 #include<stdio.h>       //printf
-#include<string.h>      //strlen
-#include<sys/socket.h>  //socket
-#include<arpa/inet.h>   //inet_addr
-#include<pthread.h>     //threads
 #include <stdlib.h>
-#include <limits.h>
-#include <sys/stat.h>
-
-void * StartAirDump(void *arg) {
-  system("sudo airodump-ng mon0 -w scanNetworks --output-format csv");
-}
 
 int main(int argc, char *argv[]) {
-  system("sudo ./clearFiles.sh");
-  //pthread_t threadp1;
-
-  sleep(3);
-  system("sudo nohup airodump-ng mon0 -w /media/usb/scanNetworks --output-format csv > /dev/null 2>&1");
-  
-  //pthread_create(&threadp1, NULL, StartAirDump, NULL);
-  printf("Start Airmon.\n");
-
-  //pthread_exit(NULL); // main thread quits
+	char command1[128];
+	char command2[128];
+	snprintf(command1, sizeof(command1), "sudo ./clearFiles.sh %s", argv[1]);
+	// execute command clear files
+	system(command1);
+	
+	sleep(3);
+	snprintf(command2, sizeof(command2), "sudo nohup airodump-ng mon0 -w %s/scanNetworks --output-format csv > /dev/null 2>&1", argv[1]);
+	// execute command Run Airmon
+	system(command2);
+	
+	printf("Start Airmon.\n");
 
   return 0;
 }

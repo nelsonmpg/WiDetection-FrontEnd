@@ -52,6 +52,9 @@ var MainSKT = function () {
     posy: 0,
     plant: ""
   };
+  
+  // localizacao do ficheiro criado pelo airmon
+  this.localfilemonitor = "";
 };
 
 /**
@@ -64,7 +67,9 @@ MainSKT.prototype.carregarConfig = function () {
   this.dbConfig.port = this.config.database.port;
   this.dbConfig.authKey = crypto.createHash('sha1').update(this.config.database.projectname).digest('hex');
   this.dbConfig.db = this.config.database.sitename;
-
+  
+  this.localfilemonitor = this.config.global.filemonitor;
+  
   this.dbData = {
     host: this.dbConfig.host,
     port: this.dbConfig.port,
@@ -80,7 +85,7 @@ MainSKT.prototype.carregarConfig = function () {
     posy: this.config.localsensor.posy,
     plant: this.config.localsensor.plant
   };
-
+  
   this.startDb();
 };
 
@@ -239,7 +244,8 @@ MainSKT.prototype.startServers = function () {
   var args = {
     port: "",
     configdb: self.dbConfig,
-    sensorcfg: self.sensorCfg
+    sensorcfg: self.sensorCfg,
+    filefolder : self.localfilemonitor
   };
 // inicia  o script do servidor
   var child = cp.fork('./lib/socket');

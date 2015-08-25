@@ -187,6 +187,7 @@ window.ConfigSiteView = Backbone.View.extend({
             "/paramsinifile",
             function (data) {
               if (data.globalconfig != 0) {
+                $("#site-file-folder").val(data.filemonitor);
                 $("#site-name").val(data.databasesitename);
                 $("#site-pass").val(data.databasepass);
                 $("#server-ip").val(data.databasehost);
@@ -456,6 +457,7 @@ window.ConfigSiteView = Backbone.View.extend({
     if (self.checkImputs()) {
       self.inputchanged = false;
       var settings = {
+        filemonitor: $("#site-file-folder").val(),
         autostart: $("#myonoffswitch").is(":checked"),
         sitename: $("#site-name").val(),
         host: $("#server-ip").val(),
