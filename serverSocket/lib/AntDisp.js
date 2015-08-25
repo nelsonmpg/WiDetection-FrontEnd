@@ -5,6 +5,12 @@ var connectdb = require("./ConnectDb");
 
 var self = this;
 
+/**
+ * Insere ou atualiza a tabela que tem o sensor com os Devices que detectou
+ * @param {type} valuesHst
+ * @param {type} client
+ * @returns {undefined}
+ */
 module.exports.insertAntDisp = function (valuesHst, client) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db).table("AntDisp").get(client).replace(function (row) {

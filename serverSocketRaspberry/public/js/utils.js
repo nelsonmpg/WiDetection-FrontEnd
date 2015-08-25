@@ -1,13 +1,31 @@
 /* global CryptoJS, async, _, google */
 
+/**
+ * Convert uma scring numa scring codificada em md5
+ * @param {type} value
+ * @returns {unresolved}
+ */
 var stringToMd5 = function (value) {
   return CryptoJS.MD5(value).toString();
 };
+
+/**
+ * Devolve os dados armazenados na local ou na session Storage da Window
+ * @returns {DOMString}
+ */
 var getKeyo = function () {
   var ls = localStorage.getItem('keyo');
   var ss = sessionStorage.getItem('keyo');
   return ls || ss;
 };
+
+/**
+ * Mostra a mensagem na pagina web
+ * @param {type} local
+ * @param {type} tipo
+ * @param {type} msg
+ * @returns {undefined}
+ */
 var showmsg = function (local, tipo, msg) {
   var formsg = {
     class: "",
@@ -40,6 +58,7 @@ var showmsg = function (local, tipo, msg) {
   $(local).html('<div class="col-md-8">' +
           '<div class="box box-default">' +
           '<div class="box-body">' +
+          '<button type="button" class="close" data-dismiss="alert" onClick="closeAlert();" aria-hidden="true">&times;</button>' +
           '<div class="alert ' + formsg.class + ' alert-dismissable">' +
           '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
           '<h4>' + msg + '</h4>' +
@@ -51,6 +70,23 @@ var showmsg = function (local, tipo, msg) {
   }, 1500);
 };
 
+/**
+ * Fecha a mensagem de Alert
+ * @param {type} local
+ * @returns {undefined}
+ */
+var closeAlert = function (local) {
+  $(".my-modal").hide();
+  $(".my-modal").html("");
+};
+
+/**
+ * Mostra a mensagem de info sem saida automatica pelo setTimeout
+ * @param {type} show
+ * @param {type} local
+ * @param {type} msg
+ * @returns {undefined}
+ */
 var showInfoMsg = function (show, local, msg) {
   var formsg = {
     class: "alert-info",
@@ -72,6 +108,11 @@ var showInfoMsg = function (show, local, msg) {
   }
 };
 
+/**
+ * Normaliza uma string
+ * @param {type} str
+ * @returns {unresolved}
+ */
 var normalizeString = function (str) {
   var defaultDiacriticsRemovalMap = [
     {'base': 'A', 'letters': /[\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F]/g},
@@ -165,6 +206,14 @@ var normalizeString = function (str) {
   str = str.replace(/ /g, '+');
   return str;
 };
+
+/**
+ * Carrega o mapa no local pretendido
+ * @param {type} local
+ * @param {type} localaddmap
+ * @param {type} calback
+ * @returns {undefined}
+ */
 var carregarmapa = function (local, localaddmap, calback) {
 //    alert();
   // Define your locations: HTML content for the info window, latitude, longitude
@@ -243,6 +292,13 @@ var carregarmapa = function (local, localaddmap, calback) {
   });
 };
 
+/**
+ * Faz o resize de uma imagem em base64
+ * @param {type} base64
+ * @param {type} maxWidth
+ * @param {type} maxHeight
+ * @returns {unresolved}
+ */
 var thumbnail = function (base64, maxWidth, maxHeight) {
   // Max size for thumbnail
   if (typeof (maxWidth) === 'undefined') {
@@ -284,6 +340,11 @@ var thumbnail = function (base64, maxWidth, maxHeight) {
   return canvas.toDataURL();
 }
 
+/**
+ * Devolve as coordenadas do ponto
+ * @param {type} pnt
+ * @returns {displayCoordinates.utilsAnonym$88}
+ */
 var displayCoordinates = function (pnt) {
   var lat = pnt.lat();
   lat = lat.toFixed(4);
@@ -295,6 +356,11 @@ var displayCoordinates = function (pnt) {
     place: ""
   };
 };
+
+/**
+ * Carrega o script de acordo com o template 
+ * @type type
+ */
 window.templateLoader = {
   load: function (views, callback) {
     async.mapSeries(views, function (view, callbacki) {
@@ -317,6 +383,16 @@ window.templateLoader = {
     });
   }
 };
+
+/**
+ * Faz os pedidos Ajax ao servidor
+ * @param {type} type
+ * @param {type} url
+ * @param {type} sucess
+ * @param {type} error
+ * @param {type} data
+ * @returns {undefined}
+ */
 window.modem = function (type, url, sucess, error, data) {
   $.ajax({
     async: true,

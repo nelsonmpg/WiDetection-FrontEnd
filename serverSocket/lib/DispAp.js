@@ -5,6 +5,12 @@ var connectdb = require("./ConnectDb");
 
 var self = this;
 
+/**
+ * Insere ou atualiza a tabela que tem todos os APs detetados
+ * @param {type} valsAp
+ * @param {type} client
+ * @returns {undefined}
+ */
 module.exports.insertDispAp = function (valsAp, client) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db).table("DispAp").get(valsAp[0]).replace(function (row) {

@@ -10,23 +10,32 @@ var chokidar = require('chokidar');
 var lineReader = require('line-reader');
 var shellInterval = require("shell-interval");
 var localTable = [];
-var fileRead = './scanNetworks-01.csv';
+var fileRead = '/scanNetworks-01.csv';
+var folderroot = "";
 
-var watcher = chokidar.watch(fileRead, {
-  ignored: /[\/\\]\./,
-  persistent: true
-});
+/**
+ * Configuracao do script que detecta alteracoes no ficheiro retendido 
+ * @type @exp;chokidar@call;watch
+ */
+var watcher;
 
+// script de copneccao com a base de daods
 var connectdb = require("./ConnectDb");
 
+// scripts para enviar os dados para a base de dados
 var dispmoveis = require("./DispMoveis");
 var antdisp = require("./AntDisp");
-
 var dispap = require("./DispAp");
 var antap = require("./AntAp");
-
 var activeant = require("./ActiveAnt");
 
+/**
+ * Construtor do Servidor
+ * @param {type} port
+ * @param {type} configdb
+ * @param {type} sensorcfg
+ * @returns {ServerSocket}
+ */
 var ServerSocket = function (port, configdb, sensorcfg) {
   this.port = port;
   this.net = require('net');
@@ -37,23 +46,33 @@ var ServerSocket = function (port, configdb, sensorcfg) {
   this.local = sensorcfg.loc;
   this.posx = sensorcfg.posx;
   this.posy = sensorcfg.posy;
+  this.plant = sensorcfg.plant;
   this.scanStart = false;
   this.dbConfig = configdb;
+  
+  fileRead = folderroot + fileRead;
+  console.log(fileRead);
+  watcher = chokidar.watch(fileRead, {
+  ignored: /[\/\\]\./,
+  persistent: true
+}); //filefolder
 
+// consiguracao dod acesso a base de dados
   this.dbData = {
     host: this.dbConfig.host,
     port: this.dbConfig.port,
     authKey: this.dbConfig.authKey
   };
 
+// envia as defenicoes de acesso a base de dados para os varios scripts
   connectdb.dbData = this.dbData;
-
   antdisp.dbData = this.dbData;
   antap.dbData = this.dbData;
   dispmoveis.dbData = this.dbData;
   dispap.dbData = this.dbData;
   activeant.dbData = this.dbData;
-
+  
+  // envia as definicoes da base de dados
   antdisp.dbConfig = this.dbConfig;
   antap.dbConfig = this.dbConfig;
   dispmoveis.dbConfig = this.dbConfig;
@@ -62,6 +81,8 @@ var ServerSocket = function (port, configdb, sensorcfg) {
 
   var self = this;
 
+// Configuracao do intervalo que executa o script para sabera memoria, 
+// o cpu e o disco utilizado pelo SO do sensor
   shellInterval({
     options: {
       command: "./serverStatus.sh",
@@ -96,11 +117,21 @@ var ServerSocket = function (port, configdb, sensorcfg) {
   });
 };
 
+/**
+ * Inicia o servidor 
+ * @returns {undefined}
+ */
 ServerSocket.prototype.start = function () {
   var self = this;
+  
+  // insere ou atualiza o sensor
   activeant.insertActiveAnt(self.clienteSend, self.lati, self.long, self.local, self.posx, self.posy);
-  this.serverSck.listen(this.port);
+  
+  // insere ou atualiza a planta 
+  activeant.insertPlant(self.clienteSend, self.plant);
+  this.serverSck.listen();
 
+// script que deteta alteracoes efectuadas no ficheiro especifico
   watcher.on('change', function (path) {
     lineReader.eachLine(fileRead, function (line) {
       if (line[2] == ":" && line.length > 4) {
@@ -108,6 +139,8 @@ ServerSocket.prototype.start = function () {
         var oldLine = localTable[result[0]];
         if (oldLine) {
           var a = result.slice();
+          
+          // verifica se duas strings sao iguais
           var diff = jsdiff.diffTrimmedLines(oldLine, line);
           diff.forEach(function (part) {
             if (part.added) {
@@ -127,9 +160,16 @@ ServerSocket.prototype.start = function () {
   });
 };
 
+/**
+ * Anvia os dados para a base de dados
+ * @param {type} result
+ * @returns {undefined}
+ */
 ServerSocket.prototype.sendToDataBase = function (result) {
   var self = this;
-  if (result[0].trim().length == 17) { // verificacao do tamanho do macaddress recebido
+  
+  // verificacao do tamanho do macaddress recebido
+  if (result[0].trim().length == 17) { 
     if (result.length < 8) {
       var valsHost = result;
       var valuesHst = result;
@@ -150,8 +190,14 @@ ServerSocket.prototype.sendToDataBase = function (result) {
   } // fim verificacao do tamanho do macaddress
 };
 
+/**
+ * Recebe os argumentos pela comunicacao do processo
+ * @param {type} param1
+ * @param {type} param2
+ */
 process.on("message", function (data) {
-  cp.spawn("./runAirmon", ["&"]);
+  folderroot = data.filefolder;
+  cp.spawn("./runAirmon", [folderroot, "&"]);
   var serverskt = new ServerSocket(data.port, data.configdb, data.sensorcfg);
   serverskt.start();
 });

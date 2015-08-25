@@ -4,7 +4,7 @@
     <div class="col-md-4">
       <div class="box">
         <div  class="box-header with-border">
-          <h3 class="box-title"><i class="fa fa-wifi"></i> Config Wlan</h3>
+          <h3 class="box-title"><i class="fa fa-wifi"></i> Config </h3>
           <div class="box-tools pull-right">
             <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
               <i class="fa fa-minus"></i>
@@ -38,7 +38,6 @@
                         <td><button id="create-monitor" type="button" class="btn btn-default" ><label>Create Monitor</label></button></td>
                         <td><input id="device-monitor" class=" width100" type="text" readonly></td>
                       </tr>
-
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->                
@@ -71,15 +70,22 @@
                         <th>Values</th>
                       </tr> -->
                       <tr>
-                        <td><label>Site Name</label></td><!-- placeholder -->
-                        <td><input id="site-name" class=" width100 valid-input" type="text" value="Default" placeholder="Default"></td>
-                        <td class="whith10p color-red" data-toggle="tooltip" title="Site Name - Min length 3"><i class="icon fa fa-close"></i></td>
+                        <td>
+                          <div class="input-group-btn width100">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><label>Site Name</label> <span class="fa fa-caret-down"></span></button>
+                            <ul id="select-site-name" class="dropdown-menu">
+                            </ul>
+                          </div><!-- /btn-group -->
+                          <!-- <label>Site Name</label>placeholder -->
+                        </td>
+                        <td><input id="site-name" class=" width100 valid-input" data-typevalue="siteName" type="text" value="Default" placeholder="Default"></td>
+                        <td class="whith10p color-red" data-toggle="tooltip" title="Site Name - Min length 3 - The special chars will be removed."><i class="icon fa fa-close"></i></td>
                       </tr>
                       <tr>
                         <td><label>PassWord</label></td>
                         <td><input id="site-pass" class=" width100 valid-input" type="text" value="wifi tracker"  placeholder="password"></td>
                         <td class="whith10p color-red" data-toggle="tooltip" title="Password Site Access - Min length 3"><i class="icon fa fa-close"></i></td>
-                      </tr>                    
+                      </tr>                   
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->                
@@ -165,14 +171,22 @@
                       </tr>  
                       <tr>
                         <td><label>PosX</label></td>
-                        <td><input id="sensor-posx" class=" width100" type="text" value="0.0" readonly><br></td>
+                        <td><input id="sensor-posx" class=" width100" type="text" value="0.0" disabled="" readonly><br></td>
                         <td class="whith10p"></td>
                       </tr>
                       <tr>
                         <td><label>PosY</label></td>
-                        <td><input id="sensor-posy" class=" width100" type="text" value="0.0" readonly><br></td>
+                        <td><input id="sensor-posy" class=" width100" type="text" value="0.0" disabled="" readonly><br></td>
                         <td class="whith10p"></td>
-                      </tr>                    
+                      </tr> 
+                      <tr>
+                        <td id="addimagesensor">
+                          <div id="imgsensor"></div>
+                        </td>
+                        <td>
+                          <button id="add-plant" type="button" class="btn btn-default width100" disabled="disabled">Add Plant</button>
+                        </td>
+                      </tr>                   
                     </tbody>
                   </table>
                 </div><!-- /.box-body -->                
@@ -199,6 +213,11 @@
                   <table class="table table-bordered">
                     <tbody>
                       <tr>
+                        <td><p class="text-center"><b>Local File Monitor</b></p></td>
+                        <td><input id="site-file-folder" class=" width100 valid-input" data-typevalue="systempath" type="text" value="./"  placeholder="./"></td>
+                        <td class="whith10p color-red" data-toggle="tooltip" title="Valid system path."><i class="icon fa fa-close"></i></td>
+                      </tr> 
+                      <tr>
                         <td>
                           <p class="text-center"><b>Auto start in next session</b></p>
                         </td>
@@ -211,7 +230,8 @@
                             </label>
                           </div>
                         </td>
-                      </tr>
+                        <td class="whith10p"></td>
+                      </tr> 
                       <tr>
                         <td>                          
                           <button id="refresh-values" type="button" class="btn btn-default width100" ><label> Refresh Values <i class='fa  fa-refresh'></i></label></button>
@@ -219,6 +239,7 @@
                         <td>                          
                           <button id="save-settings" type="button" class="btn btn-default width100" ><label> Save Settings <i class="fa fa-save"></i></label></button>
                         </td>
+                        <td class="whith10p"></td>
                       </tr>
                       <tr>
                         <td>                     
@@ -227,6 +248,7 @@
                         <td>                          
                           <button id="stop-monitor" type="button" class="btn btn-default width100" ><label> Stop Monitor <i class="fa fa-circle-o-notch"></i></label></button>
                         </td>
+                        <td class="whith10p"></td>
                       </tr>
                       <tr>
                         <td>                     
@@ -235,6 +257,7 @@
                         <td>                          
                           <button id="btn_poweroffSO" type="button" class="btn btn-default width100" ><label> PowerOff Sensor <i class="fa fa-circle-o-notch"></i></label></button>
                         </td>
+                        <td class="whith10p"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -255,22 +278,26 @@
             <button class="btn btn-box-tool" data-toggle="tooltip" title="Collapse" data-widget="collapse">
               <i class="fa fa-minus"></i>
             </button>
-            <div class="btn-group open">
-              <button class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                <i class="fa fa-wrench"></i></button>
-              <ul class="dropdown-menu" role="menu">
-                <li class="select-source"><a href="#">Google Maps</a></li>
-                <li class="select-source"><a href="#">Insert Plant</a></li>
-              </ul>
-            </div>
           </div>
         </div><!-- /.box-header -->
         <div class="box-body">
           <div class="row">
-            <div id="map-google" class="col-md-12 height600">
-
-            </div><!-- /.row -->            
-          </div><!-- ./box-body -->
+            <div class="col-md-12">
+              <div class="nav-tabs-custom">
+                <!-- Tabs within a box -->
+                <ul class="nav nav-tabs pull-right">
+                  <li class="select-source"><a href="tab2" data-toggle="tab"> Plant</a></li>
+                  <li class="select-source active"><a href="tab1" data-toggle="tab">Google Maps</a></li>
+                </ul>
+                <div id="posiSensor" class="tab-content no-padding">
+                  <div class="tab-pane active height600 tab1" id="map-google"></div>
+                  <div class="tab-pane height600 tab2" id="plantlocalsensor">
+                    <input type="file" id="selectplant" style="display: none">
+                  </div>
+                </div>
+              </div><!-- /.nav-tabs-custom -->
+            </div>
+          </div>
         </div><!-- /.box -->
       </div><!-- /.col -->
     </div><!-- /.row -->
@@ -296,3 +323,8 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div>
+
+<ul class='custom-menu'>
+  <li data-action="remove">Remove Sensor</li>
+  <li data-action="removeplant">Remove Plant</li>
+</ul>

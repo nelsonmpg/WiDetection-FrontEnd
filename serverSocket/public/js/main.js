@@ -6,6 +6,7 @@ Backbone.View.prototype.close = function () {
   this.undelegateEvents();
 };
 
+// Configuracao das varias rotas de navegacao no site
 var Router = Backbone.Router.extend({
   currentView: undefined,
   header: undefined,
@@ -13,29 +14,28 @@ var Router = Backbone.Router.extend({
   contentheader: undefined,
   contentnav: undefined,
   content: undefined,
-  footer: undefined,    
-  configform : undefined,
+  footer: undefined,
+  configform: undefined,
   loginform: undefined,
   initialize: function () {
-    
+
   },
   showView: function (view, elem, sub) {
     elem.show();
-
     if (sub == false) {
-      if (this.currentView)
+      if (this.currentView) {
         this.currentView.close();
-
+      }
       this.currentView = view;
       this.currentView.delegateEvents();
     }
     var rendered = view.render();
     elem.html(rendered.el);
   },
+  // defenicao de navegacao nas rotas
   routes: {
     //Default Page
     "": "login",
-//    "": "configsite",    
     //Pagina Inicial
     "Inicio": "inicio",
     "ConfigSite": "configsite",
@@ -51,12 +51,14 @@ var Router = Backbone.Router.extend({
     this.footer = undefined;
     this.loginform = undefined;
 
+// linpa todo o conteudo das varias View da pagina web
     $('header').html("");
     $('#content').html("");
     $('aside.main-sidebar').html("");
     $('footer').html("");
     $('contentnav').html("");
 
+//elimina o conteudo do profile
     window.profile = null;
     window.sessionStorage.clear();
     window.logged = false;
@@ -91,28 +93,41 @@ var Router = Backbone.Router.extend({
       $('footer').html(self.footer.render().el);
     });
   },
-  configsite : function (){
+  // carrega as configuracoes do site
+  configsite: function () {
     var self = this;
     self.verificaLogin(function () {
       self.configform = new ConfigSiteView({});
       $('#content').html(self.configform.render().el);
       self.configform.init();
-      self.contentnav.setView("COnfig Site");
+      self.contentnav.setView("Config Site");
     });
   },
+  // verifica se o login e valido
   verificaLogin: function (loggedFunction) {
     var self = this;
-    if (!getKeyo()) {
+    if (window.profile == undefined) {
       app.navigate('', {
         trigger: true
       });
     } else {
-      window.logged = true;
-      loggedFunction();
+      if (!getKeyo()) {
+        app.navigate('', {
+          trigger: true
+        });
+      } else {
+        window.logged = true;
+        loggedFunction();
+      }
     }
   }
 });
 
+/**
+ * Faz o load dos varios templates do BackBone
+ * @param {type} param1
+ * @param {type} param2
+ */
 templateLoader.load([
   "LoginView",
   "HeaderView",
