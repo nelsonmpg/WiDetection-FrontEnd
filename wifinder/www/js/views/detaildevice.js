@@ -20,7 +20,7 @@ window.DetailDeviceView = Backbone.View.extend({
               console.log(data);
               var html = "";
               for (var i in data) {
-                html = html + "<li class='dropdown-submenu'><a href='#'>" + data[i].group + "</a>" +
+                html = html + "<li class='dropdown-submenu'><a href='#'>" + ((data[i].group == "") ? "Unknown" : data[i].group) + "</a>" +
                         "<ul class='dropdown-menu'>";
                 for (var a in data[i].reduction) {
                   html = html + "<li><a class='deviceSearch' href='#'>" + data[i].reduction[a] + "</a></li>";
