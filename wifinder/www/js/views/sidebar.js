@@ -45,12 +45,14 @@ window.SideBarView = Backbone.View.extend({
     e.preventDefault();
     if ($(e.currentTarget).parent().attr("class") == "select-site-first") {
       if (typeof window.profile.get("site") != "undefined") {
-        if (!$('ul.sidebar-menu li.active').hasClass("treeview")) {
-          $('ul.sidebar-menu li.active').removeClass("active");
+        if ($(e.currentTarget).parent().parent().parent().hasClass("treeview")) {
+          $('ul.sidebar-menu li ul li.active').removeClass("active");
+          $(e.currentTarget).parent().addClass("active");
         } else {
-          $('ul.sidebar-menu li.active ul li.active').removeClass("active");
+          $("li.active .fa-angle-left").click();
+          $('ul.sidebar-menu li.active').removeClass("active");
+          $(e.currentTarget).parent().addClass("active");
         }
-        $(e.currentTarget).parent().addClass("active");
         app.navigate($(e.currentTarget).data("nome"), {
           trigger: true
         });
@@ -66,8 +68,8 @@ window.SideBarView = Backbone.View.extend({
     }
 
   },
-  setActive : function (){
-    $(".select-site-first a span:contains('Access Point')").click(); 
+  setActive: function () {
+    $(".select-site-first a span:contains('Access Point')").click();
   },
   initialize: function (opt) {
     this.socketsidebar = opt.socket;

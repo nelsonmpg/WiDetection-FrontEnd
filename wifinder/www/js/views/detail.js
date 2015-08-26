@@ -97,22 +97,22 @@ window.DetailView = Backbone.View.extend({
   getAllAP: function () {
     self = this;
     modem("GET",
-        "/getAllAP/" + window.profile.id,
-        function (data) {
-          var values = [];
-          for (var ssid in data[0].group[0]) {
-            values[data[0].group[0][ssid]] = {
-              "bssid": data[0].group[0][ssid],
-              "name": data[0].group[1][ssid],
-              "value": data[0].reduction[0][ssid]
-            };
-          }
-          self.allap = values;
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+            "/getAllAP/" + window.profile.id,
+            function (data) {
+              var values = [];
+              for (var ssid in data[0].group[0]) {
+                values[data[0].group[0][ssid]] = {
+                  "bssid": data[0].group[0][ssid],
+                  "name": data[0].group[1][ssid],
+                  "value": data[0].reduction[0][ssid]
+                };
+              }
+              self.allap = values;
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   selectSensor: function (e) {
@@ -174,7 +174,6 @@ window.DetailView = Backbone.View.extend({
             '<tr><th style="width:50%">Last Active:</th><td>' +
             moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
 
-    console.log($(".daterangepicker .ranges ul li.active").text());
     $(".daterangepicker .ranges ul li.active").click(); //:nth-child(5)
 
     modem("GET",
@@ -215,69 +214,68 @@ window.DetailView = Backbone.View.extend({
     $("#div-loading").show();
     if (window.profile.id != undefined && self.sensor != undefined) {
       modem("GET",
-          "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
-          function (data) {
-            var dataSet = [];
-            for (var i in data) {
-              for (var a in data[i].reduction) { //anda nos elementos
-                console.log(data[i].reduction[a].ESSID.trim());
-                dataSet.push(
-                    [data[i].group,
-                      "<a href='#' class='APjump' data-toggle='tooltip' title=" + data[i].reduction[a].macAddress + " data-mac='" + data[i].reduction[a].macAddress + "'>" + data[i].reduction[a].ESSID + "</a>",
-                      data[i].reduction[a].Authentication,
-                      data[i].reduction[a].Cipher,
-                      data[i].reduction[a].Privacy,
-                      data[i].reduction[a].Speed,
-                      data[i].reduction[a].channel,
-                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                      "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>"
-                    ]);
-              }
-            }
-            if (data.length == 0) {
-              self.toggleContentors(false);
-            } else {
-              var chartap = new ArrayToGraph(data, "chartAccessPoint", "column");
-              chartap.createArrayToGraphOneBar();
+              "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
+              function (data) {
+                var dataSet = [];
+                for (var i in data) {
+                  for (var a in data[i].reduction) { //anda nos elementos
+                    dataSet.push(
+                            [data[i].group,
+                              "<a href='#' class='APjump' data-toggle='tooltip' title=" + data[i].reduction[a].macAddress + " data-mac='" + data[i].reduction[a].macAddress + "'>" + data[i].reduction[a].ESSID + "</a>",
+                              data[i].reduction[a].Authentication,
+                              data[i].reduction[a].Cipher,
+                              data[i].reduction[a].Privacy,
+                              data[i].reduction[a].Speed,
+                              data[i].reduction[a].channel,
+                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                              "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>"
+                            ]);
+                  }
+                }
+                if (data.length == 0) {
+                  self.toggleContentors(false);
+                } else {
+                  var chartap = new ArrayToGraph(data, "chartAccessPoint", "column");
+                  chartap.createArrayToGraphOneBar();
 
-              self.toggleContentors(true);
-              $('#tblDetailsAp').DataTable({
-                "data": dataSet,
-                "paging": true,
-                "lengthChange": false,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": true,
-                "destroy": true
-              });
-            }
-          },
-          function (xhr, ajaxOptions, thrownError) {
-            var json = JSON.parse(xhr.responseText);
-            error_launch(json.message);
-          }, {}
+                  self.toggleContentors(true);
+                  $('#tblDetailsAp').DataTable({
+                    "data": dataSet,
+                    "paging": true,
+                    "lengthChange": false,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "autoWidth": true,
+                    "destroy": true
+                  });
+                }
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
       );
 //grafico disp moveis
       modem("GET",
-          "/getAllOrderbyVendor/" + window.profile.id + "/disp/" + self.sensor + "/" + max + "/" + min,
-          function (data) {
-            var dataSet = [];
-            for (var i in data) {
-              for (var a in data[i].reduction) {
-                dataSet.push(
-                    [data[i].reduction[a].macAddress, data[i].group,
-                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                      "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
-                      (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "' data-toggle='tooltip' title='" + self.allap[data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim()].name + "' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
-                    ]);
-              }
-            }
-            if (data.length == 0) {
-              self.toggleContentors(false);
-            } else {
-              var chartdisp = new ArrayToGraph(data, "chartDispMoveis", "column");
-              chartdisp.createArrayToGraphOneBar();
+              "/getAllOrderbyVendor/" + window.profile.id + "/disp/" + self.sensor + "/" + max + "/" + min,
+              function (data) {
+                var dataSet = [];
+                for (var i in data) {
+                  for (var a in data[i].reduction) {
+                    dataSet.push(
+                            [data[i].reduction[a].macAddress, data[i].group,
+                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
+                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "' data-toggle='tooltip' title='" + self.allap[data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim()].name + "' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
+                            ]);
+                  }
+                }
+                if (data.length == 0) {
+                  self.toggleContentors(false);
+                } else {
+                  var chartdisp = new ArrayToGraph(data, "chartDispMoveis", "column");
+                  chartdisp.createArrayToGraphOneBar();
                   self.toggleContentors(true);
                   $('#tblDetailsDevices').DataTable({
                     "data": dataSet,

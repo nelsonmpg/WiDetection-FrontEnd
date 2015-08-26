@@ -17,7 +17,6 @@ window.DetailDeviceView = Backbone.View.extend({
     modem("GET",
             "/getDispMacbyVendor/" + window.profile.id,
             function (data) {
-              console.log(data);
               var html = "";
               for (var i in data) {
                 html = html + "<li class='dropdown-submenu'><a href='#'>" + ((data[i].group == "") ? "Unknown" : data[i].group) + "</a>" +
@@ -28,7 +27,7 @@ window.DetailDeviceView = Backbone.View.extend({
                 html = html + "</ul></li>";
               }
               $("#selectDropdownFabricante").append(html);
-              console.log($(".deviceSearch").first().click());
+              $("#selectDropdownFabricante li:first ul li:first a.deviceSearch").click();
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
