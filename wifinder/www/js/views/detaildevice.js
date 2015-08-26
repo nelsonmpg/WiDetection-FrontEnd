@@ -35,6 +35,7 @@ window.DetailDeviceView = Backbone.View.extend({
               error_launch(json.message);
             }, {}
     );
+    $.AdminLTE.boxWidget.activate();
   },
   selectDevice: function (e) {
     var self = this;

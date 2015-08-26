@@ -54,20 +54,20 @@ window.DetailView = Backbone.View.extend({
         if (this.$.data('skin') == 'tron') {
 
           var a = this.angle(this.cv)  // Angle
-              , sa = this.startAngle          // Previous start angle
-              , sat = this.startAngle         // Start angle
-              , ea                            // Previous end angle
-              , eat = sat + a                 // End angle
-              , r = true;
+                  , sa = this.startAngle          // Previous start angle
+                  , sat = this.startAngle         // Start angle
+                  , ea                            // Previous end angle
+                  , eat = sat + a                 // End angle
+                  , r = true;
           this.g.lineWidth = this.lineWidth;
           this.o.cursor
-              && (sat = eat - 0.3)
-              && (eat = eat + 0.3);
+                  && (sat = eat - 0.3)
+                  && (eat = eat + 0.3);
           if (this.o.displayPrevious) {
             ea = this.startAngle + this.angle(this.value);
             this.o.cursor
-                && (sa = ea - 0.3)
-                && (ea = ea + 0.3);
+                    && (sa = ea - 0.3)
+                    && (ea = ea + 0.3);
             this.g.beginPath();
             this.g.strokeStyle = this.previousColor;
             this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sa, ea, false);
@@ -97,28 +97,28 @@ window.DetailView = Backbone.View.extend({
   getAllAP: function () {
     self = this;
     modem("GET",
-        "/getAllAP/" + window.profile.id,
-        function (data) {
-          var values = [];
-          for (var ssid in data[0].group[0]) {
-            values[data[0].group[0][ssid]] = {
-              "bssid": data[0].group[0][ssid],
-              "name": data[0].group[1][ssid],
-              "value": data[0].reduction[0][ssid]
-            };
-          }
-          self.allap = values;
-          for (var i in values) {
-            $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
-          }
-          $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
-          console.log("asdasdasd");
-          $("#ApSelect option:first-child").change();
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+            "/getAllAP/" + window.profile.id,
+            function (data) {
+              var values = [];
+              for (var ssid in data[0].group[0]) {
+                values[data[0].group[0][ssid]] = {
+                  "bssid": data[0].group[0][ssid],
+                  "name": data[0].group[1][ssid],
+                  "value": data[0].reduction[0][ssid]
+                };
+              }
+              self.allap = values;
+              for (var i in values) {
+                $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
+              }
+              $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
+              console.log("asdasdasd");
+              $("#ApSelect option:first-child").change();
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   selectSensor: function (e) {
@@ -127,25 +127,25 @@ window.DetailView = Backbone.View.extend({
   getSensors: function (e) {
     var self = this;
     modem("GET",
-        "/getSensors/" + window.profile.id,
-        function (data) {
-          for (var i in data) {
-            $("#SensorSelect").append("<option data-log='" + data[i].longitude +
-                "' data-lat='" + data[i].latitude +
-                "' data-city='" + data[i].local +
-                "' data-date='" + data[i].data +
-                "' data-posx='" + data[i].posX +
-                "' data-posy='" + data[i].posY +
-                "' >" + data[i].nomeAntena + "</option>");
-          }
-          $("#SensorSelectt > option:first").attr("selected", "selected");
-          $("#SensorSelect").trigger('change');
-          self.setsensor();
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+            "/getSensors/" + window.profile.id,
+            function (data) {
+              for (var i in data) {
+                $("#SensorSelect").append("<option data-log='" + data[i].longitude +
+                        "' data-lat='" + data[i].latitude +
+                        "' data-city='" + data[i].local +
+                        "' data-date='" + data[i].data +
+                        "' data-posx='" + data[i].posX +
+                        "' data-posy='" + data[i].posY +
+                        "' >" + data[i].nomeAntena + "</option>");
+              }
+              $("#SensorSelectt > option:first").attr("selected", "selected");
+              $("#SensorSelect").trigger('change');
+              self.setsensor();
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   setsensor: function () {
@@ -159,56 +159,56 @@ window.DetailView = Backbone.View.extend({
         $('#SensorSelect').find(":selected").data("lat"),
         $('#SensorSelect').find(":selected").data("log"),
         $('#SensorSelect').find(":selected").data("date")]],
-        $("#mapSensor")[0]);
+            $("#mapSensor")[0]);
     addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
         value: 1
       }]);
 
     $("#tblSensor").html(
-        '<tr><th style="width:50%">Latitude:</th><td>' +
-        $('#SensorSelect').find(":selected").data("lat") +
-        '</td></tr>' +
-        '<tr><th style="width:50%">Longitude:</th><td>' +
-        $('#SensorSelect').find(":selected").data("log") +
-        '</td></tr>' +
-        '<tr><th style="width:50%">PosX:</th><td>' +
-        $('#SensorSelect').find(":selected").data("posx") +
-        '</td></tr>' +
-        '<tr><th style="width:50%">PosY:</th><td>' +
-        $('#SensorSelect').find(":selected").data("posy") +
-        '</td></tr>' +
-        '<tr><th style="width:50%">Last Active:</th><td>' +
-        moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
+            '<tr><th style="width:50%">Latitude:</th><td>' +
+            $('#SensorSelect').find(":selected").data("lat") +
+            '</td></tr>' +
+            '<tr><th style="width:50%">Longitude:</th><td>' +
+            $('#SensorSelect').find(":selected").data("log") +
+            '</td></tr>' +
+            '<tr><th style="width:50%">PosX:</th><td>' +
+            $('#SensorSelect').find(":selected").data("posx") +
+            '</td></tr>' +
+            '<tr><th style="width:50%">PosY:</th><td>' +
+            $('#SensorSelect').find(":selected").data("posy") +
+            '</td></tr>' +
+            '<tr><th style="width:50%">Last Active:</th><td>' +
+            moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
 
     console.log($(".daterangepicker .ranges ul li.active").text());
     $(".daterangepicker .ranges ul li.active").click(); //:nth-child(5)
 
     modem("GET",
-        "/getPlantSite/" + window.profile.id + "/" + self.sensor,
-        function (data) {
-          var img = atob(data);
-          if (img != "none") {
-            $('#plantlocalsensor').css({
-              'border': "2px solid black",
-              "-webkit-box-shadow": "none",
-              "-moz-box-shadow": "none",
-              "box-shadow": "none",
-              "background-image": img,
-              "background-size": "100% 100%",
-              "background-repeat": "no-repeat",
-              "background-position": "center center"
-            });
-            $("#imgsensor").css({
-              display: "block",
-              left: $('#SensorSelect').find(":selected").data("posx") + "%",
-              top: $('#SensorSelect').find(":selected").data("posy") + "%"
-            });
-          }
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+            "/getPlantSite/" + window.profile.id + "/" + self.sensor,
+            function (data) {
+              var img = atob(data);
+              if (img != "none") {
+                $('#plantlocalsensor').css({
+                  'border': "2px solid black",
+                  "-webkit-box-shadow": "none",
+                  "-moz-box-shadow": "none",
+                  "box-shadow": "none",
+                  "background-image": img,
+                  "background-size": "100% 100%",
+                  "background-repeat": "no-repeat",
+                  "background-position": "center center"
+                });
+                $("#imgsensor").css({
+                  display: "block",
+                  left: $('#SensorSelect').find(":selected").data("posx") + "%",
+                  top: $('#SensorSelect').find(":selected").data("posy") + "%"
+                });
+              }
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   changedate: function (ev, picker) {
@@ -221,9 +221,9 @@ window.DetailView = Backbone.View.extend({
     $("#div-loading").show();
     if (window.profile.id != undefined && self.sensor != undefined) {
       modem("GET",
-          "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
-          function (data) {
-            var dataSet = [];
+              "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
+              function (data) {
+                var dataSet = [];
                 for (var i in data) {
                   for (var a in data[i].reduction) { //anda nos elementos
                     dataSet.push(
@@ -245,23 +245,23 @@ window.DetailView = Backbone.View.extend({
                   var chartap = new ArrayToGraph(data, "chartAccessPoint", "column");
                   chartap.createArrayToGraphOneBar();
 
-              self.toggleContentors(true);
-              $('#tblDetailsAp').DataTable({
-                "data": dataSet,
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": true,
-                "destroy": true
-              });
-            }
-          },
-          function (xhr, ajaxOptions, thrownError) {
-            var json = JSON.parse(xhr.responseText);
-            error_launch(json.message);
-          }, {}
+                  self.toggleContentors(true);
+                  $('#tblDetailsAp').DataTable({
+                    "data": dataSet,
+                    "paging": true,
+                    "lengthChange": false,
+                    "searching": false,
+                    "ordering": true,
+                    "info": true,
+                    "autoWidth": true,
+                    "destroy": true
+                  });
+                }
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
       );
 //grafico disp moveis
       modem("GET",
@@ -281,26 +281,26 @@ window.DetailView = Backbone.View.extend({
                 if (data.length == 0) {
                   self.toggleContentors(false);
                 } else {
-              var chartdisp = new ArrayToGraph(data, "chartDispMoveis", "column");
-              chartdisp.createArrayToGraphOneBar();
+                  var chartdisp = new ArrayToGraph(data, "chartDispMoveis", "column");
+                  chartdisp.createArrayToGraphOneBar();
 
-              self.toggleContentors(true);
-              $('#tblDetailsDevices').DataTable({
-                "data": dataSet,
-                "paging": true,
-                "lengthChange": false,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": true,
-                "destroy": true
-              });
-            }
-          },
-          function (xhr, ajaxOptions, thrownError) {
-            var json = JSON.parse(xhr.responseText);
-            error_launch(json.message);
-          }, {}
+                  self.toggleContentors(true);
+                  $('#tblDetailsDevices').DataTable({
+                    "data": dataSet,
+                    "paging": true,
+                    "lengthChange": false,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "autoWidth": true,
+                    "destroy": true
+                  });
+                }
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
       );
     }
   },

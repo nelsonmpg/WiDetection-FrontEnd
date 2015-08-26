@@ -37,6 +37,7 @@ window.DetailAPView = Backbone.View.extend({
                 error_launch(json.message);
             }, {}
     );
+    $.AdminLTE.boxWidget.activate();
   },
   setAp: function () {
     this.ap = $('#ApSelect').find(":selected").data("mac");
