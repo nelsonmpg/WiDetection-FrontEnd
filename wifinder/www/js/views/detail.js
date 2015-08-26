@@ -19,8 +19,8 @@ window.DetailView = Backbone.View.extend({
   openDetailAp: function (e) {
     e.preventDefault();
     e.stopPropagation();
+    window.profile.set("nav-mac", $(e.currentTarget).text());
     app.navigate("DetailAP", {
-      mac: $(e.currentTarget).text(),
       trigger: true
     });
   },
@@ -183,7 +183,6 @@ window.DetailView = Backbone.View.extend({
     );
   },
   changedate: function (ev, picker) {
-//    console.log(picker.chosenLabel);
     $(".daterangepicker .ranges ul li").removeClass("active");
     $(".daterangepicker .ranges ul li:contains('" + picker.chosenLabel + "')").addClass("active");
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
@@ -208,7 +207,7 @@ window.DetailView = Backbone.View.extend({
                               data[i].reduction[a].Speed,
                               data[i].reduction[a].channel,
                               moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>"
+                              "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>"
                             ]);
                   }
                 }
@@ -247,7 +246,7 @@ window.DetailView = Backbone.View.extend({
                             [data[i].reduction[a].macAddress, data[i].group,
                               moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
                               "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
-                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#'  data-toggle='tooltip' title='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
+                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#' data-toggle='tooltip' title='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
                             ]);
                   }
                 }

@@ -7,22 +7,8 @@ window.DetailAPView = Backbone.View.extend({
     "change #ApSelect": "setAp"
   },
   initialize: function () {
-    //this.render();
   },
-  init: function () {
-    this.carregarSelect();
-    if (this.mac != null) {
-      $("#ApSelect > option[data-mac='" + this.mac + "']").select();
-    }
-  },
-  setAp: function () {
-    this.ap = $('#ApSelect').find(":selected").data("mac");
-    this.getDisps(this.ap);
-    if (this.ap != "all") {
-      this.ApHourChart(this.ap);
-    }
-  },
-  carregarSelect: function () {
+  init: function (mac) {
     var self = this;
     modem("GET",
             "/getAllAP/" + window.profile.id,
@@ -40,8 +26,12 @@ window.DetailAPView = Backbone.View.extend({
                 $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
               }
               $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
-              console.log("asdasdasd");
-              $("#ApSelect option:first-child").change();
+              if (mac != null) {
+                $("#ApSelect > option:contains('" + mac + "')").attr('selected', true).change();
+              } else {
+                $("#ApSelect option:first-child").change();
+              }
+
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
@@ -49,6 +39,13 @@ window.DetailAPView = Backbone.View.extend({
             }, {}
     );
   },
+  setAp: function () {
+    this.ap = $('#ApSelect').find(":selected").data("mac");
+    this.getDisps(this.ap);
+    if (this.ap != "all") {
+      this.ApHourChart(this.ap);
+    }
+  },  
   getDisps: function (mac) {
     var self = this;
     if (this.net != undefined) {
@@ -290,7 +287,6 @@ window.DetailAPView = Backbone.View.extend({
                 tmp.push({hour: first.startOf("hour"), value: count});
                 first.add(1, "h");
               }
-              console.log(tmp);
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
