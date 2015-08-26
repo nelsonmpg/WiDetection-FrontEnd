@@ -20,8 +20,8 @@ window.DetailView = Backbone.View.extend({
   openDetailAp: function (e) {
     e.preventDefault();
     e.stopPropagation();
+    window.profile.set("nav-mac", $(e.currentTarget).text());
     app.navigate("DetailAP", {
-      mac: $(e.currentTarget).text(),
       trigger: true
     });
   },
@@ -212,7 +212,6 @@ window.DetailView = Backbone.View.extend({
     );
   },
   changedate: function (ev, picker) {
-//    console.log(picker.chosenLabel);
     $(".daterangepicker .ranges ul li").removeClass("active");
     $(".daterangepicker .ranges ul li:contains('" + picker.chosenLabel + "')").addClass("active");
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
@@ -225,27 +224,26 @@ window.DetailView = Backbone.View.extend({
           "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
           function (data) {
             var dataSet = [];
-
-            for (var i in data) {
-              for (var a in data[i].reduction) { //anda nos elementos
-                dataSet.push(
-                    [data[i].group,
-                      "<a href='#' class='APjump' data-mac='" + data[i].reduction[a].ESSID + "'>" + data[i].reduction[a].ESSID + "</a>",
-                      data[i].reduction[a].Authentication,
-                      data[i].reduction[a].Cipher,
-                      data[i].reduction[a].Privacy,
-                      data[i].reduction[a].Speed,
-                      data[i].reduction[a].channel,
-                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                      "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>"
-                    ]);
-              }
-            }
-            if (data.length == 0) {
-              self.toggleContentors(false);
-            } else {
-              var chartap = new ArrayToGraph(data, "chartAccessPoint", "column");
-              chartap.createArrayToGraphOneBar();
+                for (var i in data) {
+                  for (var a in data[i].reduction) { //anda nos elementos
+                    dataSet.push(
+                            [data[i].group,
+                              "<a href='#' class='APjump' data-mac='" + data[i].reduction[a].ESSID + "'>" + data[i].reduction[a].ESSID + "</a>",
+                              data[i].reduction[a].Authentication,
+                              data[i].reduction[a].Cipher,
+                              data[i].reduction[a].Privacy,
+                              data[i].reduction[a].Speed,
+                              data[i].reduction[a].channel,
+                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                              "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>"
+                            ]);
+                  }
+                }
+                if (data.length == 0) {
+                  self.toggleContentors(false);
+                } else {
+                  var chartap = new ArrayToGraph(data, "chartAccessPoint", "column");
+                  chartap.createArrayToGraphOneBar();
 
               self.toggleContentors(true);
               $('#tblDetailsAp').DataTable({
@@ -267,23 +265,22 @@ window.DetailView = Backbone.View.extend({
       );
 //grafico disp moveis
       modem("GET",
-          "/getAllOrderbyVendor/" + window.profile.id + "/disp/" + self.sensor + "/" + max + "/" + min,
-          function (data) {
-            var dataSet = [];
-            for (var i in data) {
-              for (var a in data[i].reduction) {
-                dataSet.push(
-                    [data[i].reduction[a].macAddress, data[i].group,
-                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                      "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
-                      (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#'  data-toggle='tooltip' title='" + self.allap[data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim()].name + "' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
-                    ]);
-              }
-            }
-            if (data.length == 0) {
-              self.toggleContentors(false);
-            } else {
-
+              "/getAllOrderbyVendor/" + window.profile.id + "/disp/" + self.sensor + "/" + max + "/" + min,
+              function (data) {
+                var dataSet = [];
+                for (var i in data) {
+                  for (var a in data[i].reduction) {
+                    dataSet.push(
+                            [data[i].reduction[a].macAddress, data[i].group,
+                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
+                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#' data-toggle='tooltip' title='" + self.allap[data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim()].name + "' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
+                            ]);
+                  }
+                }
+                if (data.length == 0) {
+                  self.toggleContentors(false);
+                } else {
               var chartdisp = new ArrayToGraph(data, "chartDispMoveis", "column");
               chartdisp.createArrayToGraphOneBar();
 

@@ -1,66 +1,61 @@
 window.DetailAPView = Backbone.View.extend({
-    ap: undefined,
-    allap: [],
-    net: undefined,
-    events: {
-        "click a.selectSensor": "selectSensor",
-        "change #ApSelect": "setAp"
-    },
-    initialize: function () {
-        //this.render();
-    },
-    init: function () {
-        this.carregarSelect();
-        if (this.mac != null) {
-            $("#ApSelect > option[data-mac='" + this.mac + "']").select();
-        }
-    },
-    setAp: function () {
-        this.ap = $('#ApSelect').find(":selected").data("mac");
-        this.getDisps(this.ap);
-        if (this.ap != "all") {
-            this.ApHourChart(this.ap);
-        }
-    },
-    carregarSelect: function () {
-        var self = this;
-        modem("GET",
+  ap: undefined,
+  allap: [],
+  net: undefined,
+  events: {
+    "click a.selectSensor": "selectSensor",
+    "change #ApSelect": "setAp"
+  },
+  initialize: function () {
+  },
+  init: function (mac) {
+    var self = this;
+    modem("GET",
             "/getAllAP/" + window.profile.id,
             function (data) {
-                var values = [];
-                for (var ssid in data[0].group[0]) {
-                    values[data[0].group[0][ssid]] = {
-                        "bssid": data[0].group[0][ssid],
-                        "name": data[0].group[1][ssid],
-                        "value": data[0].reduction[0][ssid]
-                    };
-                }
-                self.allap = values;
-                for (var i in values) {
-                    $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
-                }
-                $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
-                console.log("asdasdasd");
+              var values = [];
+              for (var ssid in data[0].group[0]) {
+                values[data[0].group[0][ssid]] = {
+                  "bssid": data[0].group[0][ssid],
+                  "name": data[0].group[1][ssid],
+                  "value": data[0].reduction[0][ssid]
+                };
+              }
+              self.allap = values;
+              for (var i in values) {
+                $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
+              }
+              $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
+              if (mac != null) {
+                $("#ApSelect > option:contains('" + mac + "')").attr('selected', true).change();
+              } else {
                 $("#ApSelect option:first-child").change();
+              }
             },
             function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);
                 error_launch(json.message);
             }, {}
-        );
-    },
-    getDisps: function (mac) {
-        var self = this;
-        if (this.net != undefined) {
-            this.net.destroy();
-            this.net = null;
-        }
-        if (mac == "all") {
-            self.networkAllAP(self.allap);
-            $("#div-row-table-ap").hide();
-        } else {
-            $("#div-row-table-ap").show();
-
+    );
+  },
+  setAp: function () {
+    this.ap = $('#ApSelect').find(":selected").data("mac");
+    this.getDisps(this.ap);
+    if (this.ap != "all") {
+      this.ApHourChart(this.ap);
+    }
+  },  
+  getDisps: function (mac) {
+    var self = this;
+    if (this.net != undefined) {
+      this.net.destroy();
+      this.net = null;
+    }
+    if (mac == "all") {
+      self.networkAllAP(self.allap);
+      $("#div-row-table-ap").hide();
+    } else {
+      $("#div-row-table-ap").show();
             var dataSet = [];
             dataSet.push([
                 self.allap[mac].bssid,
@@ -297,6 +292,8 @@ window.DetailAPView = Backbone.View.extend({
                     tmp.push({hour: first.startOf("hour"), value: count});
                     first.add(1, "h");
                 }
+                tmp.push({hour: first.startOf("hour"), value: count});
+                first.add(1, "h");
             },
             function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);

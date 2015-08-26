@@ -42,11 +42,13 @@ window.SideBarView = Backbone.View.extend({
   navsidebar: function (e) {
     var self = this;
     e.preventDefault();
-    if ($(e.currentTarget).parent().attr("class") == "dashboard" ||
-            $(e.currentTarget).parent().attr("class") == "detail" ||
-            $(e.currentTarget).parent().attr("class") == "detailap") {
+    if ($(e.currentTarget).parent().attr("class") == "select-site-first") {
       if (typeof window.profile.get("site") != "undefined") {
-        $('ul.sidebar-menu li.active').removeClass("active");
+        if (!$('ul.sidebar-menu li.active').hasClass("treeview")) {
+          $('ul.sidebar-menu li.active').removeClass("active");
+        } else {
+          $('ul.sidebar-menu li.active ul li.active').removeClass("active");
+        }
         $(e.currentTarget).parent().addClass("active");
         app.navigate($(e.currentTarget).data("nome"), {
           trigger: true
@@ -62,6 +64,9 @@ window.SideBarView = Backbone.View.extend({
       });
     }
 
+  },
+  setActive : function (){
+    $(".select-site-first a span:contains('Access Point Detail')").click(); 
   },
   initialize: function (opt) {
     this.socketsidebar = opt.socket;
