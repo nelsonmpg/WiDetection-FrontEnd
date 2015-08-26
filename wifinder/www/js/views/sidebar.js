@@ -21,7 +21,8 @@ window.SideBarView = Backbone.View.extend({
       window.profile.set({"site": $(e.currentTarget).text().trim()});
       self.socketsidebar.setSite(window.profile.id, $(e.currentTarget).text().trim());
       self.lastsite = $(e.currentTarget).text();
-      $(e.currentTarget).parent().parent("ul > li:first").children("a").children("span").text($(e.currentTarget).text());
+      $(e.currentTarget).parent().parent("ul > li:first").children("a").children("p").text($(e.currentTarget).text());
+      $(e.currentTarget).parent().parent("ul > li:first").children("a").children("p").css("visibility", "visible");
       $('ul.sidebar-menu ul.site-title li a i.fa-dot-circle-o').removeClass("fa-dot-circle-o").addClass("fa-circle-o");
       $(e.currentTarget).children().children().removeClass($(e.currentTarget).children().attr("class")).addClass("fa fa-dot-circle-o");
 
@@ -66,7 +67,7 @@ window.SideBarView = Backbone.View.extend({
 
   },
   setActive : function (){
-    $(".select-site-first a span:contains('Access Point Detail')").click(); 
+    $(".select-site-first a span:contains('Access Point')").click(); 
   },
   initialize: function (opt) {
     this.socketsidebar = opt.socket;

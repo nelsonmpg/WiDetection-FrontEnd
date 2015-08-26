@@ -10,7 +10,11 @@ window.HeaderView = Backbone.View.extend({
         "click .sidebar-toggle": "toogleSidebar",
         "click #openopt": "openSidebarOption",
         "click #newuser-btn": "newUser",
-        "click #profile-btn": "editProfile"
+        "click #profile-btn": "editProfile",
+        "click a.logo" : function (e){
+          e.preventDefault();
+          e.stopPropagation();
+        }
     },
     init: function () {
         $(".nameuser").text(window.profile.get("name"));
