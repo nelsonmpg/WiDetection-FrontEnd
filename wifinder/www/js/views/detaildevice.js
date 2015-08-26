@@ -45,7 +45,6 @@ window.DetailDeviceView = Backbone.View.extend({
     modem("GET",
             "/getDispbyMac/" + window.profile.id + "/" + self.device,
             function (data) {
-              console.log(data);
               var chart = new ArrayToGraph(data, "chartContainer", "line");
               chart.createArrayToGraphLine();
               var dataSet = [], probes = "";

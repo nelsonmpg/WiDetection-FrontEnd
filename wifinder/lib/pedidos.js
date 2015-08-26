@@ -454,6 +454,31 @@ module.exports.getDispMacbyVendor = function (req, res) {
  * @param {type} res
  * @returns {undefined}
  */
+module.exports.getApbyMac = function (req, res) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
+            .table("DispAp")
+            .get(req.params.mac)
+    .run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+                res.send(JSON.stringify(result));
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
+};
+
+
+// ------------------------------------ Fim Page DetailAP ------------------------------------
+
+/**
+ * Retorna a row referente ao device (mac) 
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.getDispbyMac = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
@@ -470,7 +495,6 @@ module.exports.getDispbyMac = function (req, res) {
   });
 };
 
-// ------------------------------------ Fim Page DetailAP ------------------------------------
 
 //************************************* Pedidos do Socket *************************************
 

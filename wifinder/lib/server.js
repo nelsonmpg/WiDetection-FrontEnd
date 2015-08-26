@@ -169,9 +169,14 @@ Server.prototype.start = function () {
   this.app.get("/getDispMacbyVendor/:id", pedidos.getDispMacbyVendor);
 
   /**
-   * 
+   * Devolve os dados referentes ao dispositivo
    */
   this.app.get("/getDispbyMac/:id/:mac", pedidos.getDispbyMac);
+  
+  /**
+   * Devolve os dados referentes ao ap
+   */
+  this.app.get("/getApbyMac/:id/:mac", pedidos.getApbyMac);
 
 // //************************************* Pedidos Users *************************************
 

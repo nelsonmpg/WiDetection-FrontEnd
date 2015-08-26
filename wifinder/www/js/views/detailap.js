@@ -43,8 +43,26 @@ window.DetailAPView = Backbone.View.extend({
     this.getDisps(this.ap);
     if (this.ap != "all") {
       this.ApHourChart(this.ap);
+      this.loadChart(this.ap);
+      $(".row-chart").show();
+    } else {
+      $(".row-chart").hide();
     }
-  },  
+  },
+  loadChart:function (mac){
+       modem("GET",
+            "/getApbyMac/" + window.profile.id + "/" + mac,
+            function (data) {
+              console.log(data);
+              var chart = new ArrayToGraph(data, "chartContainer", "line");
+              chart.createArrayToGraphLine();
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
+    );
+  },
   getDisps: function (mac) {
     var self = this;
     if (this.net != undefined) {
