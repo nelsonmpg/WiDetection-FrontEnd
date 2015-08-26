@@ -228,7 +228,6 @@ window.DetailAPView = Backbone.View.extend({
         }
         for (var i in xedges) {
             xnodes[xedges[i].from - 1].icon.color = getColor(max, _.where(xedges, {from: xedges[i].from}).length);
-            console.log(xnodes[xedges[i].from - 1].label, max, _.where(xedges, {from: xedges[i].from}).length, getColor(max, _.where(xedges, {from: xnodes[i].id}).length));
         }
         var edges = new vis.DataSet(xedges);
         var nodes = new vis.DataSet(xnodes);
