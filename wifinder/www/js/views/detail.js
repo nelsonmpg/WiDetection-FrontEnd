@@ -6,10 +6,12 @@ window.DetailView = Backbone.View.extend({
     "click a.selectSensor": "selectSensor",
     "change #SensorSelect": "setsensor",
     "click .APjump": "openDetailAp",
-    "click .select-source": "selectSource"
+    "click .select-source": "selectSource",
+    "apply.daterangepicker #reportrange": function (ev, picker) {
+      this.changedate(ev, picker);
+    }
   },
   initialize: function () {
-    //this.render();
   },
   dataselect: function (start, end) {
     $('#reportrange span').html(start.format("dddd, MMMM Do YYYY") + ' - ' + end.format("dddd, MMMM Do YYYY"));
@@ -23,7 +25,6 @@ window.DetailView = Backbone.View.extend({
     });
   },
   init: function () {
-    //alert("DetailView Inicializada");
     var self = this;
     this.getSensors();
     this.dataselect(moment().subtract(29, 'days'), moment());
@@ -37,16 +38,6 @@ window.DetailView = Backbone.View.extend({
         'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
       }
     }, self.dataselect);
-    $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
-      self.changedate(ev, picker);
-    });
-    $("#reportrange").click();
-    setTimeout(function () {
-      if (true) {
-        $("body > div.daterangepicker.dropdown-menu.opensleft > div.ranges > ul > li:nth-child(5)").click();
-//                $("body > div.daterangepicker.dropdown-menu.opensleft > div.ranges > div > button.applyBtn.btn.btn-sm.btn-success").click();
-      }
-    }, 150);
     $(".knob").knob({
       "min": 0,
       "max": 100,
@@ -95,13 +86,14 @@ window.DetailView = Backbone.View.extend({
       }
     });
 
+    // add active class a primeira opcao do seletor de dataa range
+    $(".daterangepicker .ranges ul li:first").addClass("active");
     //Initialize Select2 Elements
     $(".select2").select2();
     $.AdminLTE.boxWidget.activate();
   },
   selectSensor: function (e) {
     e.preventDefault();
-    e.stopPropagation();
   },
   getSensors: function (e) {
     var self = this;
@@ -159,6 +151,9 @@ window.DetailView = Backbone.View.extend({
             '<tr><th style="width:50%">Last Active:</th><td>' +
             moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
 
+    console.log($(".daterangepicker .ranges ul li.active").text());
+    $(".daterangepicker .ranges ul li.active").click(); //:nth-child(5)
+
     modem("GET",
             "/getPlantSite/" + window.profile.id + "/" + self.sensor,
             function (data) {
@@ -188,12 +183,15 @@ window.DetailView = Backbone.View.extend({
     );
   },
   changedate: function (ev, picker) {
+//    console.log(picker.chosenLabel);
+    $(".daterangepicker .ranges ul li").removeClass("active");
+    $(".daterangepicker .ranges ul li:contains('" + picker.chosenLabel + "')").addClass("active");
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
   },
   loadcharts: function (min, max) {
     var self = this;
     $("#div-loading").show();
-    if (window.profile.id != undefined && self.sensor != undefined) {      
+    if (window.profile.id != undefined && self.sensor != undefined) {
       modem("GET",
               "/getAllOrderbyVendor/" + window.profile.id + "/ap/" + self.sensor + "/" + max + "/" + min,
               function (data) {
@@ -201,16 +199,17 @@ window.DetailView = Backbone.View.extend({
 
                 for (var i in data) {
                   for (var a in data[i].reduction) { //anda nos elementos
-                    dataSet.push([data[i].group,
-                      "<a href='#' class='APjump' data-mac='" + data[i].reduction[a].ESSID + "'>" + data[i].reduction[a].ESSID + "</a>",
-                      data[i].reduction[a].Authentication,
-                      data[i].reduction[a].Cipher,
-                      data[i].reduction[a].Privacy,
-                      data[i].reduction[a].Speed,
-                      data[i].reduction[a].channel,
-                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                      "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>"
-                    ]);
+                    dataSet.push(
+                            [data[i].group,
+                              "<a href='#' class='APjump' data-mac='" + data[i].reduction[a].ESSID + "'>" + data[i].reduction[a].ESSID + "</a>",
+                              data[i].reduction[a].Authentication,
+                              data[i].reduction[a].Cipher,
+                              data[i].reduction[a].Privacy,
+                              data[i].reduction[a].Speed,
+                              data[i].reduction[a].channel,
+                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>"
+                            ]);
                   }
                 }
                 if (data.length == 0) {
@@ -241,15 +240,15 @@ window.DetailView = Backbone.View.extend({
       modem("GET",
               "/getAllOrderbyVendor/" + window.profile.id + "/disp/" + self.sensor + "/" + max + "/" + min,
               function (data) {
-                var values = [], dataSet = [];
+                var dataSet = [];
                 for (var i in data) {
-                  values.push({y: data[i].reduction.length, label: data[i].group});
                   for (var a in data[i].reduction) {
-                    dataSet.push([data[i].reduction[a].macAddress, data[i].group,
-                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                      "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
-                      (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
-                    ]);
+                    dataSet.push(
+                            [data[i].reduction[a].macAddress, data[i].group,
+                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
+                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#'  data-toggle='tooltip' title='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
+                            ]);
                   }
                 }
                 if (data.length == 0) {
@@ -304,8 +303,8 @@ window.DetailView = Backbone.View.extend({
   selectSource: function (e) {
     var self = this;
     e.preventDefault();
-    $(".tab-pane").removeClass("active");
-    $("." + $(e.currentTarget).children().attr("href")).addClass("active");
+    $("#posiSensor .tab-pane").removeClass("active");
+    $("#posiSensor ." + $(e.currentTarget).children().attr("href")).addClass("active");
   },
   render: function () {
     $(this.el).html(this.template());
