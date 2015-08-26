@@ -29,7 +29,7 @@ window.SideBarView = Backbone.View.extend({
       $("#site-ativo .fa-angle-left").click();
 
       $('ul.sidebar-menu li.active').removeClass("active");
-      $('ul.sidebar-menu li.dashboard').addClass("active");
+      $('ul.sidebar-menu li.select-site-first').children('a[data-nome="Dashboard"]').parent().addClass("active");
       app.navigate("Dashboard", {
         trigger: true
       });
