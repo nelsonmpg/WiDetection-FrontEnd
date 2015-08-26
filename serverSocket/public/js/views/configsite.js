@@ -220,7 +220,7 @@ window.ConfigSiteView = Backbone.View.extend({
       $("#site-name, #site-pass, #server-ip, #server-port").attr("disabled", "disabled");
       $("#server-ip").val($(e.currentTarget).data("host"));
       $("#server-port").val($(e.currentTarget).data("port"));
-      $("#site-pass").val($(e.currentTarget).data("pass"));
+      $("#site-pass").val(atob($(e.currentTarget).data("pass")));
       $("#site-name").val($(e.currentTarget).text());
     }
     self.checkImputs();
