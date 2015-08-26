@@ -104,7 +104,6 @@ module.exports.getAllTimes = function (req, res) {
         for (var i in result) {
           resposta[i.toString()] = _.sortBy(result[i], "inicio");
         }
-        console.log(resposta);
         //devolve a resposta ao cliente
         res.json(resposta);
       } else {

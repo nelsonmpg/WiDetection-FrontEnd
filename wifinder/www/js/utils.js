@@ -263,6 +263,19 @@ var displayCoordinates = function (pnt) {
     };
 };
 
+var getColor = function (max, value) {
+    var n = value * 100 / max;
+    var R = (255 * n) / 100;
+    var G = (255 * (100 - n)) / 100;
+    var B = 0;
+    return rgbToHex(R, G, B);
+};
+
+
+function rgbToHex(r, g, b) {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
 window.modem = function (type, url, sucess, error, data) {
     $.ajax({
         async: true,
