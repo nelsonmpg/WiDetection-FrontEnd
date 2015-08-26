@@ -180,21 +180,21 @@ MainSKT.prototype.carregarPrefixos = function () {
               var p = a[0];
               if (p[2] == ":") {
                 if (p.length < 9) {
-                  vendor = a[1];
+                  vendor = (typeof cardinal[1] == "undefined") ? a[1] : cardinal[1].trim();
                   keyPrefix = p;
                   docsInsert.push({
                     "prefix": keyPrefix,
-                    "vendor": (typeof cardinal[1] == "undefined") ? vendor : cardinal[1].trim()
+                    "vendor": vendor.toUpperCase().replace(/[^\w\s]/gi, '').trim()
                   });
                 }
               } else if (p[2] == "-") {
                 var b = p.split("/");
                 if (b[0].length < 9) {
-                  vendor = a[1];
+                  vendor = (typeof cardinal[1] == "undefined") ? a[1] : cardinal[1].trim();
                   keyPrefix = b[0].replace(/-/g, ":");
                   docsInsert.push({
                     "prefix": keyPrefix,
-                    "vendor": (typeof cardinal[1] == "undefined") ? vendor : cardinal[1].trim()
+                    "vendor": vendor.toUpperCase().replace(/[^\w\s]/gi, '').trim()
                   });
                 }
               } else {
@@ -204,7 +204,7 @@ MainSKT.prototype.carregarPrefixos = function () {
                   keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
                   docsInsert.push({
                     "prefix": keyPrefix,
-                    "vendor": vendor
+                    "vendor": vendor.toUpperCase().replace(/[^\w\s]/gi, '').trim()
                   });
                 }
               }
