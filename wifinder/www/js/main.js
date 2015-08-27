@@ -194,6 +194,7 @@ var Router = Backbone.Router.extend({
       $('#content').html(self.novoutilizador.render().el);
       self.novoutilizador.init();
       self.contentnav.setView("Novo Utilizador");
+      self.sidebar.removeActive();
       windowScrollTop();
     });
   },
@@ -221,6 +222,7 @@ var Router = Backbone.Router.extend({
       self.contentnav.setView("Profile");
       $('#content').html(self.editprofile.render().el);
       self.editprofile.init();
+      self.sidebar.removeActive();
     });
   }
 });

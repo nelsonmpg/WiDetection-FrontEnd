@@ -68,12 +68,10 @@ var showmsg = function (local, tipo, msg, callback) {
       };
       break;
   }
-  $("body").animate({
-    scrollTop: 0
-  });
   $(local).html('<div class="col-md-8">' +
           '<div class="box box-default">' +
           '<div class="box-body">' +
+          '<button type="button" class="close" data-dismiss="alert" onClick="closeAlert(this);" aria-hidden="true"><i class="fa fa-times fa-2x"></i></button>' +
           '<div class="alert ' + formsg.class + ' alert-dismissable">' +
           '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
           '<h4>' + msg + '</h4>' +
@@ -85,7 +83,17 @@ var showmsg = function (local, tipo, msg, callback) {
     if (callback) {
       callback();
     }
-  }, 3000);
+  }, 1500);
+};
+
+/**
+ * Fecha a mensagem de Alert
+ * @param {type} local
+ * @returns {undefined}
+ */
+var closeAlert = function (local) {
+  $(local).parent().parent().parent().parent().hide();
+  $(local).parent().parent().parent().parent().html("");
 };
 
 var showInfoMsg = function (show, local, msg) {

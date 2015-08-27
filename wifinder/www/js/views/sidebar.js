@@ -36,22 +36,23 @@ window.SideBarView = Backbone.View.extend({
       if (self.databaseselect) {
         Backbone.history.stop();
         Backbone.history.start();
-      }      
+      }
       self.databaseselect = true;
     }
   },
   navsidebar: function (e) {
     var self = this;
     e.preventDefault();
-    if ($(e.currentTarget).parent().attr("class") == "select-site-first") {
+    if ($(e.currentTarget).parent().hasClass("select-site-first")) {
       if (typeof window.profile.get("site") != "undefined") {
         if ($(e.currentTarget).parent().parent().parent().hasClass("treeview")) {
           $('ul.sidebar-menu li ul li.active').removeClass("active");
+          $(e.currentTarget).parent().addClass("active");
         } else {
           $("li.active .fa-angle-left").click();
           $('ul.sidebar-menu li.active').removeClass("active");
+          $(e.currentTarget).parent().addClass("active");
         }
-        $(e.currentTarget).parent().addClass("active");
         app.navigate($(e.currentTarget).data("nome"), {
           trigger: true
         });
@@ -59,6 +60,7 @@ window.SideBarView = Backbone.View.extend({
         showmsg('.my-modal', "warning", "Select a site first.<br>To continue.");
       }
     } else {
+      $("li.active .fa-angle-left").click();
       $('ul.sidebar-menu li.active').removeClass("active");
       $(e.currentTarget).parent().addClass("active");
       app.navigate($(e.currentTarget).data("nome"), {
@@ -69,6 +71,11 @@ window.SideBarView = Backbone.View.extend({
   },
   setActive: function () {
     $(".select-site-first a span:contains('Access')").click();
+  },
+  removeActive: function () {
+    
+    $("li.active .fa-angle-left").click();
+    $('ul.sidebar-menu li.active').removeClass("active");
   },
   initialize: function (opt) {
     this.socketsidebar = opt.socket;
