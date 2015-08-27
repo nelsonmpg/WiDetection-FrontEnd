@@ -47,12 +47,11 @@ window.SideBarView = Backbone.View.extend({
       if (typeof window.profile.get("site") != "undefined") {
         if ($(e.currentTarget).parent().parent().parent().hasClass("treeview")) {
           $('ul.sidebar-menu li ul li.active').removeClass("active");
-          $(e.currentTarget).parent().addClass("active");
         } else {
           $("li.active .fa-angle-left").click();
           $('ul.sidebar-menu li.active').removeClass("active");
-          $(e.currentTarget).parent().addClass("active");
         }
+          $(e.currentTarget).parent().addClass("active");
         app.navigate($(e.currentTarget).data("nome"), {
           trigger: true
         });

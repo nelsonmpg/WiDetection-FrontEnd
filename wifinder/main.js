@@ -50,6 +50,12 @@ Main.prototype.startHTTPServer = function () {
   var child = cp.fork('./lib/server');
   child.send(args);
 
+  console.log("  __          ___ ______ _           _".yellow);
+  console.log("  \\ \\        / (_)  ____(_)         | |".yellow);
+  console.log("   \\ \\  /\\  / / _| |__   _ _ __   __| | ___ _ __".yellow);
+  console.log("    \\ \\/  \\/ / | |  __| | | '_ \\ / _` |/ _ \\ '__|".yellow);
+  console.log("     \\  /\\  /  | | |    | | | | | (_| |  __/ |".yellow);
+  console.log("      \\/  \\/   |_|_|    |_|_| |_|\\__,_|\\___|_|".yellow);
   console.log("****************** Server HTTP Start ******************".yellow);
 };
 
