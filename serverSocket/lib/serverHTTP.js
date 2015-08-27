@@ -61,10 +61,10 @@ ServerHTTP.prototype.start = function () {
 
 // Login do utilizador
   this.app.post("/login", dbUsers.loginUser);
-  
+
 // devolve a lista de sites existentes no servidor do login
   this.app.get("/getsitelist", dbUsers.getsitelist);
-  
+
   // verifica se o caminho para uma diretoria existe
   this.app.get("/validpathsystem/:path", osquerys.validpathsystem);
 
@@ -79,7 +79,7 @@ ServerHTTP.prototype.start = function () {
 
 // Guarda as configuracoess no ficheiro Ini
   this.app.post("/savesettings", osquerys.savesettings);
-  
+
 // Constroi a interface monitor
   this.app.post("/createmonitor", osquerys.createmonitor);
 
@@ -101,7 +101,13 @@ ServerHTTP.prototype.start = function () {
 // Verifica se no ficheiro de configuracao foi selecionada a opcao de auto start
   this.checkServerSocketAutoStart();
 
-  console.log('Server HTTP Wait %d'.green.bold, self.port);
+  console.log("  __          ___ ______ _           _".green.bold);
+  console.log("  \\ \\        / (_)  ____(_)         | |".green.bold);
+  console.log("   \\ \\  /\\  / / _| |__   _ _ __   __| | ___ _ __".green.bold);
+  console.log("    \\ \\/  \\/ / | |  __| | | '_ \\ / _` |/ _ \\ '__|".green.bold);
+  console.log("     \\  /\\  /  | | |    | | | | | (_| |  __/ |".green.bold);
+  console.log("      \\/  \\/   |_|_|    |_|_| |_|\\__,_|\\___|_|".green.bold);
+  console.log('\nServer HTTP Wait %d'.green.bold, self.port);
 };
 
 /**
@@ -112,7 +118,7 @@ ServerHTTP.prototype.checkServerSocketAutoStart = function () {
   var fileconfig = './ConfigSKT.ini';
   // verifica se o ficheiro de configuracao existe
   var configexist = checkconfigexist(fileconfig);
-  
+
   // se o ficheiro existe 
   if (configexist) {
     var config = ini.parse(fs.readFileSync(fileconfig, 'utf-8'));

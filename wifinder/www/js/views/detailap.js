@@ -54,7 +54,6 @@ window.DetailAPView = Backbone.View.extend({
        modem("GET",
             "/getApbyMac/" + window.profile.id + "/" + mac,
             function (data) {
-              console.log(data);
               var chart = new ArrayToGraph(data, "chartContainer", "line");
               chart.createArrayToGraphLine();
             },
