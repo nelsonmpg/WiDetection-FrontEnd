@@ -114,6 +114,7 @@ var Router = Backbone.Router.extend({
     var self = this;
     self.loginform = new LoginView({});
     $('#content').html(self.loginform.render().el);
+    windowScrollTop();
     self.loginform.checkloginstored();
   },
   inicio: function () {
@@ -140,6 +141,7 @@ var Router = Backbone.Router.extend({
       }
       self.content = new InicioView();
       $('#content').html(self.content.render().el);
+      windowScrollTop();
     });
   },
   detail: function () {
@@ -149,6 +151,7 @@ var Router = Backbone.Router.extend({
       self.contentnav.setView("Detail");
       $('#content').html(self.detail.render().el);
       self.detail.init();
+      windowScrollTop();
     });
   },
   detaialap: function () {
@@ -157,8 +160,9 @@ var Router = Backbone.Router.extend({
       self.detailap = new DetailAPView();
       self.contentnav.setView("DetailAP");
       $('#content').html(self.detailap.render().el);
-      self.detailap.init((typeof window.profile.get("nav-mac") == "undefined")? null : (window.profile.get("nav-mac")), window.profile.set("nav-mac", undefined), self.sidebar.setActive());
-     });
+      self.detailap.init((typeof window.profile.get("nav-mac") == "undefined") ? null : (window.profile.get("nav-mac")), window.profile.set("nav-mac", undefined), self.sidebar.setActive());
+      windowScrollTop();
+    });
   },
   detaildevice: function () {
     var self = this;
@@ -167,6 +171,7 @@ var Router = Backbone.Router.extend({
       self.contentnav.setView("Device");
       $('#content').html(self.detaildevice.render().el);
       self.detaildevice.init();
+      windowScrollTop();
     });
   },
   dashboardSetup: function () {
@@ -178,6 +183,7 @@ var Router = Backbone.Router.extend({
       $('#content').html(self.dashboard.render().el);
       self.contentnav.setView("Dashboard");
       self.dashboard.init();
+      windowScrollTop();
     });
   },
   newUser: function () {
@@ -188,6 +194,7 @@ var Router = Backbone.Router.extend({
       $('#content').html(self.novoutilizador.render().el);
       self.novoutilizador.init();
       self.contentnav.setView("Novo Utilizador");
+      windowScrollTop();
     });
   },
   verificaLogin: function (loggedFunction) {

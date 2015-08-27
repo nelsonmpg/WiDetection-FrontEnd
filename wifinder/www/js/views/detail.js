@@ -134,7 +134,6 @@ window.DetailView = Backbone.View.extend({
               }
               $("#SensorSelectt > option:first").attr("selected", "selected");
               $("#SensorSelect").trigger('change');
-              self.setsensor();
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
@@ -174,8 +173,8 @@ window.DetailView = Backbone.View.extend({
             '<tr><th style="width:50%">Last Active:</th><td>' +
             moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
 
-    $(".daterangepicker .ranges ul li.active").click(); //:nth-child(5)
-
+    $(".applyBtn").attr("disabled", false).click();
+    
     modem("GET",
             "/getPlantSite/" + window.profile.id + "/" + self.sensor,
             function (data) {

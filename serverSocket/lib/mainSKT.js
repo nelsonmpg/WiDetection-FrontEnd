@@ -130,13 +130,13 @@ MainSKT.prototype.waitDbAndTableOk = function () {
   var self = this;
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db)
-            .wait()("status_changes")("new_val")("status")("ready_for_writes").run(conn)
+            .wait()("ready").run(conn)
             .finally(function () {
               conn.close();
             });
   }).then(function (resul) {
     console.log("Tabelas - " + resul);
-    if (!resul[0]) {
+    if (resul == 0) {
       setTimeout(function () {
         self.waitDbAndTableOk();
       }, 500);

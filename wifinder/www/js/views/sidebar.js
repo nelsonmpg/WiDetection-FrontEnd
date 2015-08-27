@@ -36,7 +36,7 @@ window.SideBarView = Backbone.View.extend({
       if (self.databaseselect) {
         Backbone.history.stop();
         Backbone.history.start();
-      }
+      }      
       self.databaseselect = true;
     }
   },
@@ -51,7 +51,7 @@ window.SideBarView = Backbone.View.extend({
           $("li.active .fa-angle-left").click();
           $('ul.sidebar-menu li.active').removeClass("active");
         }
-          $(e.currentTarget).parent().addClass("active");
+        $(e.currentTarget).parent().addClass("active");
         app.navigate($(e.currentTarget).data("nome"), {
           trigger: true
         });
@@ -68,7 +68,7 @@ window.SideBarView = Backbone.View.extend({
 
   },
   setActive: function () {
-    $(".select-site-first a span:contains('Access Point')").click();
+    $(".select-site-first a span:contains('Access')").click();
   },
   initialize: function (opt) {
     this.socketsidebar = opt.socket;
