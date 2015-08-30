@@ -1,0 +1,16 @@
+Na View dos sensores(Details) 
+	- Colocar por Cima de cada Tabela / Grafico uma label com data / Hora / Sensor selecionado
+
+Na View do DashBoar colocar uma pesquisa geral por site
+	- Pode-se colocar uma tabela com toda a informação para fazer a pesquisa
+
+
+
+fazer uma interface simples para simular a entrada de um cliente por exemplo num banco ou ....
+
+Tentar perceber a utilização do aircrack com o OS fingerprint
+
+
+- Fazer o indeice do relatorio e emviar para o prof. Luis para ele validar.
+
+O relatorio não deve de ter mais do que 5 capitulos.
