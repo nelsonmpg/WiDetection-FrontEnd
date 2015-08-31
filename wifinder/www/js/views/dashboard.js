@@ -103,18 +103,18 @@ window.DashboardView = Backbone.View.extend({
   MapSensors: function (e) {
     var self = this;
     modem("GET",
-        "/getSensors/" + window.profile.id,
-        function (data) {
-          var locations = [];
-          for (var i in data) {
-            locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data])
-          }
-          carregarmapa(locations, $("#map")[0]);
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+            "/getSensors/" + window.profile.id,
+            function (data) {
+              var locations = [];
+              for (var i in data) {
+                locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
+              }
+              carregarmapa(locations, $("#map")[0]);
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   chartDispActive: function () {

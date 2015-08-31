@@ -89,7 +89,10 @@ ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
 ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
   var datapoint = [];
   for (var i in this.array) {
-    datapoint.push({label: i, y: this.array[i].length * 1});
+    datapoint.push({
+      label: i,
+      y: this.array[i].length * 1
+    });
   }
   this.dataTograph.push({
     type: this.type,
@@ -251,7 +254,7 @@ ArrayToGraph.prototype.createAndShowGraphLine = function () {
 };
 
 ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
-  var self = this;  
+  var self = this;
   if (this.array.length > 4) {
     this.anguloX = -60;
   }
