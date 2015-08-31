@@ -274,6 +274,7 @@ module.exports.getAllOrderbyVendor = function (req, res) {
   var min = req.params.min;//new Date(req.params.min).toJSON();
   var max = req.params.max;//new Date(req.params.max).toJSON();
   var table = ((req.params.table).toString().toUpperCase() == "AP") ? "DispAp" : "DispMoveis";
+  console.log(min,max,table,req.params.sensor,self.getDataBase(req.params.id));
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
       return row("disp")("values").contains(function (a) {
