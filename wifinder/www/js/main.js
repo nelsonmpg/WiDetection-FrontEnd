@@ -148,7 +148,7 @@ var Router = Backbone.Router.extend({
     var self = this;
     self.verificaLogin(function () {
       self.detail = new DetailView();
-      self.contentnav.setView("Detail");
+      self.contentnav.setView("Details  >  Sensor");
       $('#content').html(self.detail.render().el);
       self.detail.init();
       windowScrollTop();
@@ -158,7 +158,7 @@ var Router = Backbone.Router.extend({
     var self = this;
     self.verificaLogin(function () {
       self.detailap = new DetailAPView();
-      self.contentnav.setView("DetailAP");
+      self.contentnav.setView("Details  >  Access Point");
       $('#content').html(self.detailap.render().el);
       self.detailap.init((typeof window.profile.get("nav-mac") == "undefined") ? null : (window.profile.get("nav-mac")), window.profile.set("nav-mac", undefined), self.sidebar.setActive());
       windowScrollTop();
@@ -168,7 +168,7 @@ var Router = Backbone.Router.extend({
     var self = this;
     self.verificaLogin(function () {
       self.detaildevice = new DetailDeviceView();
-      self.contentnav.setView("Device");
+      self.contentnav.setView("Details  >  Device");
       $('#content').html(self.detaildevice.render().el);
       self.detaildevice.init();
       windowScrollTop();

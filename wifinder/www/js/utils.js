@@ -183,7 +183,7 @@ var carregarmapa = function (local, localaddmap) {
   var iconsLength = icons.length;
   var map = new google.maps.Map(localaddmap, {
     zoom: 18,
-    center: new google.maps.LatLng(local[0][1], local[0][2]),
+    center: new google.maps.LatLng(locations[0][1], locations[0][2]),
     mapTypeId: google.maps.MapTypeId.ROADMAP, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
     mapTypeControl: true,
     streetViewControl: true,

@@ -27,9 +27,9 @@ window.DetailView = Backbone.View.extend({
   },
   init: function () {
     var self = this;
-    this.getSensors();
     this.getAllAP();
-    this.dataselect(moment().subtract(29, 'days'), moment());
+    this.getSensors();
+    this.dataselect(moment(), moment());
     $('#reportrange').daterangepicker({
       ranges: {
         'Today': [moment().hours(0).minutes(0).seconds(0), moment()],
@@ -148,12 +148,15 @@ window.DetailView = Backbone.View.extend({
     $('#chartDisc').val(0).trigger('change');
 
     this.sensor = $('#SensorSelect').find(":selected").text();
-    var map = carregarmapa([[$('#SensorSelect').find(":selected").data("city"),
+    var map = carregarmapa([[
+        $('#SensorSelect').find(":selected").data("city"),
         $('#SensorSelect').find(":selected").data("lat"),
         $('#SensorSelect').find(":selected").data("log"),
         $('#SensorSelect').find(":selected").data("date")]],
             $("#mapSensor")[0]);
-    addCircletoMap(map, [{lat: $('#SensorSelect').find(":selected").data("lat"), log: $('#SensorSelect').find(":selected").data("log"),
+    addCircletoMap(map, [{
+        lat: $('#SensorSelect').find(":selected").data("lat"),
+        log: $('#SensorSelect').find(":selected").data("log"),
         value: 1
       }]);
 
@@ -170,11 +173,14 @@ window.DetailView = Backbone.View.extend({
             '<tr><th style="width:50%">PosY:</th><td>' +
             $('#SensorSelect').find(":selected").data("posy") +
             '</td></tr>' +
-            '<tr><th style="width:50%">Last Active:</th><td>' +
+            '<tr><th style="width:50%">Last Active:</th><td id="actual-time-sensor">' +
             moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
 
     $(".applyBtn").attr("disabled", false).click();
-    
+
+    $(".sensor-selected").text(this.sensor);
+    $(".time-selected").text($(".daterangepicker .ranges ul li:first").text() + " -> " + $("#reportrange span").text());
+
     modem("GET",
             "/getPlantSite/" + window.profile.id + "/" + self.sensor,
             function (data) {
@@ -207,6 +213,9 @@ window.DetailView = Backbone.View.extend({
     $(".daterangepicker .ranges ul li").removeClass("active");
     $(".daterangepicker .ranges ul li:contains('" + picker.chosenLabel + "')").addClass("active");
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
+
+    $(".sensor-selected").text(this.sensor);
+    $(".time-selected").text(picker.chosenLabel + " -> " + $("#reportrange span").text());
   },
   loadcharts: function (min, max) {
     var self = this;
@@ -218,17 +227,17 @@ window.DetailView = Backbone.View.extend({
                 var dataSet = [];
                 for (var i in data) {
                   for (var a in data[i].reduction) { //anda nos elementos
-                    dataSet.push(
-                            [data[i].group,
-                              "<a href='#' class='APjump' data-toggle='tooltip' title=" + data[i].reduction[a].macAddress + " data-mac='" + data[i].reduction[a].macAddress + "'>" + data[i].reduction[a].ESSID + "</a>",
-                              data[i].reduction[a].Authentication,
-                              data[i].reduction[a].Cipher,
-                              data[i].reduction[a].Privacy,
-                              data[i].reduction[a].Speed,
-                              data[i].reduction[a].channel,
-                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                              "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>"
-                            ]);
+                    dataSet.push([
+                      data[i].group,
+                      "<a href='#' class='APjump' data-toggle='tooltip' title=" + data[i].reduction[a].macAddress + " data-mac='" + data[i].reduction[a].macAddress + "'>" + data[i].reduction[a].ESSID + "</a>",
+                      data[i].reduction[a].Authentication,
+                      data[i].reduction[a].Cipher,
+                      data[i].reduction[a].Privacy,
+                      data[i].reduction[a].Speed,
+                      data[i].reduction[a].channel,
+                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                      "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>"
+                    ]);
                   }
                 }
                 if (data.length == 0) {
@@ -262,20 +271,22 @@ window.DetailView = Backbone.View.extend({
                 var dataSet = [];
                 for (var i in data) {
                   for (var a in data[i].reduction) {
-                    dataSet.push(
-                            [data[i].reduction[a].macAddress, data[i].group,
-                              moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                              "<a href='#' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</a>",
-                              (data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() == "(notassociated)") ? "" : "<a href='#' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "' data-toggle='tooltip' title='" + self.allap[data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim()].name + "' class='APjump' data-mac='" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
-                            ]);
+                    var ipap = data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim();
+                    dataSet.push([
+                      data[i].reduction[a].macAddress,
+                      data[i].group,
+                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
+                      "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>",
+                      (ipap == "(notassociated)") ? "" : "<a href='#' data-mac='" + ipap + "' data-toggle='tooltip' title='" + (typeof self.allap[ipap] == "undefined" ? "Unknown" : self.allap[ipap].name) + "' class='APjump'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
+                    ]);
                   }
                 }
                 if (data.length == 0) {
                   self.toggleContentors(false);
                 } else {
+                  self.toggleContentors(true);
                   var chartdisp = new ArrayToGraph(data, "chartDispMoveis", "column");
                   chartdisp.createArrayToGraphOneBar();
-                  self.toggleContentors(true);
                   $('#tblDetailsDevices').DataTable({
                     "data": dataSet,
                     "paging": true,
@@ -312,6 +323,7 @@ window.DetailView = Backbone.View.extend({
   },
   updateDataSensor: function (data) {
     if (data.nomeAntena == this.sensor) {
+      $("#actual-time-sensor").text(moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm'));
       $('#chartCpu').val(data.cpu).trigger('change');
       $('#chartMem').val((data.memory.used / data.memory.total) * 100).trigger('change');
       $('#chartDisc').val(data.disc.use.toString().replace(/%/g, "")).trigger('change');

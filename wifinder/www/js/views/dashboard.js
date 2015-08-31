@@ -107,7 +107,7 @@ window.DashboardView = Backbone.View.extend({
             function (data) {
               var locations = [];
               for (var i in data) {
-                locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data])
+                locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
               }
               carregarmapa(locations, $("#map")[0]);
             },
