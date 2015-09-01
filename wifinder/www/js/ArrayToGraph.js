@@ -118,7 +118,7 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
 
   this.dataTograph = [{
       type: this.type,
-      name: "Dispositivos Moveis",
+      name: "Wireless Devices",
       legendText: "Dispositivos Moveis",
       showInLegend: true,
       dataPoints: pointsDisp
