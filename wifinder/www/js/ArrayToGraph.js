@@ -102,6 +102,7 @@ ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
 };
 
 ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
+  try {    
   var pointsDisp = [];
   var pointsAp = [];
   var self = this;
@@ -131,6 +132,9 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
       dataPoints: pointsAp
     }];
   this.createAndShowGraphTwoBars();
+  } catch (err){
+    console.log(err);
+  }
 };
 
 ArrayToGraph.prototype.updateNumDisp = function (data) {
