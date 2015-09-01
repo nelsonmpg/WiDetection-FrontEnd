@@ -112,17 +112,17 @@ ChartRealTime.prototype.updateIntervalGraph = function () {
   this.updateInterGraph = setInterval(function () {
     try {
       if (Backbone.history.getFragment() != "Dashboard" ||
-          self.atualSite != window.profile.get("site")) {
+              self.atualSite != window.profile.get("site")) {
         self.stopIntervalGraph();
-      }
-      self.updateGraph();
-      if ($("#" + self.localChart).length > 0 && self.chart != null) {
-        self.chart.render();
       } else {
-        self.stopIntervalGraph();
+        self.updateGraph();
+        if ($("#" + self.localChart).length > 0 && self.chart != null) {
+          self.chart.render();
+        } else {
+          self.stopIntervalGraph();
+        }
       }
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err.message);
       self.stopIntervalGraph();
     }
@@ -162,7 +162,7 @@ ChartRealTime.prototype.graph = function () {
   } else {
     self.stopIntervalGraph();
     $("#" + this.localChart).html('<div class="overlay text-center">' +
-        '<h1 style="margin-top: 10%"><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
+            '<h1 style="margin-top: 10%"><i class="fa fa-frown-o fa-spin"></i> No Results</h1></div>');
   }
 
 };
