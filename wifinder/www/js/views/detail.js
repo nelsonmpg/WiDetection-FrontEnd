@@ -4,9 +4,12 @@ window.DetailView = Backbone.View.extend({
   sensor: undefined,
   allap: [],
   events: {
-    "click a.selectSensor": "selectSensor",
+    "click a.selectSensor": function (e) {
+      e.preventDefault();
+    },
     "change #SensorSelect": "setsensor",
     "click .APjump": "openDetailAp",
+    "click .Dispjump": "openDetailDisp",
     "click .select-source": "selectSource",
     "apply.daterangepicker #reportrange": function (ev, picker) {
       this.changedate(ev, picker);
@@ -22,6 +25,15 @@ window.DetailView = Backbone.View.extend({
     e.stopPropagation();
     window.profile.set("nav-mac", $(e.currentTarget).data("mac"));
     app.navigate("DetailAP", {
+      trigger: true
+    });
+  },
+  openDetailDisp: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    window.profile.set("nav-vendor", $(e.currentTarget).data("vendor"));
+    window.profile.set("nav-mac", $(e.currentTarget).text());
+    app.navigate("DetailDevice", {
       trigger: true
     });
   },
@@ -90,6 +102,7 @@ window.DetailView = Backbone.View.extend({
 
 // add active class a primeira opcao do seletor de dataa range
     $(".daterangepicker .ranges ul li:first").addClass("active");
+
 //Initialize Select2 Elements
     $(".select2").select2();
     $.AdminLTE.boxWidget.activate();
@@ -115,9 +128,6 @@ window.DetailView = Backbone.View.extend({
             }, {}
     );
     this.allap = self.allap;
-  },
-  selectSensor: function (e) {
-    e.preventDefault();
   },
   getSensors: function (e) {
     var self = this;
@@ -162,6 +172,9 @@ window.DetailView = Backbone.View.extend({
       }]);
 
     $("#tblSensor").html(
+            '<tr><th style="width:50%">Sensor Name:</th><td>' +
+            $('#SensorSelect').find(":selected").text() +
+            '</td></tr>' +
             '<tr><th style="width:50%">Latitude:</th><td>' +
             $('#SensorSelect').find(":selected").data("lat") +
             '</td></tr>' +
@@ -175,7 +188,7 @@ window.DetailView = Backbone.View.extend({
             $('#SensorSelect').find(":selected").data("posy") +
             '</td></tr>' +
             '<tr><th style="width:50%">Last Active:</th><td id="actual-time-sensor">' +
-            moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm') + '</td></tr>');
+            moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm:ss') + '</td></tr>');
 
     $(".applyBtn").attr("disabled", false).click();
 
@@ -274,7 +287,7 @@ window.DetailView = Backbone.View.extend({
                   for (var a in data[i].reduction) {
                     var ipap = data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim();
                     dataSet.push([
-                      data[i].reduction[a].macAddress,
+                      "<a href='#' data-vendor='" + data[i].group + "' class='Dispjump'>" + data[i].reduction[a].macAddress + "</a>",
                       data[i].group,
                       moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
                       "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>",
@@ -324,7 +337,7 @@ window.DetailView = Backbone.View.extend({
   },
   updateDataSensor: function (data) {
     if (data.nomeAntena == this.sensor) {
-      $("#actual-time-sensor").text(moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm'));
+      $("#actual-time-sensor").text(moment(data.data).format('DD/MM/YYYY HH:mm:ss'));
       $('#chartCpu').val(data.cpu).trigger('change');
       $('#chartMem').val((data.memory.used / data.memory.total) * 100).trigger('change');
       $('#chartDisc').val(data.disc.use.toString().replace(/%/g, "")).trigger('change');

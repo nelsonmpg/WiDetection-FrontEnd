@@ -12,7 +12,7 @@ window.DetailDeviceView = Backbone.View.extend({
   initialize: function () {
     //this.render();
   },
-  init: function () {
+  init: function (obj) {
     var self = this;
     modem("GET",
             "/getDispMacbyVendor/" + window.profile.id,
@@ -27,7 +27,13 @@ window.DetailDeviceView = Backbone.View.extend({
                 html = html + "</ul></li>";
               }
               $("#selectDropdownFabricante").append(html);
-              $("#selectDropdownFabricante li:first ul li:first a.deviceSearch").click();
+
+              if (obj.length != 0) {
+                $("#selectDropdownFabricante li:contains('" + obj.vendor + "') ul li:contains('" + obj.mac + "') a.deviceSearch").click();
+              } else {
+                $("#selectDropdownFabricante li:first ul li:first a.deviceSearch").click();
+              }
+
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);

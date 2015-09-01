@@ -69,8 +69,8 @@ window.SideBarView = Backbone.View.extend({
     }
 
   },
-  setActive: function () {
-    $(".select-site-first a span:contains('Access')").click();
+  setActive: function (mav) {
+    $(".select-site-first a span:contains('" + mav + "')").click();
   },
   removeActive: function () {
     

@@ -160,7 +160,7 @@ var Router = Backbone.Router.extend({
       self.detailap = new DetailAPView();
       self.contentnav.setView("Details  >  Access Point");
       $('#content').html(self.detailap.render().el);
-      self.detailap.init((typeof window.profile.get("nav-mac") == "undefined") ? null : (window.profile.get("nav-mac")), window.profile.set("nav-mac", undefined), self.sidebar.setActive());
+      self.detailap.init((typeof window.profile.get("nav-mac") == "undefined") ? null : (window.profile.get("nav-mac")), window.profile.set("nav-mac", undefined), self.sidebar.setActive("Access"));
       windowScrollTop();
     });
   },
@@ -170,7 +170,14 @@ var Router = Backbone.Router.extend({
       self.detaildevice = new DetailDeviceView();
       self.contentnav.setView("Details  >  Device");
       $('#content').html(self.detaildevice.render().el);
-      self.detaildevice.init();
+      var obj = [];
+      if (typeof window.profile.get("nav-vendor") != "undefined" && typeof window.profile.get("nav-mac") != "undefined") {
+        obj = {
+          vendor: window.profile.get("nav-vendor"),
+          mac: window.profile.get("nav-mac")
+        };
+      }
+      self.detaildevice.init((obj), window.profile.set("nav-vendor", undefined), window.profile.set("nav-mac", undefined), self.sidebar.setActive("Devices"));
       windowScrollTop();
     });
   },
