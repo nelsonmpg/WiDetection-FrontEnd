@@ -274,7 +274,6 @@ module.exports.getAllOrderbyVendor = function (req, res) {
   var min = req.params.min;//new Date(req.params.min).toJSON();
   var max = req.params.max;//new Date(req.params.max).toJSON();
   var table = ((req.params.table).toString().toUpperCase() == "AP") ? "DispAp" : "DispMoveis";
-  console.log(min,max,table,req.params.sensor,self.getDataBase(req.params.id));
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
       return row("disp")("values").contains(function (a) {
@@ -626,7 +625,7 @@ module.exports.getAllDisp = function (iduser, socket) {
 
                   //Interval de update do grafico nos clientes
                   liveActives[self.getDataBase(iduser)].intervalChart = setInterval(function () {
-                    if (typeof liveActives[self.getDataBase(iduser)] != "undefined" && liveActives[self.getDataBase(iduser)] != null) {
+                    if (typeof liveActives[self.getDataBase(iduser)] != "undefined" && liveActives[self.getDataBase(iduser)] != null && liveActives[self.getDataBase(iduser)].array != undefined) {
                       connectdb.onConnect(function (err, conn) {
                         r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (row) {
                           return  row("disp").do(function (ro) {
@@ -653,6 +652,8 @@ module.exports.getAllDisp = function (iduser, socket) {
                           conn.close();
                         });
                       });
+                    } else {
+                      clearInterval(this);                      
                     }
                   }, 1000 * 60); //De minuto a minuto
                 }
