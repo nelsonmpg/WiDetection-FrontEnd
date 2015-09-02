@@ -25,9 +25,9 @@ module.exports.getNumDispositivos = function (req, res) {
         "moveis": r.db(self.getDataBase(req.params.id)).table("DispMoveis").count(),
         "ap": r.db(self.getDataBase(req.params.id)).table("DispAp").count()};
     }).run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -58,9 +58,9 @@ module.exports.getAllSensorAndisp = function (req, res) {
         }
       };
     }).coerceTo('array').run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -83,37 +83,19 @@ module.exports.getAllTimes = function (req, res) {
           });
         })};
     }).filter({"state": true}).without("state")("row")
-            .coerceTo("array")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .coerceTo("array")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result2) {
+
     var tempo = new Worker('./lib/TempoMedio.js');
     var result = [];
-
     //Na resposta do webworker
     tempo.onmessage = function (msg) {
-      // se a mensagem for "stop" e' para parar
-      if (msg.data == "stop") {
-        //termina o webworker
-        tempo.terminate();
-        //array para construir a resposta
-        var resposta = {};
-        //[macAddress] = numero de visitas
-        for (var i in result) {
-          resposta[i.toString()] = _.sortBy(result[i], "inicio");
-        }
-        //devolve a resposta ao cliente
-        res.json(resposta);
-      } else {
-        //verifica se a posição do array esta' indefinida e inicializa-a
-        if (typeof result[msg.data.macAddress] == "undefined") {
-          result[msg.data.macAddress] = [];
-        }
-        //guarda no array das visitas [macAddress] = [{visita},{visita}]
-        result[msg.data.macAddress].push(msg.data.visita);
-      }
+      res.json(JSON.stringify(msg.data));
+      tempo.terminate();
     };
 
     //worker start
@@ -132,12 +114,12 @@ module.exports.getAllTimes = function (req, res) {
 module.exports.getFabricantes = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.sock))
-            .table('DispMoveis')
-            .coerceTo("array")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .table('DispMoveis')
+        .coerceTo("array")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(getMACInDate(req.params.min, result));
   }).error(function (err) {
@@ -154,12 +136,12 @@ module.exports.getFabricantes = function (req, res) {
 module.exports.getDataBases = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.dbList().map({"db": r.row})
-            .filter(r.row("db").ne("rethinkdb"))
-            .filter(r.row("db").ne("user"))
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .filter(r.row("db").ne("rethinkdb"))
+        .filter(r.row("db").ne("user"))
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -176,11 +158,11 @@ module.exports.getDataBases = function (req, res) {
 module.exports.getSensors = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id)).table("ActiveAnt")
-            .coerceTo("ARRAY")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .coerceTo("ARRAY")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -197,12 +179,12 @@ module.exports.getSensors = function (req, res) {
 module.exports.getNameVendorByMac = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("DispMoveis")
-            .get(req.params.mac)("nameVendor")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .table("DispMoveis")
+        .get(req.params.mac)("nameVendor")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -242,17 +224,17 @@ module.exports.getActiveDisps = function (req, res) {
   }
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table(table)
-            .get(req.params.sensor)("host")
-            .do(function (row) {
-              return row.filter(function (a) {
-                return a("data").ge(r.now().toEpochTime().sub(60));
-              }).withFields("macAddress", "nameVendor", "Power", "data");
-            }).coerceTo("ARRAY")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .table(table)
+        .get(req.params.sensor)("host")
+        .do(function (row) {
+          return row.filter(function (a) {
+            return a("data").ge(r.now().toEpochTime().sub(60));
+          }).withFields("macAddress", "nameVendor", "Power", "data");
+        }).coerceTo("ARRAY")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -286,10 +268,10 @@ module.exports.getAllOrderbyVendor = function (req, res) {
         return b("name").eq(req.params.sensor);
       });
     }).coerceTo("ARRAY")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -310,11 +292,11 @@ module.exports.getDispMoveisbySensor = function (req, res) {
         return a.match("^" + req.params.sensor + "$");
       });
     }).group("nameVendor")
-            .coerceTo("ARRAY")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .coerceTo("ARRAY")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -331,12 +313,12 @@ module.exports.getDispMoveisbySensor = function (req, res) {
 module.exports.getPlantSite = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("plantSite")
-            .get(req.params.sensor)("img")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .table("plantSite")
+        .get(req.params.sensor)("img")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.json(result);
   }).error(function (err) {
@@ -357,12 +339,12 @@ module.exports.getPlantSite = function (req, res) {
 module.exports.getAllAP = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("AntAp")("host")
-            .group("macAddress", "ESSID")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .table("AntAp")("host")
+        .group("macAddress", "ESSID")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -379,18 +361,18 @@ module.exports.getAllAP = function (req, res) {
 module.exports.getDispConnectedtoAp = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("DispMoveis")
-            .filter(function (row) {
-              return row("disp")("values").contains(function (a) {
-                return a("BSSID").contains(function (b) {
-                  return b.match(req.params.mac);
-                });
-              });
-            }).coerceTo("array")
-            .run(conn)
-            .finally(function () {
-              conn.close();
+        .table("DispMoveis")
+        .filter(function (row) {
+          return row("disp")("values").contains(function (a) {
+            return a("BSSID").contains(function (b) {
+              return b.match(req.params.mac);
             });
+          });
+        }).coerceTo("array")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send([result, req.params.mac]);
   }).error(function (err) {
@@ -407,17 +389,17 @@ module.exports.getDispConnectedtoAp = function (req, res) {
 module.exports.getApFirstTime = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("DispAp")
-            .get(req.params.mac)("disp")("First_time")
-            .min().do(function (result) {
+        .table("DispAp")
+        .get(req.params.mac)("disp")("First_time")
+        .min().do(function (result) {
       return [result, r.db(self.getDataBase(req.params.id))
-                .table("DispAp")
-                .get(req.params.mac)("disp")("values")
-                .nth(0)("Last_time").max()];
+            .table("DispAp")
+            .get(req.params.mac)("disp")("values")
+            .nth(0)("Last_time").max()];
     }).run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -434,13 +416,13 @@ module.exports.getApFirstTime = function (req, res) {
 module.exports.getDispMacbyVendor = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("DispMoveis")
-            .group("nameVendor")("macAddress")
-            .coerceTo("ARRAY")
-            .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .table("DispMoveis")
+        .group("nameVendor")("macAddress")
+        .coerceTo("ARRAY")
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
     res.send(result);
   }).error(function (err) {
@@ -457,14 +439,14 @@ module.exports.getDispMacbyVendor = function (req, res) {
 module.exports.getApbyMac = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("DispAp")
-            .get(req.params.mac)
-    .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .table("DispAp")
+        .get(req.params.mac)
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
-                res.send(JSON.stringify(result));
+    res.send(JSON.stringify(result));
   }).error(function (err) {
     console.log("ERROR: %s:%s", err.name, err.msg);
   });
@@ -482,14 +464,14 @@ module.exports.getApbyMac = function (req, res) {
 module.exports.getDispbyMac = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("DispMoveis")
-            .get(req.params.mac)
-    .run(conn)
-            .finally(function () {
-              conn.close();
-            });
+        .table("DispMoveis")
+        .get(req.params.mac)
+        .run(conn)
+        .finally(function () {
+          conn.close();
+        });
   }).then(function (result) {
-                res.send(JSON.stringify(result));
+    res.send(JSON.stringify(result));
   }).error(function (err) {
     console.log("ERROR: %s:%s", err.name, err.msg);
   });
@@ -506,16 +488,16 @@ module.exports.getDispbyMac = function (req, res) {
 module.exports.getAllDataBases = function (callback) {
   connectdb.onConnect(function (err, conn) {
     r.dbList().map({"db": r.row})
-            .filter(r.row("db").ne("rethinkdb"))
-            .filter(r.row("db").ne("user"))
-            .run(conn, function (err, result) {
-              if (err) {
-                callback(err.msg, null);
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                callback(null, result);
-              }
-            });
+        .filter(r.row("db").ne("rethinkdb"))
+        .filter(r.row("db").ne("user"))
+        .run(conn, function (err, result) {
+          if (err) {
+            callback(err.msg, null);
+            console.log("ERROR: %s:%s", err.name, err.msg);
+          } else {
+            callback(null, result);
+          }
+        });
   });
 };
 
@@ -532,15 +514,15 @@ module.exports.getAllDataBases = function (callback) {
 module.exports.changeTablesDisps = function (database, socket, table, nemedisp) {
   connectdb.onConnect(function (err, conn) {
     r.db(database).table(table)
-            .changes()
-            .filter(function (row) {
-              return row('old_val').eq(null);
-            }).run(conn)
-            .then(function (cursor) {
-              cursor.each(function (err, item) {
-                socket.emit("newDisp", item, nemedisp, database);
-              });
-            });
+        .changes()
+        .filter(function (row) {
+          return row('old_val').eq(null);
+        }).run(conn)
+        .then(function (cursor) {
+          cursor.each(function (err, item) {
+            socket.emit("newDisp", item, nemedisp, database);
+          });
+        });
   });
 };
 
@@ -556,19 +538,19 @@ module.exports.changeTablesDisps = function (database, socket, table, nemedisp) 
 module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
   connectdb.onConnect(function (err, conn) {
     r.db(database).table(table)
-            .changes()('new_val')
-            .map(function (v) {
-              return {"sensor": v("nomeAntena"), "hosts": v("host").do(function (row) {
-                  return row.filter(function (o) {
-                    return o("data").ge(r.now().toEpochTime().sub(60));
-                  }).withFields("macAddress", "nameVendor", "Power", "data");
-                })};
-            }).run(conn)
-            .then(function (cursor) {
-              cursor.each(function (err, item) {
-                socket.emit("updateRealTimeChart", item, nomedisp, database);
-              });
-            });
+        .changes()('new_val')
+        .map(function (v) {
+          return {"sensor": v("nomeAntena"), "hosts": v("host").do(function (row) {
+              return row.filter(function (o) {
+                return o("data").ge(r.now().toEpochTime().sub(60));
+              }).withFields("macAddress", "nameVendor", "Power", "data");
+            })};
+        }).run(conn)
+        .then(function (cursor) {
+          cursor.each(function (err, item) {
+            socket.emit("updateRealTimeChart", item, nomedisp, database);
+          });
+        });
   });
 };
 
@@ -581,12 +563,12 @@ module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
 module.exports.changeActiveAnt = function (database, socket) {
   connectdb.onConnect(function (err, conn) {
     r.db(database).table("ActiveAnt")
-            .changes()('new_val').withFields("nomeAntena", "cpu", "disc", "memory", "data").run(conn)
-            .then(function (cursor) {
-              cursor.each(function (err, item) {
-                socket.emit("changeActiveAnt", item, database);
-              });
-            });
+        .changes()('new_val').withFields("nomeAntena", "cpu", "disc", "memory", "data").run(conn)
+        .then(function (cursor) {
+          cursor.each(function (err, item) {
+            socket.emit("changeActiveAnt", item, database);
+          });
+        });
   });
 };
 
@@ -609,56 +591,56 @@ module.exports.getAllDisp = function (iduser, socket) {
             });
           })};
       }).filter({"state": true}).without("state")("row")
-              .coerceTo("ARRAY")
-              .run(conn, function (err, result) {
-                if (err) {
-                  console.log("ERROR: %s:%s", err.name, err.msg);
-                } else {
+          .coerceTo("ARRAY")
+          .run(conn, function (err, result) {
+            if (err) {
+              console.log("ERROR: %s:%s", err.name, err.msg);
+            } else {
 
-                  var work = new Worker('./lib/workerGraph.js');
-                  work.postMessage(result);
-                  work.onmessage = function (msg) {
-                    liveActives[self.getDataBase(iduser)].array = msg.data;
-                    work.terminate();
-                    socket.emit("getAllDisp", msg.data, self.getDataBase(iduser));
-                  };
+              var work = new Worker('./lib/workerGraph.js');
+              work.postMessage(result);
+              work.onmessage = function (msg) {
+                liveActives[self.getDataBase(iduser)].array = msg.data;
+                work.terminate();
+                socket.emit("getAllDisp", msg.data, self.getDataBase(iduser));
+              };
 
-                  //Interval de update do grafico nos clientes
-                  liveActives[self.getDataBase(iduser)].intervalChart = setInterval(function () {
-                    if (typeof liveActives[self.getDataBase(iduser)] != "undefined" && liveActives[self.getDataBase(iduser)] != null && liveActives[self.getDataBase(iduser)].array != undefined) {
-                      connectdb.onConnect(function (err, conn) {
-                        r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (row) {
-                          return  row("disp").do(function (ro) {
-                            return {"macAddress": row("macAddress"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))};
-                          });
-                        }).map(function (a) {
-                          return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
-                              return value("Last_time").ge(r.now().toEpochTime().sub(60));
-                            })};
-                        }).filter({"state": true})
-                                .count().run(conn, function (err, result) {
-                          if (err) {
-                            console.log("ERROR: %s:%s", err.name, err.msg);
-                          } else {
-                            //Atualiza o array do servidor       
-                            var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
-                            novaData.addMinutes(1);
-                            liveActives[self.getDataBase(iduser)].array.shift();
-                            var x = {x: novaData.toISOString(), y: result * 1};
-                            liveActives[self.getDataBase(iduser)].array.push(x);
-                            //Envia para os clientes
-                            socket.emit("updateChart", x, self.getDataBase(iduser));
-                          }
-                          conn.close();
-                        });
+              //Interval de update do grafico nos clientes
+              liveActives[self.getDataBase(iduser)].intervalChart = setInterval(function () {
+                if (typeof liveActives[self.getDataBase(iduser)] != "undefined" && liveActives[self.getDataBase(iduser)] != null && liveActives[self.getDataBase(iduser)].array != undefined) {
+                  connectdb.onConnect(function (err, conn) {
+                    r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (row) {
+                      return  row("disp").do(function (ro) {
+                        return {"macAddress": row("macAddress"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))};
                       });
-                    } else {
-                      clearInterval(this);                      
-                    }
-                  }, 1000 * 60); //De minuto a minuto
+                    }).map(function (a) {
+                      return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
+                          return value("Last_time").ge(r.now().toEpochTime().sub(60));
+                        })};
+                    }).filter({"state": true})
+                        .count().run(conn, function (err, result) {
+                      if (err) {
+                        console.log("ERROR: %s:%s", err.name, err.msg);
+                      } else {
+                        //Atualiza o array do servidor       
+                        var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
+                        novaData.addMinutes(1);
+                        liveActives[self.getDataBase(iduser)].array.shift();
+                        var x = {x: novaData.toISOString(), y: result * 1};
+                        liveActives[self.getDataBase(iduser)].array.push(x);
+                        //Envia para os clientes
+                        socket.emit("updateChart", x, self.getDataBase(iduser));
+                      }
+                      conn.close();
+                    });
+                  });
+                } else {
+                  clearInterval(this);
                 }
-                conn.close();
-              });
+              }, 1000 * 60); //De minuto a minuto
+            }
+            conn.close();
+          });
     });
   }
 };

@@ -109,7 +109,7 @@ window.DashboardView = Backbone.View.extend({
               for (var i in data) {
                 locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
               }
-              carregarmapa(locations, $("#map").get()[0]);
+              carregarmapa(locations, "map");
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
@@ -131,7 +131,8 @@ window.DashboardView = Backbone.View.extend({
     modem("GET",
         "/getAllTimes/" + window.profile.id,
         function (data) {
-            self.countChart = new ArrayToGraph(data, "chartDispVisit", "column");
+          console.log(JSON.parse(data));
+            self.countChart = new ArrayToGraph(JSON.parse(data), "chartDispVisit", "column");
             self.countChart.createArrayToGraphOneBar2();
         },
         function (xhr, ajaxOptions, thrownError) {

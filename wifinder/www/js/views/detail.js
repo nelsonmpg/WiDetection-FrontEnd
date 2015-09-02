@@ -164,7 +164,7 @@ window.DetailView = Backbone.View.extend({
         $('#SensorSelect').find(":selected").data("lat"),
         $('#SensorSelect').find(":selected").data("log"),
         $('#SensorSelect').find(":selected").data("date")]],
-            $("#mapSensor").get()[0]);
+            "mapSensor");
     addCircletoMap(map, [{
         lat: $('#SensorSelect').find(":selected").data("lat"),
         log: $('#SensorSelect').find(":selected").data("log"),

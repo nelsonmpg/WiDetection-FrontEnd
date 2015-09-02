@@ -69,13 +69,13 @@ var showmsg = function (local, tipo, msg, callback) {
       break;
   }
   $(local).html('<div class="col-md-8">' +
-          '<div class="box box-default">' +
-          '<div class="box-body">' +
-          '<button type="button" class="close" data-dismiss="alert" onClick="closeAlert(this);" aria-hidden="true"><i class="fa fa-times fa-2x"></i></button>' +
-          '<div class="alert ' + formsg.class + ' alert-dismissable">' +
-          '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
-          '<h4>' + msg + '</h4>' +
-          '</div></div></div></div>');
+      '<div class="box box-default">' +
+      '<div class="box-body">' +
+      '<button type="button" class="close" data-dismiss="alert" onClick="closeAlert(this);" aria-hidden="true"><i class="fa fa-times fa-2x"></i></button>' +
+      '<div class="alert ' + formsg.class + ' alert-dismissable">' +
+      '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
+      '<h4>' + msg + '</h4>' +
+      '</div></div></div></div>');
   $(local).show();
   setTimeout(function () {
     $(local).hide();
@@ -108,12 +108,12 @@ var showInfoMsg = function (show, local, msg) {
   });
   if (show) {
     $(local).html('<div class="col-md-8">' +
-            '<div class="box box-default">' +
-            '<div class="box-body">' +
-            '<div class="alert ' + formsg.class + ' alert-dismissable">' +
-            '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
-            '<h4>' + msg + '</h4>' +
-            '</div></div></div></div>');
+        '<div class="box box-default">' +
+        '<div class="box-body">' +
+        '<div class="alert ' + formsg.class + ' alert-dismissable">' +
+        '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
+        '<h4>' + msg + '</h4>' +
+        '</div></div></div></div>');
     $(local).show();
   } else {
     $(local).hide();
@@ -181,7 +181,10 @@ var carregarmapa = function (local, localaddmap) {
     iconURLPrefix + 'yellow-dot.png'
   ];
   var iconsLength = icons.length;
-  var map = new google.maps.Map(localaddmap, {
+  var map = null;
+  
+  try {  
+  map = new google.maps.Map(document.getElementById(localaddmap), {
     zoom: 18,
     center: new google.maps.LatLng(locations[0][1], locations[0][2]),
     mapTypeId: google.maps.MapTypeId.ROADMAP, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
@@ -202,7 +205,7 @@ var carregarmapa = function (local, localaddmap) {
     if (locations[i][3] != null) {
       var now = new Date();
       if (new Date(locations[i][3]) > now.addMinutes(-5)) {
-        icon = icons[3];
+        icon = icons[1];
       } else {
         icon = icons[0];
       }
@@ -245,6 +248,10 @@ var carregarmapa = function (local, localaddmap) {
 //    });
   });
   return map;
+  }
+  catch(err) {
+    console.log(err.message);
+}
 };
 
 

@@ -24,7 +24,7 @@ self.onmessage = function (e) {
     return this;
   };
 
-  var result = [];
+  var result = {};
   var ini, fin;
   
   for (var a in teste) {
@@ -43,7 +43,7 @@ self.onmessage = function (e) {
             var x = {"sensor": teste[a].sensores[b].name, "inicio": ini, "fim": fin};
             result[teste[a].macAddress].push(x);
             //console.log(result[teste[a].macAddress]);
-            self.postMessage({"macAddress":teste[a].macAddress,"visita":x,"nameVendor":teste[a].nameVendor});
+//            self.postMessage({"macAddress":teste[a].macAddress,"visita":x,"nameVendor":teste[a].nameVendor});
             ini = sensorLastTime;
             fin = ini;
           }
@@ -52,5 +52,5 @@ self.onmessage = function (e) {
     }
   }
  
-  self.postMessage("stop");
+  self.postMessage(result);
 };
