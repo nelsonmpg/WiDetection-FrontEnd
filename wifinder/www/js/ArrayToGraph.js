@@ -14,6 +14,7 @@ var ArrayToGraph = function (array, local, type) {
   this.click = null;
   this.anguloX = 0;
   this.theme = "theme3";
+  this.scalegraph = 1;
 };
 
 ArrayToGraph.prototype.changeAnguloX = function (angulo) {
@@ -74,6 +75,7 @@ ArrayToGraph.prototype.updateGraphSimpleLine = function (data) {
 ArrayToGraph.prototype.createArrayToGraphOneBar = function () {
   var datapoint = [];
   for (var i in this.array) {
+    (this.array[i].reduction.length > 20 ? this.scalegraph = 3 : 1);
     datapoint.push({
       y: this.array[i].reduction.length,
       label: (this.array[i].group == "") ? "Unknown" : this.array[i].group
@@ -276,7 +278,7 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
     },
     axisY: {
       gridThickness: 1,
-      interval: 1,
+      interval: self.scalegraph,
       labelFontSize: 12,
       labelFontFamily: "verdana",
       labelFontColor: "black"
