@@ -45,6 +45,7 @@ window.DetailView = Backbone.View.extend({
     $('#reportrange').daterangepicker({
       ranges: {
         'Today': [moment().hours(0).minutes(0).seconds(0), moment()],
+        'Last Hour':[moment().hours(moment().subtract(1, 'hour').hours()), moment()],
         'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
         'Last 7 Days': [moment().subtract(6, 'days'), moment()],
         'Last 30 Days': [moment().subtract(29, 'days'), moment()],
@@ -224,12 +225,13 @@ window.DetailView = Backbone.View.extend({
     );
   },
   changedate: function (ev, picker) {
+    console.log(picker.startDate.format(), picker.endDate.format());
     $(".daterangepicker .ranges ul li").removeClass("active");
     $(".daterangepicker .ranges ul li:contains('" + picker.chosenLabel + "')").addClass("active");
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
 
     $(".sensor-selected").text(this.sensor);
-    $(".time-selected").text(picker.chosenLabel + " -> " + $("#reportrange span").text());
+    $(".time-selected").text(picker.chosenLabel + " ⇨ " + $("#reportrange span").text());
   },
   loadcharts: function (min, max) {
     var self = this;
