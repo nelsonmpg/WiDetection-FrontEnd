@@ -302,6 +302,7 @@ window.ConfigSiteView = Backbone.View.extend({
             function (data) {
               if (data.length > 0) {
                 $("#device-monitor").val(data);
+                $("#device-select").val($("#select-device li:first").text());
                 $("#select-device").parent().children("button").addClass("disabled");
               }
               $('#create-monitor').prop('disabled', true);

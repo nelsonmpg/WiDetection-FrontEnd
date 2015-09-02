@@ -6,13 +6,18 @@ window.SideBarView = Backbone.View.extend({
   socketsidebar: null,
   events: {
     "click .site-option": "select_site",
-    "click #site-ativo": "stopevent",
+    "click #site-ativo": function (e) {
+      e.preventDefault();
+      $('ul.sidebar-menu li.active').removeClass("active");
+      $(e.currentTarget).parent().addClass("active");
+    },
     "click .select-item-menu": "navsidebar"
   },
-  stopevent: function (e) {
-    e.preventDefault();
-    $('ul.sidebar-menu li.active').removeClass("active");
-    $(e.currentTarget).parent().addClass("active");
+  resetValues: function () {
+    var self = this;
+    window.profile.set("site", undefined);
+    self.databaseselect = false;
+    self.lastsite = "";
   },
   select_site: function (e) {
     var self = this;
@@ -44,7 +49,7 @@ window.SideBarView = Backbone.View.extend({
     var self = this;
     e.preventDefault();
     if ($(e.currentTarget).parent().hasClass("select-site-first")) {
-      if (typeof window.profile.get("site") != "undefined") {
+      if (typeof window.profile.get("site") != "undefined" && self.databaseselect) {
         if ($(e.currentTarget).parent().parent().parent().hasClass("treeview")) {
           $('ul.sidebar-menu li ul li.active').removeClass("active");
           $(e.currentTarget).parent().addClass("active");
@@ -73,7 +78,6 @@ window.SideBarView = Backbone.View.extend({
     $(".select-site-first a span:contains('" + mav + "')").click();
   },
   removeActive: function () {
-    
     $("li.active .fa-angle-left").click();
     $('ul.sidebar-menu li.active').removeClass("active");
   },
@@ -81,14 +85,14 @@ window.SideBarView = Backbone.View.extend({
     this.socketsidebar = opt.socket;
   },
   addsitessidebar: function () {
-    if (typeof window.profile.get("site") == "undefined") {
+    if (!self.databaseselect) {
       modem('GET', "/getAllDataBase",
               function (data) {
                 var sitesAppend = "";
                 for (var i = 0; i < data.length; i++) {
                   sitesAppend += '<li class="site-option"><a href="#"><i class="fa fa-circle-o"></i> ' + data[i].db + '</a></li>';
                 }
-                $('ul.sidebar-menu ul.site-title').append(sitesAppend);
+                $('ul.sidebar-menu ul.site-title').html(sitesAppend);
               },
               function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);
