@@ -127,13 +127,11 @@ var Router = Backbone.Router.extend({
         self.header = new HeaderView({
           logo: (window.profile.logo == "") ? "./img/user.png" : window.profile.logo
         });
-//        self.sidebar = new SideBarView({socket: self.socketclt});
         self.footer = new FooterView();
         self.contentnav = new ContentNavView();
         $('header').html(self.header.render().el);
         self.header.init();
         $('#contentnav').html(self.contentnav.render().el);
-//        $('aside.main-sidebar').html(self.sidebar.render().el);
         $('footer').html(self.footer.render().el);
       } else {
         self.sidebar.resetValues();
