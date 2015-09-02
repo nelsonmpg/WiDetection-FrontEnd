@@ -123,13 +123,13 @@ var ServerSocket = function (port, configdb, sensorcfg) {
  */
 ServerSocket.prototype.start = function () {
   var self = this;
+  this.serverSck.listen();
   
   // insere ou atualiza o sensor
   activeant.insertActiveAnt(self.clienteSend, self.lati, self.long, self.local, self.posx, self.posy);
   
   // insere ou atualiza a planta 
   activeant.insertPlant(self.clienteSend, self.plant);
-  this.serverSck.listen();
 
 // script que deteta alteracoes efectuadas no ficheiro especifico
   watcher.on('change', function (path) {
@@ -144,13 +144,13 @@ ServerSocket.prototype.start = function () {
           var diff = jsdiff.diffTrimmedLines(oldLine, line);
           diff.forEach(function (part) {
             if (part.added) {
-              localTable[result[0]] = line;
+              localTable[a[0]] = line;
               self.sendToDataBase(a);
             }
           });
         } else {
           var b = result.slice();
-          localTable[result[0]] = line;
+          localTable[b[0]] = line;
           self.sendToDataBase(b);
         }
       }

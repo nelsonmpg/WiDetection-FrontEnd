@@ -52,7 +52,7 @@ var MainSKT = function () {
     posy: 0,
     plant: ""
   };
-  
+
   // localizacao do ficheiro criado pelo airmon
   this.localfilemonitor = "";
 };
@@ -67,9 +67,9 @@ MainSKT.prototype.carregarConfig = function () {
   this.dbConfig.port = this.config.database.port;
   this.dbConfig.authKey = crypto.createHash('sha1').update(this.config.database.projectname).digest('hex');
   this.dbConfig.db = this.config.database.sitename;
-  
+
   this.localfilemonitor = this.config.global.filemonitor;
-  
+
   this.dbData = {
     host: this.dbConfig.host,
     port: this.dbConfig.port,
@@ -85,7 +85,7 @@ MainSKT.prototype.carregarConfig = function () {
     posy: this.config.localsensor.posy,
     plant: this.config.localsensor.plant
   };
-  
+
   this.startDb();
 };
 
@@ -136,12 +136,13 @@ MainSKT.prototype.waitDbAndTableOk = function () {
             });
   }).then(function (resul) {
     console.log("Tabelas - " + resul);
-    if (resul == 0) {
+    if (resul != Object.keys(self.dbConfig.tables).length) {
       setTimeout(function () {
         self.waitDbAndTableOk();
       }, 500);
+    } else {
+      self.carregarPrefixos();
     }
-    self.carregarPrefixos();
   }).error(function (err) {
     console.log(err);
   });
@@ -153,7 +154,7 @@ MainSKT.prototype.waitDbAndTableOk = function () {
  */
 MainSKT.prototype.carregarPrefixos = function () {
   var self = this;
-
+  console.log("Consulta da tablea dos prefixos ter dados.");
 // Verifica se a tabela dos prefixos ja possuem dados
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.dbConfig.db).table("tblPrefix").coerceTo("array").count().run(conn)
@@ -163,10 +164,12 @@ MainSKT.prototype.carregarPrefixos = function () {
   }).then(function (resul) {
     // teste se a tabela dos prefixos esta vazia
     if (!(resul > 0) || typeof resul == "undefined") {
+      console.log("Carregar Prefixos.");
       // fas o download da pagina com os prefixos e constroi o array de objectos 
       // para inserir na base de dados
       self.download(url, function (data) {
         if (data) {
+          console.log("Criacao da lsista de prefixos para colocar na base dados.");
           var lines = data.split("\n");
           var docsInsert = [];
           for (var i in lines) {
@@ -210,6 +213,7 @@ MainSKT.prototype.carregarPrefixos = function () {
               }
             }
           }
+          console.log("Insersao da lista de prefixos na base de dados.");
           // Insere de uma vez todos os prefixos na base de dados
           r.connect(self.dbData).then(function (conn) {
             return r.db(self.dbConfig.db).table("tblPrefix").insert(docsInsert).run(conn)
@@ -241,11 +245,12 @@ MainSKT.prototype.carregarPrefixos = function () {
 MainSKT.prototype.startServers = function () {
   var self = this;
 
+  console.log("Carregar lista de configuracoes para enviar pra outro processo.");
   var args = {
     port: "",
     configdb: self.dbConfig,
     sensorcfg: self.sensorCfg,
-    filefolder : self.localfilemonitor
+    filefolder: self.localfilemonitor
   };
 // inicia  o script do servidor
   var child = cp.fork('./lib/socket');

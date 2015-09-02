@@ -227,7 +227,7 @@ window.ConfigSiteView = Backbone.View.extend({
   },
   refresh: function () {
     var self = this;
-    showInfoMsg(true, '.my-modal', "RefreshValues.<br>Wait... <i class='fa fa-refresh fa-spin'></i>");
+    showInfoMsg(true, '.my-modal', "RefreshValues.<br>Please Wait a Moment... <i class='fa fa-refresh fa-spin'></i>");
     self.init();
     $("#site-name, #site-pass, #server-ip, #server-port").attr("disabled", false);
   },
@@ -323,7 +323,7 @@ window.ConfigSiteView = Backbone.View.extend({
   createmonitor: function () {
     var self = this;
     console.log("create monitor");
-    showInfoMsg(true, '.my-modal', "Create Monitor.<br>Wait... <i class='fa fa-refresh fa-spin'></i>");
+    showInfoMsg(true, '.my-modal', "Create Monitor.<br>Please Wait a Moment... <i class='fa fa-refresh fa-spin'></i>");
     modem("POST",
             "/createmonitor",
             function (data) {
@@ -553,7 +553,7 @@ window.ConfigSiteView = Backbone.View.extend({
         self.continue = false;
         if ($("#device-monitor").val().trim().length > 0) {
           console.log("start monitor");
-          showInfoMsg(true, '.my-modal', "Start Monitor.<br>Wait... <i class='fa fa-refresh fa-spin'></i>");
+          showInfoMsg(true, '.my-modal', "Start Monitor.<br>Please Wait a Moment... <i class='fa fa-refresh fa-spin'></i>");
           modem("POST",
                   "/startmonitor",
                   function (data) {
@@ -585,7 +585,7 @@ window.ConfigSiteView = Backbone.View.extend({
   stopmonitor: function () {
     var self = this;
     console.log("Start stop Monitor!");
-    showInfoMsg(true, '.my-modal', "Stop Monitor.<br>Wait... <i class='fa fa-refresh fa-spin'></i>");
+    showInfoMsg(true, '.my-modal', "Stop Monitor.<br>Please Wait a Moment... <i class='fa fa-refresh fa-spin'></i>");
     modem("POST",
             "/stopmonitor",
             function (data) {
