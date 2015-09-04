@@ -103,6 +103,22 @@ ArrayToGraph.prototype.createArrayToGraphOneBar2 = function () {
   this.createAndShowGraphOneBar();
 };
 
+ArrayToGraph.prototype.createArrayToGraphOneBar3 = function () {
+  var datapoint = [];
+  for (var i in this.array) {
+    datapoint.push({
+      label: i,
+      y: this.array[i] *1
+    });
+  }
+  this.dataTograph.push({
+    type: this.type,
+    dataPoints: datapoint
+  });
+  this.createAndShowGraphOneBar();
+};
+
+
 ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
   try {    
   var pointsDisp = [];
