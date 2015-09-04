@@ -135,7 +135,6 @@ window.DashboardView = Backbone.View.extend({
           a =  _.groupBy(a, function (o) {
             return o[0].nameVendor;
           });
-          console.log(a);
           self.countChart = new ArrayToGraph(a, "chartDispVisit", "column");
           self.countChart.createArrayToGraphOneBar2();
         },
