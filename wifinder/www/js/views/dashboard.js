@@ -78,7 +78,7 @@ window.DashboardView = Backbone.View.extend({
       self.lastSensorselect = sensor;
       modem("GET",
           "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
-          function (data) {      
+          function (data) {
             self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
             self.chartrealtimeMoveis.updateIntervalGraph();
           },
@@ -90,8 +90,8 @@ window.DashboardView = Backbone.View.extend({
       modem("GET",
           "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
           function (data) {
-              self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
-              self.chartrealtimeAp.updateIntervalGraph();
+            self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
+            self.chartrealtimeAp.updateIntervalGraph();
           },
           function (xhr, ajaxOptions, thrownError) {
             var json = JSON.parse(xhr.responseText);
@@ -103,18 +103,18 @@ window.DashboardView = Backbone.View.extend({
   MapSensors: function (e) {
     var self = this;
     modem("GET",
-            "/getSensors/" + window.profile.id,
-            function (data) {
-              var locations = [];
-              for (var i in data) {
-                locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
-              }
-              carregarmapa(locations, "map");
-            },
-            function (xhr, ajaxOptions, thrownError) {
-              var json = JSON.parse(xhr.responseText);
-              error_launch(json.message);
-            }, {}
+        "/getSensors/" + window.profile.id,
+        function (data) {
+          var locations = [];
+          for (var i in data) {
+            locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
+          }
+          carregarmapa(locations, "map");
+        },
+        function (xhr, ajaxOptions, thrownError) {
+          var json = JSON.parse(xhr.responseText);
+          error_launch(json.message);
+        }, {}
     );
   },
   chartDispActive: function () {
@@ -131,9 +131,13 @@ window.DashboardView = Backbone.View.extend({
     modem("GET",
         "/getAllTimes/" + window.profile.id,
         function (data) {
-          console.log(JSON.parse(data));
-            self.countChart = new ArrayToGraph(JSON.parse(data), "chartDispVisit", "column");
-            self.countChart.createArrayToGraphOneBar2();
+          var a = JSON.parse(data);
+          a =  _.groupBy(a, function (o) {
+            return o[0].nameVendor;
+          });
+          console.log(a);
+          self.countChart = new ArrayToGraph(a, "chartDispVisit", "column");
+          self.countChart.createArrayToGraphOneBar2();
         },
         function (xhr, ajaxOptions, thrownError) {
           var json = JSON.parse(xhr.responseText);

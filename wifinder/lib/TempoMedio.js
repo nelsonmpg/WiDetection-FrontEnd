@@ -25,7 +25,7 @@ self.onmessage = function (e) {
   };
 
   var result = {};
-  var ini, fin;
+  var ini, fin, x;
   
   for (var a in teste) {
     for (var b in teste[a].sensores) {
@@ -40,7 +40,7 @@ self.onmessage = function (e) {
             if (typeof result[teste[a].macAddress] == "undefined" ) {
             result[teste[a].macAddress] = [];
             }
-            var x = {"sensor": teste[a].sensores[b].name, "inicio": ini, "fim": fin};
+            x = {"sensor": teste[a].sensores[b].name, "inicio": ini, "fim": fin};
             result[teste[a].macAddress].push(x);
             //console.log(result[teste[a].macAddress]);
 //            self.postMessage({"macAddress":teste[a].macAddress,"visita":x,"nameVendor":teste[a].nameVendor});
@@ -49,6 +49,8 @@ self.onmessage = function (e) {
           }
         }
       }
+      result[teste[a].macAddress] = [];
+      result[teste[a].macAddress].push({"sensor": teste[a].sensores[b].name, "inicio": ini, "fim": fin,"nameVendor":teste[a].nameVendor});
     }
   }
  
