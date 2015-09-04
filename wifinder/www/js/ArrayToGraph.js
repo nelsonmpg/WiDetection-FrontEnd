@@ -193,7 +193,7 @@ ArrayToGraph.prototype.updateSensor = function (data) {
 
 ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
   var self = this;
-  if (this.array.length > 4) {
+  if (self.dataTograph[0].dataPoints.length > 4) {
     this.anguloX = -30;
   }
   this.chart = new CanvasJS.Chart(this.local, {
@@ -277,8 +277,8 @@ ArrayToGraph.prototype.createAndShowGraphLine = function () {
 
 ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
   var self = this;
-  if (this.array.length > 4) {
-    this.anguloX = -60;
+  if (self.dataTograph[0].dataPoints.length > 3) {
+    this.anguloX = -50;
   }
   this.chart = new CanvasJS.Chart(this.local, {
     animationEnabled: true,
