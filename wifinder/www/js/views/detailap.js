@@ -64,6 +64,7 @@ window.DetailAPView = Backbone.View.extend({
     );
   },
   getDisps: function (mac) {
+    $(".showScale").hide();
     var self = this;
     if (this.net != undefined) {
       this.net.destroy();
@@ -172,8 +173,8 @@ window.DetailAPView = Backbone.View.extend({
           icon: {
             face: 'FontAwesome',
             code: '\uf1eb',
-            size: 50 //,
-//            color: '#00ff00'
+            size: 50,
+            color: '#00ff00'
           }});
       }
 
@@ -247,6 +248,7 @@ window.DetailAPView = Backbone.View.extend({
     for (var i in xedges) {
       xnodes[xedges[i].from - 1].icon.color = getColor(max, _.where(xedges, {from: xedges[i].from}).length);
     }
+    $(".maxDevice").html(max+" devices");
     var edges = new vis.DataSet(xedges);
     var nodes = new vis.DataSet(xnodes);
     // create a network
@@ -269,6 +271,8 @@ window.DetailAPView = Backbone.View.extend({
     }
     // initialize your network!
     self.net = new vis.Network(container, data, options);
+    
+    $(".showScale").show();
   },
   ApHourChart: function (mac) {
     self = this;

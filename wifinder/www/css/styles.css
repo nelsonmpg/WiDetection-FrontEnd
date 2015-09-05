@@ -334,8 +334,17 @@ label.error,div.error{
   /*height: 100%;*/
 }
 
-/*.vertical-center > .container {
-  max-width: 100%;*/
+.css3gradient{
+  height: 15px;
+  background-color:#00ff00;
+  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr=#00ff00, endColorstr=#ff0000);
+  background-image:-moz-linear-gradient(left, #00ff00 0%, #ff0000 100%);
+  background-image:-webkit-linear-gradient(left, #00ff00 0%, #ff0000 100%);
+  background-image:-ms-linear-gradient(left, #00ff00 0%, #ff0000 100%);
+  background-image:linear-gradient(left, #00ff00 0%, #ff0000 100%);
+  background-image:-o-linear-gradient(left, #00ff00 0%, #ff0000 100%);
+  background-image:-webkit-gradient(linear, left bottom, right bottom, color-stop(0%,#00ff00), color-stop(100%,#ff0000));
+}
 
 .top5 { margin-top:5px; }
 .top7 { margin-top:7px; }
