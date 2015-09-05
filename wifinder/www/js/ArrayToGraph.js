@@ -120,37 +120,37 @@ ArrayToGraph.prototype.createArrayToGraphOneBar3 = function () {
 
 
 ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
-  try {    
-  var pointsDisp = [];
-  var pointsAp = [];
-  var self = this;
-  for (var i in this.array) {
-    pointsDisp.push({
-      label: this.array[i].DISP.nome,
-      y: 1 * this.array[i].DISP.count
-    });
-    pointsAp.push({
-      label: this.array[i].AP.nome,
-      y: 1 * this.array[i].AP.count
-    });
-  }
+  try {
+    var pointsDisp = [];
+    var pointsAp = [];
+    var self = this;
+    for (var i in this.array) {
+      pointsDisp.push({
+        label: this.array[i].DISP.nome,
+        y: 1 * this.array[i].DISP.count
+      });
+      pointsAp.push({
+        label: this.array[i].AP.nome,
+        y: 1 * this.array[i].AP.count
+      });
+    }
 
-  this.dataTograph = [{
-      type: this.type,
-      name: "Wireless Devices",
-      legendText: "Dispositivos Moveis",
-      showInLegend: true,
-      dataPoints: pointsDisp
-    }, {
-      type: this.type,
-      name: "Access Points",
-      legendText: "Access Points",
-      axisYType: "secondary",
-      showInLegend: true,
-      dataPoints: pointsAp
-    }];
-  this.createAndShowGraphTwoBars();
-  } catch (err){
+    this.dataTograph = [{
+        type: this.type,
+        name: "Wireless Devices",
+        legendText: "Dispositivos Moveis",
+        showInLegend: true,
+        dataPoints: pointsDisp
+      }, {
+        type: this.type,
+        name: "Access Points",
+        legendText: "Access Points",
+        axisYType: "secondary",
+        showInLegend: true,
+        dataPoints: pointsAp
+      }];
+    this.createAndShowGraphTwoBars();
+  } catch (err) {
     console.log(err);
   }
 };
@@ -251,8 +251,7 @@ ArrayToGraph.prototype.createAndShowGraphLine = function () {
       cursor: "pointer", itemclick: function (e) {
         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
           e.dataSeries.visible = false;
-        }
-        else {
+        } else {
           e.dataSeries.visible = true;
         }
         self.chart.render();
