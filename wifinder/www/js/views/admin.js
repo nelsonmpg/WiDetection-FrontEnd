@@ -40,7 +40,7 @@ window.AdminView = Backbone.View.extend({
                 for (var j in data[i].sensors) {
                   tableSite += '<tr><td>' + (j * 1 + 1) + '</td>' +
                           '<td class="center-vertical sensor-name" data-work="' + (checkSensorActive(data[i].sensors[j].data)) + '">' + data[i].sensors[j].nomeAntena + '</td>' +
-                          '<td class="center-vertical">' + moment(data[i].sensors[j].data).format('DD/MM/YYYY HH:mm:ss') + '</td>' +
+                          '<td class="center-vertical">' + moment(data[i].sensors[j].data).format('YYYY/MM/DD HH:mm:ss') + '</td>' +
                           '<td class="center-vertical">' + ((checkSensorActive(data[i].sensors[j].data)) ? self.chsckedTrue : self.chsckedFalse) + '</td>' +
                           '<td class="center-vertical"><button class="btn btn-default removesensor">Remove Sensor</button></td></tr>';
                 }

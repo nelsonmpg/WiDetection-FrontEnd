@@ -100,9 +100,6 @@ window.DetailView = Backbone.View.extend({
       }
     });
 
-// add active class a primeira opcao do seletor de data range
-    $(".daterangepicker .ranges ul li:first").addClass("active");
-
 //Initialize Select2 Elements
     $(".select2").select2();
     $.AdminLTE.boxWidget.activate();
@@ -145,6 +142,9 @@ window.DetailView = Backbone.View.extend({
               }
               $("#SensorSelectt > option:first").attr("selected", "selected");
               $("#SensorSelect").trigger('change');
+
+              // add active class a primeira opcao do seletor de data range
+              $(".daterangepicker .ranges ul li:first").addClass("active");
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
@@ -188,7 +188,7 @@ window.DetailView = Backbone.View.extend({
             $('#SensorSelect').find(":selected").data("posy") +
             '</td></tr>' +
             '<tr><th style="width:50%">Last Active:</th><td id="actual-time-sensor">' +
-            moment($('#SensorSelect').find(":selected").data("date")).format('DD/MM/YYYY HH:mm:ss') + '</td></tr>');
+            moment($('#SensorSelect').find(":selected").data("date")).format('YYYY/MM/DD HH:mm:ss') + '</td></tr>');
 
     $(".applyBtn").attr("disabled", false).click();
 
@@ -249,8 +249,8 @@ window.DetailView = Backbone.View.extend({
                       data[i].reduction[a].Privacy,
                       data[i].reduction[a].Speed,
                       data[i].reduction[a].channel,
-                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                      "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>"
+                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('YYYY/MM/DD HH:mm'),
+                      "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('YYYY/MM/DD HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>"
                     ]);
                   }
                 }
@@ -289,8 +289,8 @@ window.DetailView = Backbone.View.extend({
                     dataSet.push([
                       "<a href='#' data-vendor='" + data[i].group + "' class='Dispjump'>" + data[i].reduction[a].macAddress + "</a>",
                       data[i].group,
-                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('DD/MM/YYYY HH:mm'),
-                      "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('DD/MM/YYYY HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>",
+                      moment(data[i].reduction[a].disp[0].First_time * 1000).format('YYYY/MM/DD HH:mm'),
+                      "<span data-toggle='tooltip' title='" + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).format('YYYY/MM/DD HH:mm') + "'> " + moment(data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].Last_time * 1000).fromNow() + "</span>",
                       (ipap == "(notassociated)") ? "" : "<a href='#' data-mac='" + ipap + "' data-toggle='tooltip' title='" + (typeof self.allap[ipap] == "undefined" ? "Unknown" : self.allap[ipap].name) + "' class='APjump'>" + data[i].reduction[a].disp[0].values[data[i].reduction[a].disp[0].values.length - 1].BSSID.trim() + "</a>"
                     ]);
                   }
@@ -337,7 +337,7 @@ window.DetailView = Backbone.View.extend({
   },
   updateDataSensor: function (data) {
     if (data.nomeAntena == this.sensor) {
-      $("#actual-time-sensor").text(moment(data.data).format('DD/MM/YYYY HH:mm:ss'));
+      $("#actual-time-sensor").text(moment(data.data).format('YYYY/MM/DD HH:mm:ss'));
       $('#chartCpu').val(data.cpu).trigger('change');
       $('#chartMem').val((data.memory.used / data.memory.total) * 100).trigger('change');
       $('#chartDisc').val(data.disc.use.toString().replace(/%/g, "")).trigger('change');
