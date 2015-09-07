@@ -68,7 +68,6 @@ window.LoginView = Backbone.View.extend({
   },
   checkloginstored:function(){
      var credencial = localStorage.getItem('keyo');
-     console.log(credencial);
         if (credencial != null && credencial != "null") {
             var decoded =  atob(credencial).split(":");
             $("#login-form input[type='email']").val(decoded[0]);

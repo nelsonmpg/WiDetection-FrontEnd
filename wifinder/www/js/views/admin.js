@@ -1,6 +1,6 @@
 window.AdminView = Backbone.View.extend({
-  chsckedTrue: '<input type="checkbox" checked="true" disabled>',
-  chsckedFalse: '<input type="checkbox" disabled>',
+  chsckedTrue: "<span><i class='fa fa-power-off fa-2x' style='text-shadow: 2px 2px 2px #ccc; color: green;'></i></span>",    //'<input type="checkbox" checked="true" disabled>',
+  chsckedFalse: "<span><i class='fa  fa-circle-o-notch fa-2x' style='text-shadow: 2px 2px 2px #ccc; color: red;'></i></span>",  //'<input type="checkbox" disabled>',
   socketAdmin: undefined,
   events: {
     "keyup #urlvendor": "checkvendorslist",
