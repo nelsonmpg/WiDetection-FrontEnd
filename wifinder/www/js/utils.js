@@ -23,7 +23,7 @@ var checkSensorActive = function (last_date) {
   var HH = Math.floor(diffSeconds / 3600);
   var MM = Math.floor(diffSeconds % 3600) / 60;
 
-  return ((HH > 0) ? true : (MM > 5) ? true : false);
+  return ((HH > 0) ? false : (MM > 5) ? false : true);
 };
 
 

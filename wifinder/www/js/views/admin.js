@@ -1,6 +1,6 @@
 window.AdminView = Backbone.View.extend({
-  chsckedTrue: "<span><i class='fa fa-power-off fa-2x' style='text-shadow: 2px 2px 2px #ccc; color: green;'></i></span>",    //'<input type="checkbox" checked="true" disabled>',
-  chsckedFalse: "<span><i class='fa  fa-circle-o-notch fa-2x' style='text-shadow: 2px 2px 2px #ccc; color: red;'></i></span>",  //'<input type="checkbox" disabled>',
+  chsckedTrue: "<span><i class='fa fa-power-off fa-2x' style='text-shadow: 2px 2px 2px #ccc; color: green;'></i></span>", //'<input type="checkbox" checked="true" disabled>',
+  chsckedFalse: "<span><i class='fa  fa-circle-o-notch fa-2x' style='text-shadow: 2px 2px 2px #ccc; color: red;'></i></span>", //'<input type="checkbox" disabled>',
   socketAdmin: undefined,
   events: {
     "keyup #urlvendor": "checkvendorslist",
@@ -33,15 +33,15 @@ window.AdminView = Backbone.View.extend({
               var tableSite = '<table class="table table-bordered"><tbody>' +
                       '<tr><th style="width: 10px">#</th><th>Site Name</th><th>Sensors</th><th></th></tr>';
               for (var i in data) {
-                tableSite += '<tr><td class="center-vertical">' + i + '</td> ' +
+                tableSite += '<tr><td class="center-vertical">' + (i * 1 + 1) + '</td> ' +
                         '<td class="center-vertical site-name">' + data[i].db + '</td>' +
                         '<td><table class="table table-bordered" data-numSensors="' + data[i].numSensor + '"><tbody>' +
                         '<tr><th style="width: 10px">#</th><th>Sensor Name</th><th>Date</th><th>Active in Last 5 minutes</th><th></th></tr>';
                 for (var j in data[i].sensors) {
-                  tableSite += '<tr><td>' + j + '</td>' +
-                          '<td class="center-vertical sensor-name">' + data[i].sensors[j].nomeAntena + '</td>' +
+                  tableSite += '<tr><td>' + (j * 1 + 1) + '</td>' +
+                          '<td class="center-vertical sensor-name" data-work="' + (checkSensorActive(data[i].sensors[j].data)) + '">' + data[i].sensors[j].nomeAntena + '</td>' +
                           '<td class="center-vertical">' + moment(data[i].sensors[j].data).format('DD/MM/YYYY HH:mm:ss') + '</td>' +
-                          '<td class="center-vertical">' + ((checkSensorActive(data[i].sensors[j].data)) ? self.chsckedFalse : self.chsckedTrue) + '</td>' +
+                          '<td class="center-vertical">' + ((checkSensorActive(data[i].sensors[j].data)) ? self.chsckedTrue : self.chsckedFalse) + '</td>' +
                           '<td class="center-vertical"><button class="btn btn-default removesensor">Remove Sensor</button></td></tr>';
                 }
                 tableSite += '</tbody></table></td><td class="center-vertical"><button class="btn btn-default removesite">Remove Site</button></td></tr>';
@@ -105,16 +105,23 @@ window.AdminView = Backbone.View.extend({
     var $row2 = $(e.currentTarget).parent().parent().parent().parent().parent().closest("tr");
     var $text2 = $row2.find(".site-name").text();
     var numsensor = $(e.currentTarget).parent().parent().parent().parent().data("numsensors");
-    if (numsensor > 1) {
-      $("#modalRemove .modal-body").html("<p>Remove this sensor?<br>" + $text + " in this site " + $text2 + "</p>");
-      $("#modalRemove").attr("data-sitename", $text2);
-      $("#modalRemove").attr("data-sensorname", $text);
-    } else {
-      $("#modalRemove .modal-body").html("<p>This site only contains a sensor '" + $text + "'.<br>To remove it from the site '" + $text2 + "' will be also removed.</p>");
-      $("#modalRemove").attr("data-sitename", $text2);
-    }
+    console.log($row.find(".sensor-name").data("work"));
+
     $(".closeModal").attr("disabled", false);
     $("#removeok").attr("disabled", false);
+    if (numsensor > 1) {
+      if ($row.find(".sensor-name").data("work")) {
+        $("#modalRemove .modal-body").html("<p>You can't remove '" + $text + "' from '" + $text2 + "' while it's running.</p>");
+        $("#removeok").attr("disabled", true);
+      } else {
+        $("#modalRemove .modal-body").html("<p>Remove this sensor?<br>'" + $text + "' in site '" + $text2 + "'.</p>");
+        $("#modalRemove").attr("data-sitename", $text2);
+        $("#modalRemove").attr("data-sensorname", $text);
+      }
+    } else {
+      $("#modalRemove .modal-body").html("<p>This site only contains a sensor '" + $text + "'.<br>Remove the sensor '" + $text + "' will also remove the site '" + $text2 + "'.</p>");
+      $("#modalRemove").attr("data-sitename", $text2);
+    }
     $("#modalRemove").show();
   },
   removeSensorSite: function () {
@@ -123,36 +130,37 @@ window.AdminView = Backbone.View.extend({
     $("#removeok").attr("disabled", true);
     $('<p>Please wait a moment.<i class="fa fa-refresh fa-spin"></i></p>').insertAfter("#modalRemove .modal-body p");
     if ($("#modalRemove").data("sensorname")) {
-      modem("POST",
-              "/removeSensor",
-              function (data) {
-                console.log(data);
-                self.init();
-                $(".closeModal").attr("disabled", false);
-                $("#modalRemove").hide();
-              },
-              function (xhr, ajaxOptions, thrownError) {
-                var json = JSON.parse(xhr.responseText);
-                error_launch(json.message);
-              }, {
-        site: $("#modalRemove").data("sitename"),
-        sensor: $("#modalRemove").data("sensorname")
-      });
+
+//      modem("POST",
+//              "/removeSensor",
+//              function (data) {
+//                console.log(data);
+//                self.init();
+//                $(".closeModal").attr("disabled", false);
+//                $("#modalRemove").hide();
+//              },
+//              function (xhr, ajaxOptions, thrownError) {
+//                var json = JSON.parse(xhr.responseText);
+//                error_launch(json.message);
+//              }, {
+//        site: $("#modalRemove").data("sitename"),
+//        sensor: $("#modalRemove").data("sensorname")
+//      });
     } else {
-      modem("POST",
-              "/removeSite",
-              function (data) {
-                console.log(data);
-                self.init();
-                $(".closeModal").attr("disabled", false);
-                $("#modalRemove").hide();
-              },
-              function (xhr, ajaxOptions, thrownError) {
-                var json = JSON.parse(xhr.responseText);
-                error_launch(json.message);
-              }, {
-        site: $("#modalRemove").data("sitename")
-      });
+//      modem("POST",
+//              "/removeSite",
+//              function (data) {
+//                console.log(data);
+//                self.init();
+//                $(".closeModal").attr("disabled", false);
+//                $("#modalRemove").hide();
+//              },
+//              function (xhr, ajaxOptions, thrownError) {
+//                var json = JSON.parse(xhr.responseText);
+//                error_launch(json.message);
+//              }, {
+//        site: $("#modalRemove").data("sitename")
+//      });
     }
     $("#modalRemove").attr("data-sitename", null);
     $("#modalRemove").attr("data-sensorname", null);
