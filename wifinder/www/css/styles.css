@@ -383,5 +383,5 @@ pre {
 }
 
 .canvasjs-chart-tooltip{
-  z-index: 100;
+  z-index: 100 !important;
 }
