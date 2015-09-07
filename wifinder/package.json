@@ -18,6 +18,7 @@
     "debug": "*",
     "express": "*",
     "ini": "*",
+    "request": "^2.61.0",
     "rethinkdb": "*",
     "socket.io": "*",
     "underscore": "*",

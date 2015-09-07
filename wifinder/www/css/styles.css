@@ -350,3 +350,25 @@ label.error,div.error{
 .bottom15 { margin-bottom:15px; }
 .bottom17 { margin-bottom:17px; }
 .bottom30 { margin-bottom:30px; }
+
+.with100 {
+  width: 100%;
+}
+
+pre {
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  font-size: 1em;
+  text-wrap: none;
+}
+#tablelistSitesAndSensores table, #tablelistSitesAndSensores th, #tablelistSitesAndSensores td {
+    border: solid black 1px !important;
+}
+
+.center-vertical {
+  vertical-align: middle !important;
+  text-align: center !important;
+}

@@ -1,0 +1,121 @@
+
+<!-- Default box -->
+<div class="box">
+  <div class="box-header with-border">
+    <h3 class="box-title"> Create or Update Table of Vendors</h3>
+    <div class="box-tools pull-right">
+      <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+    </div>
+  </div>
+  <div class="box-body">
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="col-lg-1">
+          <span>URL</span>
+        </div>
+        <div class="col-lg-8">          
+          <input id="urlvendor" type="text" placeholder="Url list of vendors" class="with100">
+        </div>
+        <div class="col-lg-1">
+          <span class="validUrl" data-toggle="tooltip" title="Valid Url"><i class="icon fa fa-times"></i></span>
+        </div>
+        <div class="col-lg-2">
+          <button id="addlistvendors" class="btn btn-default" disabled>Create or Updete Vendors</button>
+        </div>
+      </div>
+      <div class="row top5">
+        <div class="col-lg-12">
+          <div class="row">
+            <span>Example of Url Contents</span>
+          </div>
+          <div class="row">
+            <div class="col-lg-3">
+              <span>Example 1</span>
+              <pre>
+# Comments
+
+00:00:00 name_vendor</pre>
+            </div>
+            <div class="col-lg-3">
+              <span>Example 2</span>
+              <pre>
+# Comments
+
+00:00:00 abbreviation # name_vendor</pre>
+            </div>
+            <div class="col-lg-3">
+              <span>Example 3</span>
+              <pre>
+# Comments
+
+000000 name_vendor</pre>
+            </div>
+            <div class="col-lg-3">
+              <span>Example 4</span>
+              <pre>
+# Comments
+
+00-00-00 name_vendor</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /.box-body -->
+  <div class="box-footer">
+  </div><!-- /.box-footer-->
+</div><!-- /.box -->
+
+<!-- Default box -->
+<div class="box">
+  <div class="box-header with-border">
+    <h3 class="box-title"> Delete Site</h3>
+    <div class="box-tools pull-right">
+      <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+    </div>
+  </div>
+  <div class="box-body">
+    <div id="tablelistSitesAndSensores" class="col-lg-12">
+
+    </div>
+  </div><!-- /.box-body -->
+  <div class="box-footer">
+  </div><!-- /.box-footer-->
+</div><!-- /.box -->
+
+<div id="modalInsertUrl" class="modal modal-warning">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-close"></i></span></button>
+        <h4 class="modal-title">Insert Vendors in table?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Url added.</p>
+        <p id="linkurl"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline pull-left closeModal" data-dismiss="modal">Close</button>
+        <button id="yesclick" type="button" class="btn btn-outline">Yes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+
+<div id="modalRemove" class="modal modal-warning">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-close"></i></span></button>
+        <h4 class="modal-title">Remove </h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline pull-left closeModal" data-dismiss="modal">Close</button>
+        <button id="removeok" type="button" class="btn btn-outline">Yes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>

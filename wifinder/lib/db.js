@@ -81,11 +81,20 @@ module.exports.loginUser = function (req, res) {
  */
 module.exports.registeruser = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
-    return r.db("user").table("users").filter({"email": req.body.email}).count().do(function (valor) {
-      return r.branch(valor.eq(0),
-              r.db("user").table("users").insert({"email": req.body.email, "fullname": req.body.fullname, "pass": req.body.pass, "logo": ""}),
-              false)
-    }).run(conn)
+    return r.db("user").table("users")
+            .filter({"email": req.body.email})
+            .count()
+            .do(function (valor) {
+              return r.branch(valor.eq(0),
+                      r.db("user")
+                      .table("users")
+                      .insert({
+                        "email": req.body.email,
+                        "fullname": req.body.fullname,
+                        "pass": req.body.pass,
+                        "logo": ""}),
+                      false);
+            }).run(conn)
             .finally(function () {
               conn.close();
             });
@@ -102,22 +111,32 @@ module.exports.registeruser = function (req, res) {
  * @param {type} res
  * @returns {undefined}
  */
-module.exports.updateuser  = function (req, res) {
-      console.log(req.body.oldEmail, req.body.newEmail,req.body.fullname,req.body.pass,req.body.id);
-      var mail = (req.body.newEmail == req.body.oldEmail) ? true : req.body.newEmail;
-     r.connect(self.dbData).then(function (conn) {
-        return r.db("user").table("users").filter({"email": mail}).count().do(function (valor) {
-            return r.branch(valor.eq(0),
-                    r.db("user").table("users").get(req.body.id).update({"email": req.body.newEmail, "fullname": req.body.fullname, "pass": req.body.pass, "logo": req.body.img}),
-                    false);
-        }).run(conn)
-                .finally(function () {
-                    conn.close();
-                });
-    }).then(function (output) {
-      console.log(output);
-        res.send(output);
-    }).error(function (err) {
-        console.log("ERROR: %s:%s", err.name, err.msg);
-    });
+module.exports.updateuser = function (req, res) {
+  console.log(req.body.oldEmail, req.body.newEmail, req.body.fullname, req.body.pass, req.body.id);
+  var mail = (req.body.newEmail == req.body.oldEmail) ? true : req.body.newEmail;
+  r.connect(self.dbData).then(function (conn) {
+    return r.db("user")
+            .table("users")
+            .filter({"email": mail})
+            .count()
+            .do(function (valor) {
+              return r.branch(valor.eq(0),
+                      r.db("user").table("users")
+                      .get(req.body.id)
+                      .update({
+                        "email": req.body.newEmail,
+                        "fullname": req.body.fullname,
+                        "pass": req.body.pass,
+                        "logo": req.body.img}),
+                      false);
+            }).run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (output) {
+    console.log(output);
+    res.send(output);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
 };

@@ -14,6 +14,7 @@ var Router = Backbone.Router.extend({
   content: undefined,
   footer: undefined,
   dashboard: undefined,
+  admin: undefined,
   appEventBus: undefined,
   novoutilizador: undefined,
   loginform: undefined,
@@ -84,6 +85,7 @@ var Router = Backbone.Router.extend({
     "Detail": "detail",
     "DetailAP": "detaialap",
     "DetailDevice": "detaildevice",
+    "AdminSites": "adminsites",
     '*notFound': 'login'
   },
   login: function () {
@@ -195,6 +197,24 @@ var Router = Backbone.Router.extend({
       windowScrollTop();
     });
   },
+  adminsites: function () {
+    var self = this;
+    self.verificaLogin(function () {
+      if (self.socketclt) {
+        self.socketclt.disconnect();
+      }
+      self.contentnav.setView("Administration");
+      self.sidebar.resetValues();
+      self.sidebar = new SideBarView({socket: self.socketclt});
+      $('aside.main-sidebar').html(self.sidebar.render().el);
+      self.admin = new AdminView({socket: self.socketclt});
+      $('#content').html(self.admin.render().el);
+      self.admin.init();
+
+      self.sidebar.selectadmin();
+      windowScrollTop();
+    });
+  },
   newUser: function () {
     var self = this;
     self.verificaLogin(function () {
@@ -247,7 +267,8 @@ templateLoader.load([
   "EditProfileView",
   "DetailView",
   "DetailAPView",
-  "DetailDeviceView"],
+  "DetailDeviceView",
+  "AdminView"],
         function () {
           app = new Router();
           Backbone.history.start();

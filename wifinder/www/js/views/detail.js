@@ -193,7 +193,7 @@ window.DetailView = Backbone.View.extend({
     $(".applyBtn").attr("disabled", false).click();
 
     $(".sensor-selected").text(this.sensor);
-    $(".time-selected").text($(".daterangepicker .ranges ul li:first").text() + " -> " + $("#reportrange span").text());
+    $(".time-selected").html($(".daterangepicker .ranges ul li:first").text() + " <i class='fa fa-arrow-circle-right'></i> " + $("#reportrange span").text());
 
     modem("GET",
             "/getPlantSite/" + window.profile.id + "/" + self.sensor,
@@ -229,7 +229,7 @@ window.DetailView = Backbone.View.extend({
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
 
     $(".sensor-selected").text(this.sensor);
-    $(".time-selected").text(picker.chosenLabel + " ⇨ " + $("#reportrange span").text());
+    $(".time-selected").html(picker.chosenLabel + " <i class='fa fa-arrow-circle-right'></i> " + $("#reportrange span").text());
   },
   loadcharts: function (min, max) {
     var self = this;

@@ -77,12 +77,21 @@ window.SideBarView = Backbone.View.extend({
   setActive: function (mav) {
     $(".select-site-first a span:contains('" + mav + "')").click();
   },
+  selectadmin : function (){
+    $('li a[data-nome="AdminSites"].select-item-menu').click();
+    $(".showitem").css({
+      "display": "none"
+    });
+  },
   removeActive: function () {
     $("li.active .fa-angle-left").click();
     $('ul.sidebar-menu li.active').removeClass("active");
   },
   initialize: function (opt) {
-    this.socketsidebar = opt.socket;
+    this.socketsidebar = opt.socket;    
+    $(".showitem").css({
+      "display": "block"
+    });
   },
   addsitessidebar: function () {
     if (!self.databaseselect) {

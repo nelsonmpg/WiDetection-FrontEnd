@@ -1,6 +1,7 @@
 /* global module */
 
 require('colors');
+var request = require("request");
 var r = require('rethinkdb');
 var debug = require('debug')('r');
 var Worker = require('workerjs');
@@ -478,6 +479,153 @@ module.exports.getDispbyMac = function (req, res) {
   });
 };
 
+// //************************************* Pedidos Admin Site *************************************
+
+/**
+ * Recebe um link, verifica os conteudo e adiciona a tabelas dos fbricantes
+ */
+module.exports.addorupdatevendors = function (req, res) {
+  console.log(req.body.url);
+  console.log("Carregar Prefixos.");
+  // fas o download da pagina com os prefixos e constroi o array de objectos 
+  // para inserir na base de dados
+  download(req.body.url, function (data) {
+    if (data) {
+      console.log("Criacao da lista de prefixos para colocar na base dados.");
+      var lines = data.split("\n");
+      var docsInsert = [];
+      for (var i in lines) {
+        var line = lines[i].trim();
+        if (line[0] != "#" && line.length > 5 && numberIsHex(line)) {
+          var prefix = "";
+          var vendor = "";
+          var keyPrefix = "";
+          var cardinal = line.split("#");
+          var a = line.replace(/\s+/g, " ").split(" ");
+          var p = a[0];
+          if (p[2] == ":") {
+            if (p.length < 9) {
+              vendor = (typeof cardinal[1] == "undefined") ? a[1] : cardinal[1].trim();
+              keyPrefix = p;
+              docsInsert.push({
+                "prefix": keyPrefix,
+                "vendor": vendor.toUpperCase().replace(/[^\w\s]/gi, '').trim()
+              });
+            }
+          } else if (p[2] == "-") {
+            var b = p.split("/");
+            if (b[0].length < 9) {
+              vendor = (typeof cardinal[1] == "undefined") ? a[1] : cardinal[1].trim();
+              keyPrefix = b[0].replace(/-/g, ":");
+              docsInsert.push({
+                "prefix": keyPrefix,
+                "vendor": vendor.toUpperCase().replace(/[^\w\s]/gi, '').trim()
+              });
+            }
+          } else {
+            if (line.trim() != "") {
+              prefix = line.substring(0, 6);
+              vendor = line.substring(7, line.length);
+              keyPrefix = prefix.substr(0, 2) + ":" + prefix.substr(2, 2) + ":" + prefix.substr(4);
+              docsInsert.push({
+                "prefix": keyPrefix,
+                "vendor": vendor.toUpperCase().replace(/[^\w\s]/gi, '').trim()
+              });
+            }
+          }
+        }
+      }
+      console.log("Insersao da lista de prefixos na base de dados.");
+      if (docsInsert.length > 0) {
+        console.log(docsInsert.length);
+
+        // Insere de uma vez todos os prefixos na base de dados
+        r.connect(self.dbData).then(function (conn) {
+          return r.db("Prefix").table("tblPrefix").insert(docsInsert).run(conn)
+                  .finally(function () {
+                    conn.close();
+                  });
+        }).then(function (output) {
+          console.log("Query output:", output);
+          res.json(output);
+        }).error(function (err) {
+          console.log("Failed:", err);
+        });
+      } else {
+        console.log("sem dados");
+        res.json({
+          inserted: 0
+        });
+      }
+    } else {
+      console.log("error");
+    }
+  });
+};
+
+/**
+ * Devolve a lista de sites e os seus sensores
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getsitesAndSensores = function (req, res) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.dbList()
+            .filter(r.row.ne("rethinkdb"))
+            .filter(r.row.ne("user"))
+            .filter(r.row.ne("Prefix"))
+            .map(function (d) {
+              return {
+                "db": d,
+                "numSensor": r.db(d).table("ActiveAnt").count(),
+                "sensors": r.db(d).table("ActiveAnt").withFields("nomeAntena", "data").coerceTo("array")
+              };
+            }).run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.send(JSON.stringify(result));
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
+};
+
+module.exports.removeSite = function (req, res) {
+  console.log("Site Removido - " + req.body.site);
+  r.connect(self.dbData).then(function (conn) {
+    return r.dbDrop(req.body.site).run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.send(JSON.stringify(result));
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
+};
+
+
+module.exports.removeSensor = function (req, res) {
+  console.log("Site - " + req.body.site);
+  console.log("Sensor removido - " + req.body.sensor);
+//  r.connect(self.dbData).then(function (conn) {
+//    return r.dbDrop(req.body.site).run(conn)
+//            .finally(function () {
+//              conn.close();
+//            });
+//  }).then(function (result) {
+  res.send(JSON.stringify({result: "ok"}));
+//  }).error(function (err) {
+//    console.log("ERROR: %s:%s", err.name, err.msg);
+//  });
+};
+
+
+// ------------------------------------ Fim Admin Site ------------------------------------
+
+
 
 //************************************* Pedidos do Socket *************************************
 
@@ -487,19 +635,20 @@ module.exports.getDispbyMac = function (req, res) {
  * @returns {undefined}
  */
 module.exports.getAllDataBases = function (callback) {
-  connectdb.onConnect(function (err, conn) {
-    r.dbList().map({"db": r.row})
+  r.connect(self.dbData).then(function (conn) {
+    return r.dbList().map({"db": r.row})
             .filter(r.row("db").ne("rethinkdb"))
             .filter(r.row("db").ne("user"))
             .filter(r.row("db").ne("Prefix"))
-            .run(conn, function (err, result) {
-              if (err) {
-                callback(err.msg, null);
-                console.log("ERROR: %s:%s", err.name, err.msg);
-              } else {
-                callback(null, result);
-              }
+            .run(conn)
+            .finally(function () {
+              conn.close();
             });
+  }).then(function (result) {
+    callback(null, result);
+  }).error(function (err) {
+    callback(err.msg, null);
+    console.log("ERROR: %s:%s", err.name, err.msg);
   });
 };
 
@@ -514,9 +663,9 @@ module.exports.getAllDataBases = function (callback) {
  * 
  */
 module.exports.changeTablesDisps = function (database, socket, table, nemedisp) {
-  connectdb.onConnect(function (err, conn) {
+  r.connect(self.dbData).then(function (conn) {
     r.db(database).table(table)
-            .changes()
+            .changes({squash: 1})
             .filter(function (row) {
               return row('old_val').eq(null);
             }).run(conn)
@@ -538,9 +687,10 @@ module.exports.changeTablesDisps = function (database, socket, table, nemedisp) 
  * @returns {undefined}
  */
 module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(database).table(table)
-            .changes()('new_val')
+  r.connect(self.dbData).then(function (conn) {
+    r.db(database)
+            .table(table)
+            .changes({squash: 1})('new_val')
             .map(function (v) {
               return {"sensor": v("nomeAntena"), "hosts": v("host").do(function (row) {
                   return row.filter(function (o) {
@@ -563,12 +713,17 @@ module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
  * @returns {undefined}
  */
 module.exports.changeActiveAnt = function (database, socket) {
-  connectdb.onConnect(function (err, conn) {
-    r.db(database).table("ActiveAnt")
-            .changes()('new_val').withFields("nomeAntena", "cpu", "disc", "memory", "data").run(conn)
-            .then(function (cursor) {
-              cursor.each(function (err, item) {
-                socket.emit("changeActiveAnt", item, database);
+  r.connect(self.dbData).then(function (conn) {
+    r.db(database)
+            .table("ActiveAnt")
+            .changes({squash: 5})('new_val').withFields("nomeAntena", "cpu", "disc", "memory", "data")
+            .run(conn, function (error, cursor) {
+              cursor.on("data", function (change) {
+                socket.emit('changeActiveAnt', change, database);
+              });
+              cursor.on("error", function (error) {
+                socket.emit('error', {error: error});
+                cursor.close();
               });
             });
   });
@@ -585,64 +740,65 @@ module.exports.getAllDisp = function (iduser, socket) {
     socket.emit("getAllDisp", liveActives[self.getDataBase(iduser)].array, self.getDataBase(iduser));
   } else {
     liveActives[self.getDataBase(iduser)] = {};
-    connectdb.onConnect(function (err, conn) {
-      r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (a) {
+    r.connect(self.dbData).then(function (conn) {
+      return r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (a) {
         return {"row": a, "state": a("disp").contains(function (b) {
             return b("values").contains(function (c) {
               return c("Last_time").ge(r.now().toEpochTime().sub(3600));
             });
           })};
       }).filter({"state": true}).without("state")("row")
-              .coerceTo("ARRAY")
-              .run(conn, function (err, result) {
-                if (err) {
-                  console.log("ERROR: %s:%s", err.name, err.msg);
-                } else {
-
-                  var work = new Worker('./lib/workerGraph.js');
-                  work.postMessage(result);
-                  work.onmessage = function (msg) {
-                    liveActives[self.getDataBase(iduser)].array = msg.data;
-                    work.terminate();
-                    socket.emit("getAllDisp", msg.data, self.getDataBase(iduser));
-                  };
-
-                  //Interval de update do grafico nos clientes
-                  liveActives[self.getDataBase(iduser)].intervalChart = setInterval(function () {
-                    if (typeof liveActives[self.getDataBase(iduser)] != "undefined" && liveActives[self.getDataBase(iduser)] != null && liveActives[self.getDataBase(iduser)].array != undefined) {
-                      connectdb.onConnect(function (err, conn) {
-                        r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (row) {
-                          return  row("disp").do(function (ro) {
-                            return {"macAddress": row("macAddress"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))};
-                          });
-                        }).map(function (a) {
-                          return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
-                              return value("Last_time").ge(r.now().toEpochTime().sub(60));
-                            })};
-                        }).filter({"state": true})
-                                .count().run(conn, function (err, result) {
-                          if (err) {
-                            console.log("ERROR: %s:%s", err.name, err.msg);
-                          } else {
-                            //Atualiza o array do servidor       
-                            var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
-                            novaData.addMinutes(1);
-                            liveActives[self.getDataBase(iduser)].array.shift();
-                            var x = {x: novaData.toISOString(), y: result * 1};
-                            liveActives[self.getDataBase(iduser)].array.push(x);
-                            //Envia para os clientes
-                            socket.emit("updateChart", x, self.getDataBase(iduser));
-                          }
-                          conn.close();
-                        });
-                      });
-                    } else {
-                      clearInterval(this);
-                    }
-                  }, 1000 * 60); //De minuto a minuto
-                }
+              .coerceTo("array")
+              .run(conn)
+              .finally(function () {
                 conn.close();
               });
+    }).then(function (result) {
+      var work = new Worker('./lib/workerGraph.js');
+      work.postMessage(result);
+      work.onmessage = function (msg) {
+        liveActives[self.getDataBase(iduser)].array = msg.data;
+        work.terminate();
+        socket.emit("getAllDisp", msg.data, self.getDataBase(iduser));
+      };
+
+      //Interval de update do grafico nos clientes
+      liveActives[self.getDataBase(iduser)].intervalChart = setInterval(function () {
+        if (typeof liveActives[self.getDataBase(iduser)] != "undefined" &&
+                liveActives[self.getDataBase(iduser)] != null &&
+                liveActives[self.getDataBase(iduser)].array != undefined) {
+          r.connect(self.dbData).then(function (conn) {
+            return r.db(self.getDataBase(iduser)).table("DispMoveis").map(function (row) {
+              return  row("disp").do(function (ro) {
+                return {"macAddress": row("macAddress"), "values": ro("values").nth(0).orderBy(r.desc("Last_time")).limit(10).orderBy(r.asc("Last_time"))};
+              });
+            }).map(function (a) {
+              return {"macAddress": a('macAddress'), "state": a('values').contains(function (value) {
+                  return value("Last_time").ge(r.now().toEpochTime().sub(60));
+                })};
+            }).filter({"state": true}).count().run(conn).finally(function () {
+              conn.close();
+            });
+          }).then(function (result) {
+            //Atualiza o array do servidor       
+            var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
+            novaData.addMinutes(1);
+            liveActives[self.getDataBase(iduser)].array.shift();
+            var x = {x: novaData.toISOString(), y: result * 1};
+            liveActives[self.getDataBase(iduser)].array.push(x);
+            //Envia para os clientes
+            socket.emit("updateChart", x, self.getDataBase(iduser));
+          }).error(function (err) {
+            callback(err.msg, null);
+            console.log("ERROR: %s:%s", err.name, err.msg);
+          });
+        } else {
+          clearInterval(this);
+        }
+      }, 1000 * 60); //De minuto a minuto
+
+    }).error(function (err) {
+      console.log("ERROR: %s:%s", err.name, err.msg);
     });
   }
 };
@@ -657,3 +813,35 @@ Date.prototype.addMinutes = function (h) {
   this.setMinutes(this.getMinutes() + h);
   return this;
 };
+
+/**
+ * Fazo download da pagina passada por parametro
+ * @param {type} url
+ * @param {type} callback
+ * @returns {undefined}
+ */
+var download = function (url, callback) {
+  request(url, function (err, res, body) {
+    var data = body;
+    callback(data);
+  }).on("error", function () {
+    callback(null);
+  });
+};
+
+/**  * Verifica se o carater passado por parametro e um carater hexadecimal
+ * @param {type} char
+ * @returns {Boolean}
+ */
+var numberIsHex = function (char) {
+  var result = false;
+  char = char.replace(/[^\w\s]/gi, '').slice(0, 6);
+  char = char.substr(0, 2) + ":" + char.substr(2, 2) + ":" + char.substr(4);
+  var urlPattern = /^(([A-Fa-f0-9]{2}[:]){2}[A-Fa-f0-9]{2}[,]?)+$/;
+  if (char.match(urlPattern)) {
+    result = true;
+    //    console.log(char);
+  }
+  return result;
+};
+

@@ -144,7 +144,7 @@ Server.prototype.start = function () {
    * Decolve a planta do local onde  o sensor de encontra
    */
   this.app.get("/getPlantSite/:id/:sensor", pedidos.getPlantSite);
-  
+
 
 //************************************* Page DetailAP *************************************
 
@@ -172,11 +172,35 @@ Server.prototype.start = function () {
    * Devolve os dados referentes ao dispositivo
    */
   this.app.get("/getDispbyMac/:id/:mac", pedidos.getDispbyMac);
-  
+
   /**
    * Devolve os dados referentes ao ap
    */
   this.app.get("/getApbyMac/:id/:mac", pedidos.getApbyMac);
+
+// //************************************* Pedidos Admin Site *************************************
+
+  /**
+   * Recebe um link, verifica os conteudo e adiciona a tabelas dos fbricantes
+   */
+  this.app.post("/addVendors", pedidos.addorupdatevendors);
+
+  /**
+   * Devolve a lista de sites e os seus sensores
+   */
+  this.app.get("/getsitesAndSensores", pedidos.getsitesAndSensores);
+
+/**
+ * Elimina o site do servidor
+ */
+  this.app.post("/removeSite", pedidos.removeSite);
+    
+  /**
+   * 
+   */
+  this.app.post("/removeSensor", pedidos.removeSensor);
+  
+//----------------------------------------------------------------------------------
 
 // //************************************* Pedidos Users *************************************
 
