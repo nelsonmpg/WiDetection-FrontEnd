@@ -131,10 +131,18 @@ window.DashboardView = Backbone.View.extend({
     modem("GET",
         "/getAllTimes/" + window.profile.id,
         function (data) {
-          var a = JSON.parse(data);
+          var a = JSON.parse(data),visita,newChart =[];
           a =  _.groupBy(a, function (o) {
             return o[0].nameVendor;
           });
+          for (var marca in a) {
+            visita = 0;
+            for (var device in a[marca]) {
+              visita += a[marca][device].length;
+            }
+            newChart[marca] = visita;
+          }
+          console.log(newChart,a);
           self.countChart = new ArrayToGraph(a, "chartDispVisit", "column");
           self.countChart.createArrayToGraphOneBar2();
         },

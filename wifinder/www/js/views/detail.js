@@ -100,7 +100,7 @@ window.DetailView = Backbone.View.extend({
       }
     });
 
-// add active class a primeira opcao do seletor de dataa range
+// add active class a primeira opcao do seletor de data range
     $(".daterangepicker .ranges ul li:first").addClass("active");
 
 //Initialize Select2 Elements
