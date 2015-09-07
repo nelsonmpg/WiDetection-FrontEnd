@@ -381,3 +381,7 @@ pre {
   vertical-align: middle !important;
   text-align: center !important;
 }
+
+.canvasjs-chart-tooltip{
+  z-index: 100;
+}
