@@ -7,6 +7,9 @@ window.AdminView = Backbone.View.extend({
     "change #urlvendor": "checkvendorslist",
     "click #addlistvendors": function () {
       $("#linkurl").text($("#urlvendor").val());
+      $(".closeModal").attr("disabled", false);
+      $("#yesclick").attr("disabled", false);
+      $("#linkurl").next().remove();
       $("#modalInsertUrl").show();
     },
     "click #yesclick": "addvendorslist",
@@ -109,7 +112,7 @@ window.AdminView = Backbone.View.extend({
     } else {
       $("#modalRemove .modal-body").html("<p>This site only contains a sensor '" + $text + "'.<br>To remove it from the site '" + $text2 + "' will be also removed.</p>");
       $("#modalRemove").attr("data-sitename", $text2);
-    }    
+    }
     $(".closeModal").attr("disabled", false);
     $("#removeok").attr("disabled", false);
     $("#modalRemove").show();
