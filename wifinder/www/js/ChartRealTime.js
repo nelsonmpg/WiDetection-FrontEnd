@@ -134,7 +134,6 @@ ChartRealTime.prototype.graph = function () {
   var self = this;
   if (this.valuesToGraph.length > 0) {
     this.chart = new CanvasJS.Chart(this.localChart, {
-      zoomEnabled: true,
       exportEnabled: true,
       animationEnabled: true,
       theme: "theme3",
