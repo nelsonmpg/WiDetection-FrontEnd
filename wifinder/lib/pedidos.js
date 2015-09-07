@@ -606,20 +606,82 @@ module.exports.removeSite = function (req, res) {
   });
 };
 
-
+/**
+ * 
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 module.exports.removeSensor = function (req, res) {
   console.log("Site - " + req.body.site);
   console.log("Sensor removido - " + req.body.sensor);
-//  r.connect(self.dbData).then(function (conn) {
-//    return r.dbDrop(req.body.site).run(conn)
-//            .finally(function () {
-//              conn.close();
-//            });
-//  }).then(function (result) {
-  res.send(JSON.stringify({result: "ok"}));
-//  }).error(function (err) {
-//    console.log("ERROR: %s:%s", err.name, err.msg);
-//  });
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(req.body.site)
+            .table("DispMoveis")
+            .replace(function (row) {
+              return {
+                "Probed_ESSIDs": row("Probed_ESSIDs"),
+                "macAddress": row("macAddress"),
+                "nameVendor": row("nameVendor"),
+                "disp": row("disp").filter(function (disp) {
+                  return disp("name").match("^" + req.body.sensor + "$").not();
+                })};
+            }).do(function () {
+      return r.db(req.body.site)
+              .table("DispMoveis")
+              .forEach(function (row) {
+                return r.branch(
+                        row("disp").isEmpty(),
+                        r.db(req.body.site)
+                        .table("DispMoveis")
+                        .get(row("macAddress"))
+                        .delete(),
+                        row);
+              });
+    }).do(function () {
+      return r.db(req.body.site)
+              .table("DispAp")
+              .replace(function (row) {
+                return {
+                  "Authentication": row("Authentication"),
+                  "macAddress": row("macAddress"),
+                  "nameVendor": row("nameVendor"),
+                  "Cipher": row("Cipher"),
+                  "ESSID": row("ESSID"),
+                  "Privacy": row("Privacy"),
+                  "Speed": row("Speed"),
+                  "channel": row("channel"),
+                  "disp": row("disp").filter(function (disp) {
+                    return disp("name").match("^" + req.body.sensor + "$").not();
+                  })};
+              }).do(function () {
+        return r.db(req.body.site)
+                .table("DispAp")
+                .forEach(function (row) {
+                  return r.branch(
+                          row("disp").isEmpty(),
+                          r.db(req.body.site)
+                          .table("DispAp")
+                          .get(row("macAddress")).delete(),
+                          row);
+                });
+      });
+    }).do(function () {
+      return r.db(req.body.site).table("ActiveAnt").get(req.body.sensor).delete();
+    }).do(function () {
+      return r.db(req.body.site).table("AntAp").get(req.body.sensor).delete();
+    }).do(function () {
+      return r.db(req.body.site).table("AntDisp").get(req.body.sensor).delete();
+    }).do(function () {
+      return  r.db(req.body.site).table("plantSite").get(req.body.sensor).delete();
+    }).run(conn).finally(function () {
+      conn.close();
+    });
+  }).then(function (result) {
+    res.send(JSON.stringify(result));
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
 };
 
 
@@ -717,13 +779,10 @@ module.exports.changeActiveAnt = function (database, socket) {
     r.db(database)
             .table("ActiveAnt")
             .changes({squash: 5})('new_val').withFields("nomeAntena", "cpu", "disc", "memory", "data")
-            .run(conn, function (error, cursor) {
-              cursor.on("data", function (change) {
-                socket.emit('changeActiveAnt', change, database);
-              });
-              cursor.on("error", function (error) {
-                socket.emit('error', {error: error});
-                cursor.close();
+            .run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+                socket.emit('changeActiveAnt', item, database);
               });
             });
   });

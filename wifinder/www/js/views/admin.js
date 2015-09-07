@@ -37,7 +37,7 @@ window.AdminView = Backbone.View.extend({
                 for (var j in data[i].sensors) {
                   tableSite += '<tr><td>' + j + '</td>' +
                           '<td class="center-vertical sensor-name">' + data[i].sensors[j].nomeAntena + '</td>' +
-                          '<td class="center-vertical">' + data[i].sensors[j].data + '</td>' +
+                          '<td class="center-vertical">' + moment(data[i].sensors[j].data).format('DD/MM/YYYY HH:mm:ss') + '</td>' +
                           '<td class="center-vertical">' + ((checkSensorActive(data[i].sensors[j].data)) ? self.chsckedFalse : self.chsckedTrue) + '</td>' +
                           '<td class="center-vertical"><button class="btn btn-default removesensor">Remove Sensor</button></td></tr>';
                 }
@@ -93,6 +93,8 @@ window.AdminView = Backbone.View.extend({
     $("#modalRemove .modal-body").html("<p>Remove this site?<br>" + $text + "</p>");
     $("#modalRemove").attr("data-sitename", $text);
     $("#modalRemove").show();
+    $(".closeModal").attr("disabled", false);
+    $("#removeok").attr("disabled", false);
   },
   removeSensor: function (e) {
     var $row = $(e.currentTarget).closest("tr");
@@ -107,7 +109,9 @@ window.AdminView = Backbone.View.extend({
     } else {
       $("#modalRemove .modal-body").html("<p>This site only contains a sensor '" + $text + "'.<br>To remove it from the site '" + $text2 + "' will be also removed.</p>");
       $("#modalRemove").attr("data-sitename", $text2);
-    }
+    }    
+    $(".closeModal").attr("disabled", false);
+    $("#removeok").attr("disabled", false);
     $("#modalRemove").show();
   },
   removeSensorSite: function () {
