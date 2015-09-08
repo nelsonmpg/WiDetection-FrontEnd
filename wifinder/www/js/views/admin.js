@@ -130,37 +130,36 @@ window.AdminView = Backbone.View.extend({
     $("#removeok").attr("disabled", true);
     $('<p>Please wait a moment.<i class="fa fa-refresh fa-spin"></i></p>').insertAfter("#modalRemove .modal-body p");
     if ($("#modalRemove").data("sensorname")) {
-
-//      modem("POST",
-//              "/removeSensor",
-//              function (data) {
-//                console.log(data);
-//                self.init();
-//                $(".closeModal").attr("disabled", false);
-//                $("#modalRemove").hide();
-//              },
-//              function (xhr, ajaxOptions, thrownError) {
-//                var json = JSON.parse(xhr.responseText);
-//                error_launch(json.message);
-//              }, {
-//        site: $("#modalRemove").data("sitename"),
-//        sensor: $("#modalRemove").data("sensorname")
-//      });
+      modem("POST",
+              "/removeSensor",
+              function (data) {
+                console.log(data);
+                self.init();
+                $(".closeModal").attr("disabled", false);
+                $("#modalRemove").hide();
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {
+        site: $("#modalRemove").data("sitename"),
+        sensor: $("#modalRemove").data("sensorname")
+      });
     } else {
-//      modem("POST",
-//              "/removeSite",
-//              function (data) {
-//                console.log(data);
-//                self.init();
-//                $(".closeModal").attr("disabled", false);
-//                $("#modalRemove").hide();
-//              },
-//              function (xhr, ajaxOptions, thrownError) {
-//                var json = JSON.parse(xhr.responseText);
-//                error_launch(json.message);
-//              }, {
-//        site: $("#modalRemove").data("sitename")
-//      });
+      modem("POST",
+              "/removeSite",
+              function (data) {
+                console.log(data);
+                self.init();
+                $(".closeModal").attr("disabled", false);
+                $("#modalRemove").hide();
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {
+        site: $("#modalRemove").data("sitename")
+      });
     }
     $("#modalRemove").attr("data-sitename", null);
     $("#modalRemove").attr("data-sensorname", null);
