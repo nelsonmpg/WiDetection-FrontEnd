@@ -177,6 +177,11 @@ Server.prototype.start = function () {
    * Devolve os dados referentes ao ap
    */
   this.app.get("/getApbyMac/:id/:mac", pedidos.getApbyMac);
+  
+  /**
+   * Devolve bssid from all devices
+   */
+  this.app.get("/getBssisFromAll/:id", pedidos.getBssisFromAll);
 
 // //************************************* Pedidos Admin Site *************************************
 

@@ -14,14 +14,12 @@ window.DashboardView = Backbone.View.extend({
   },
   init: function () {
     var self = this;
-
     self.requestNumDisps();
     self.createChart2Bar();
     self.chartDispActive();
     self.createChartTotalVisitas();
     self.MapSensors();
     self.carregarNetwork();
-
     //Initialize Select2 Elements
     $(".select2").select2();
     $.AdminLTE.boxWidget.activate();
@@ -29,40 +27,39 @@ window.DashboardView = Backbone.View.extend({
   requestNumDisps: function () {
     var self = this;
     modem("GET",
-        "/getNumDispositivos/" + window.profile.id,
-        function (data) {
-          $("body").find("#sensores-num-div").html(data.sensor);
-          $("body").find("#disp-num-div").html(data.moveis);
-          $("body").find("#ap-num-div").html(data.ap);
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+            "/getNumDispositivos/" + window.profile.id,
+            function (data) {
+              $("body").find("#sensores-num-div").html(data.sensor);
+              $("body").find("#disp-num-div").html(data.moveis);
+              $("body").find("#ap-num-div").html(data.ap);
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   createChart2Bar: function () {
     var self = this;
     modem("GET",
-        "/getAllAntenasAndDisps/" + window.profile.id,
-        function (data) {
-          var sensorList = "";
-          for (var i in data) {
-            sensorList += '<option class="select-sensor-lst">' + data[i].AP.nome + '</option>';
-          }
+            "/getAllAntenasAndDisps/" + window.profile.id,
+            function (data) {
+              var sensorList = "";
+              for (var i in data) {
+                sensorList += '<option class="select-sensor-lst">' + data[i].AP.nome + '</option>';
+              }
 
-          $("#select-chart-sensor").html(sensorList);
-          $("#select-chart-sensor > option:first").attr("selected", "selected");
-          $("#select-chart-sensor").trigger('change');
-
-          self.graph2Bar = new ArrayToGraph(data, "chart2bars", "column");
-          // para aparecer a div com os resultados
-          self.graph2Bar.createArrayToGraphTwoBar();
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+              $("#select-chart-sensor").html(sensorList);
+              $("#select-chart-sensor > option:first").attr("selected", "selected");
+              $("#select-chart-sensor").trigger('change');
+              self.graph2Bar = new ArrayToGraph(data, "chart2bars", "column");
+              // para aparecer a div com os resultados
+              self.graph2Bar.createArrayToGraphTwoBar();
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   selectsensortochart: function (e) {
@@ -77,44 +74,44 @@ window.DashboardView = Backbone.View.extend({
     if (self.lastSensorselect != sensor) {
       self.lastSensorselect = sensor;
       modem("GET",
-          "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
-          function (data) {
-            self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
-            self.chartrealtimeMoveis.updateIntervalGraph();
-          },
-          function (xhr, ajaxOptions, thrownError) {
-            var json = JSON.parse(xhr.responseText);
-            error_launch(json.message);
-          }, {}
+              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
+              function (data) {
+                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
+                self.chartrealtimeMoveis.updateIntervalGraph();
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
       );
       modem("GET",
-          "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
-          function (data) {
-            self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
-            self.chartrealtimeAp.updateIntervalGraph();
-          },
-          function (xhr, ajaxOptions, thrownError) {
-            var json = JSON.parse(xhr.responseText);
-            error_launch(json.message);
-          }, {}
+              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
+              function (data) {
+                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
+                self.chartrealtimeAp.updateIntervalGraph();
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
       );
     }
   },
   MapSensors: function (e) {
     var self = this;
     modem("GET",
-        "/getSensors/" + window.profile.id,
-        function (data) {
-          var locations = [];
-          for (var i in data) {
-            locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
-          }
-          carregarmapa(locations, "map");
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+            "/getSensors/" + window.profile.id,
+            function (data) {
+              var locations = [];
+              for (var i in data) {
+                locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
+              }
+              carregarmapa(locations, "map");
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   chartDispActive: function () {
@@ -129,27 +126,27 @@ window.DashboardView = Backbone.View.extend({
   createChartTotalVisitas: function () {
     var self = this;
     modem("GET",
-        "/getAllTimes/" + window.profile.id,
-        function (data) {
-          var a = JSON.parse(data),visita,newChart =[];
-          a =  _.groupBy(a, function (o) {
-            return o[0].nameVendor;
-          });
-          for (var marca in a) {
-            visita = 0;
-            for (var device in a[marca]) {
-              visita += a[marca][device].length;
-            }
-            newChart[marca] = visita;
-          }
-          console.log(newChart,a);
-          self.countChart = new ArrayToGraph(a, "chartDispVisit", "column");
-          self.countChart.createArrayToGraphOneBar2();
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+            "/getAllTimes/" + window.profile.id,
+            function (data) {
+              var a = JSON.parse(data), visita, newChart = [];
+              a = _.groupBy(a, function (o) {
+                return o[0].nameVendor;
+              });
+              for (var marca in a) {
+                visita = 0;
+                for (var device in a[marca]) {
+                  visita += a[marca][device].length;
+                }
+                newChart[marca] = visita;
+              }
+              console.log(newChart, a);
+              self.countChart = new ArrayToGraph(a, "chartDispVisit", "column");
+              self.countChart.createArrayToGraphOneBar2();
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   updatePower: function (data, disp) {
@@ -197,77 +194,53 @@ window.DashboardView = Backbone.View.extend({
   carregarNetwork: function () {
     var self = this;
     modem("GET",
-        "/getAllAP/" + window.profile.id,
-        function (data) {
-          var values = [];
-          for (var ssid in data[0].group[0]) {
-            values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
-          }
+            "/getAllAP/" + window.profile.id,
+            function (data) {
+              var values = [];
+              for (var ssid in data[0].group[0]) {
+                values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
+              }
 
-          self.makeNetwork(values);
-
-        },
-        function (xhr, ajaxOptions, thrownError) {
-          var json = JSON.parse(xhr.responseText);
-          error_launch(json.message);
-        }, {}
+              self.makeNetwork(values);
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
     );
   },
   makeNetwork: function (macs) {
+    console.log(macs);
     var self = this;
     var xnodes = [];
     var xedges = [];
     var devices = [];
     for (var a in macs) {
-      if (devices.indexOf(macs[a].bssid.trim()) < 0) {
+      if (devices.indexOf(macs[a].bssid.trim()) < 0 && macs[a].name != "") { // carregar aps
         devices.push(macs[a].bssid.trim());
         xnodes.push({id: devices.indexOf(macs[a].bssid.trim()) + 1, label: macs[a].name + "\n" + macs[a].bssid.trim(), group: "ap"});
       }
-
-      modem("GET",
-          "/getDispConnectedtoAp/" + window.profile.id + "/" + macs[a].bssid,
-          function (data) {
-            for (var i in data[0]) {
-              if (devices.indexOf((data[0][i].macAddress).trim()) < 0) {
-                devices.push((data[0][i].macAddress).trim());
-                xnodes.push({id: devices.indexOf((data[0][i].macAddress).trim()) + 1, label: data[0][i].nameVendor + "\n" + data[0][i].macAddress, group: "device"});
-              }
-              if (_.where(xedges, {from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1}) == 0) {
-                xedges.push({from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1});
-              }
-            }
-            if (data[1] == macs[a].bssid) { //se for o ultimo ap
-
-              //getDispMacbyVendor
-
-              modem("GET",
-                  "/getDispMacbyVendor/" + window.profile.id,
-                  function (data) {
-                    for (var c in data) {
-                      for (var d in data[c].reduction) {
-                        if (devices.indexOf((data[c].reduction[d]).trim()) < 0) {
-                          devices.push((data[c].reduction[d]).trim());
-                          xnodes.push({id: devices.indexOf((data[c].reduction[d]).trim()) + 1, label: data[c].group + "\n" + data[c].reduction[d], group: "device"});
-                        }
-                      }
-                    }
-
-                    self.fazergrafico(xedges, xnodes);
-                  },
-                  function (xhr, ajaxOptions, thrownError) {
-                    var json = JSON.parse(xhr.responseText);
-                    error_launch(json.message);
-                  }, {}
-              );
-            }
-
-          },
-          function (xhr, ajaxOptions, thrownError) {
-            var json = JSON.parse(xhr.responseText);
-            error_launch(json.message);
-          }, {}
-      );
     }
+    modem("GET",
+            "/getBssisFromAll/" + window.profile.id,
+            function (data) { //uma lista com os bssd's a que cada device esteve associado
+              for (var i in data) {
+                if (devices.indexOf((data[i].mac).trim()) < 0) {
+                  devices.push((data[i].mac).trim());
+                  xnodes.push({id: devices.indexOf(data[i].mac.trim()) + 1, label: data[i].vendor + "\n" + data[i].mac.trim(), group: "device"});
+                }
+
+                for (var a in data[i].bssid) {
+                  xedges.push({from: devices.indexOf(data[i].bssid[a].trim()) + 1, to: devices.indexOf((data[i].mac).trim()) + 1});
+                }
+                self.fazergrafico(xedges, xnodes);
+              }
+            },
+            function (xhr, ajaxOptions, thrownError) {
+              var json = JSON.parse(xhr.responseText);
+              error_launch(json.message);
+            }, {}
+    );
   },
   fazergrafico: function (xedges, xnodes) {
     var self = this;

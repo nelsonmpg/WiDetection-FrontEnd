@@ -281,6 +281,28 @@ module.exports.getAllOrderbyVendor = function (req, res) {
   });
 };
 
+module.exports.getBssisFromAll = function (req, res) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id)).table("DispMoveis").map(function (row) {
+      return  {
+        "mac": row("macAddress"),
+        "vendor": row("nameVendor"),
+        "bssid": row("disp").nth(0)("values")("BSSID").distinct().filter(function (a) {
+          return a.ne("(notassociated)").and(a.ne(""));
+        })
+      };
+    }).coerceTo("ARRAY")
+            .run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.send(result);
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
+};
+
 /**
  * Devolve a tabela DispMoveis filtrada pelo nome do sensor
  * @param {type} req
