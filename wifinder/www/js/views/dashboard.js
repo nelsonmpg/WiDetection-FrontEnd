@@ -164,6 +164,21 @@ window.DashboardView = Backbone.View.extend({
         break;
     }
   },
+  updateCharTwoBars: function (data, local) {
+    var self = this;
+    switch (local) {
+      case "disp":
+        if (self.graph2Bar) {
+          self.graph2Bar.updateNumDisp(data);
+        }
+        break;
+      case "ap":
+        if (self.graph2Bar) {
+          self.graph2Bar.updateNumAp(data);
+        }
+        break;
+    }
+  },
   newdisps: function (data, local) {
     var self = this;
     switch (local) {

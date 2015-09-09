@@ -68,5 +68,10 @@ var socketClient = function (options) {
     socket.on("changeActiveAnt", function (data, site) {
       self.vent.trigger("changeActiveAnt", data, site);
     });
+    
+    // socket a escuta de atualizacao do estado do sensor
+    socket.on("updateCharTwoBars", function (data, local, site) {
+      self.vent.trigger("updateCharTwoBars", data, local, site);
+    });    
   };
 };
