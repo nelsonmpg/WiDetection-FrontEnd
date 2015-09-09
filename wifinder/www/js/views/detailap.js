@@ -207,7 +207,9 @@ window.DetailAPView = Backbone.View.extend({
                               for (var d in data[c].reduction) {
                                 if (devices.indexOf((data[c].reduction[d]).trim()) < 0) {
                                   devices.push((data[c].reduction[d]).trim());
-                                  xnodes.push({id: devices.indexOf((data[c].reduction[d]).trim()) + 1, label: data[c].group + "\n" + data[c].reduction[d], shape: 'icon',
+                                  xnodes.push({
+                                    id: devices.indexOf((data[c].reduction[d]).trim()) + 1,
+                                    label: data[c].group + "\n" + data[c].reduction[d], shape: 'icon',
                                     icon: {
                                       face: 'FontAwesome',
                                       code: '\uf108',
@@ -261,7 +263,7 @@ window.DetailAPView = Backbone.View.extend({
     var options = {
       "edges": {
         "smooth": {
-          "roundness": 0
+          "roundness": 1
         }
       }
     };
