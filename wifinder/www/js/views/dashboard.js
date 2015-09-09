@@ -27,39 +27,39 @@ window.DashboardView = Backbone.View.extend({
   requestNumDisps: function () {
     var self = this;
     modem("GET",
-            "/getNumDispositivos/" + window.profile.id,
-            function (data) {
-              $("body").find("#sensores-num-div").html(data.sensor);
-              $("body").find("#disp-num-div").html(data.moveis);
-              $("body").find("#ap-num-div").html(data.ap);
-            },
-            function (xhr, ajaxOptions, thrownError) {
-              var json = JSON.parse(xhr.responseText);
-              error_launch(json.message);
-            }, {}
+        "/getNumDispositivos/" + window.profile.id,
+        function (data) {
+          $("body").find("#sensores-num-div").html(data.sensor);
+          $("body").find("#disp-num-div").html(data.moveis);
+          $("body").find("#ap-num-div").html(data.ap);
+        },
+        function (xhr, ajaxOptions, thrownError) {
+          var json = JSON.parse(xhr.responseText);
+          error_launch(json.message);
+        }, {}
     );
   },
   createChart2Bar: function () {
     var self = this;
     modem("GET",
-            "/getAllAntenasAndDisps/" + window.profile.id,
-            function (data) {
-              var sensorList = "";
-              for (var i in data) {
-                sensorList += '<option class="select-sensor-lst">' + data[i].AP.nome + '</option>';
-              }
+        "/getAllAntenasAndDisps/" + window.profile.id,
+        function (data) {
+          var sensorList = "";
+          for (var i in data) {
+            sensorList += '<option class="select-sensor-lst">' + data[i].AP.nome + '</option>';
+          }
 
-              $("#select-chart-sensor").html(sensorList);
-              $("#select-chart-sensor > option:first").attr("selected", "selected");
-              $("#select-chart-sensor").trigger('change');
-              self.graph2Bar = new ArrayToGraph(data, "chart2bars", "column");
-              // para aparecer a div com os resultados
-              self.graph2Bar.createArrayToGraphTwoBar();
-            },
-            function (xhr, ajaxOptions, thrownError) {
-              var json = JSON.parse(xhr.responseText);
-              error_launch(json.message);
-            }, {}
+          $("#select-chart-sensor").html(sensorList);
+          $("#select-chart-sensor > option:first").attr("selected", "selected");
+          $("#select-chart-sensor").trigger('change');
+          self.graph2Bar = new ArrayToGraph(data, "chart2bars", "column");
+          // para aparecer a div com os resultados
+          self.graph2Bar.createArrayToGraphTwoBar();
+        },
+        function (xhr, ajaxOptions, thrownError) {
+          var json = JSON.parse(xhr.responseText);
+          error_launch(json.message);
+        }, {}
     );
   },
   selectsensortochart: function (e) {
@@ -74,44 +74,44 @@ window.DashboardView = Backbone.View.extend({
     if (self.lastSensorselect != sensor) {
       self.lastSensorselect = sensor;
       modem("GET",
-              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
-              function (data) {
-                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
-                self.chartrealtimeMoveis.updateIntervalGraph();
-              },
-              function (xhr, ajaxOptions, thrownError) {
-                var json = JSON.parse(xhr.responseText);
-                error_launch(json.message);
-              }, {}
+          "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
+          function (data) {
+            self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
+            self.chartrealtimeMoveis.updateIntervalGraph();
+          },
+          function (xhr, ajaxOptions, thrownError) {
+            var json = JSON.parse(xhr.responseText);
+            error_launch(json.message);
+          }, {}
       );
       modem("GET",
-              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
-              function (data) {
-                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
-                self.chartrealtimeAp.updateIntervalGraph();
-              },
-              function (xhr, ajaxOptions, thrownError) {
-                var json = JSON.parse(xhr.responseText);
-                error_launch(json.message);
-              }, {}
+          "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
+          function (data) {
+            self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
+            self.chartrealtimeAp.updateIntervalGraph();
+          },
+          function (xhr, ajaxOptions, thrownError) {
+            var json = JSON.parse(xhr.responseText);
+            error_launch(json.message);
+          }, {}
       );
     }
   },
   MapSensors: function (e) {
     var self = this;
     modem("GET",
-            "/getSensors/" + window.profile.id,
-            function (data) {
-              var locations = [];
-              for (var i in data) {
-                locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
-              }
-              carregarmapa(locations, "map");
-            },
-            function (xhr, ajaxOptions, thrownError) {
-              var json = JSON.parse(xhr.responseText);
-              error_launch(json.message);
-            }, {}
+        "/getSensors/" + window.profile.id,
+        function (data) {
+          var locations = [];
+          for (var i in data) {
+            locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
+          }
+          carregarmapa(locations, "map");
+        },
+        function (xhr, ajaxOptions, thrownError) {
+          var json = JSON.parse(xhr.responseText);
+          error_launch(json.message);
+        }, {}
     );
   },
   chartDispActive: function () {
@@ -126,27 +126,26 @@ window.DashboardView = Backbone.View.extend({
   createChartTotalVisitas: function () {
     var self = this;
     modem("GET",
-            "/getAllTimes/" + window.profile.id,
-            function (data) {
-              var a = JSON.parse(data), visita, newChart = [];
-              a = _.groupBy(a, function (o) {
-                return o[0].nameVendor;
-              });
-              for (var marca in a) {
-                visita = 0;
-                for (var device in a[marca]) {
-                  visita += a[marca][device].length;
-                }
-                newChart[marca] = visita;
-              }
-              console.log(newChart, a);
-              self.countChart = new ArrayToGraph(a, "chartDispVisit", "column");
-              self.countChart.createArrayToGraphOneBar2();
-            },
-            function (xhr, ajaxOptions, thrownError) {
-              var json = JSON.parse(xhr.responseText);
-              error_launch(json.message);
-            }, {}
+        "/getAllTimes/" + window.profile.id,
+        function (data) {
+          var a = JSON.parse(data), visita, newChart = [];
+          a = _.groupBy(a, function (o) {
+            return o[0].nameVendor;
+          });
+          for (var marca in a) {
+            visita = 0;
+            for (var device in a[marca]) {
+              visita += a[marca][device].length;
+            }
+            newChart[marca] = visita;
+          }
+          self.countChart = new ArrayToGraph(a, "chartDispVisit", "column");
+          self.countChart.createArrayToGraphOneBar2();
+        },
+        function (xhr, ajaxOptions, thrownError) {
+          var json = JSON.parse(xhr.responseText);
+          error_launch(json.message);
+        }, {}
     );
   },
   updatePower: function (data, disp) {
@@ -209,101 +208,19 @@ window.DashboardView = Backbone.View.extend({
   carregarNetwork: function () {
     var self = this;
     modem("GET",
-            "/getAllAP/" + window.profile.id,
-            function (data) {
-              var values = [];
-              for (var ssid in data[0].group[0]) {
-                values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
-              }
-
-              self.makeNetwork(values);
-            },
-            function (xhr, ajaxOptions, thrownError) {
-              var json = JSON.parse(xhr.responseText);
-              error_launch(json.message);
-            }, {}
-    );
-  },
-  makeNetwork: function (macs) {
-    console.log(macs);
-    var self = this;
-    var xnodes = [];
-    var xedges = [];
-    var devices = [];
-    for (var a in macs) {
-      if (devices.indexOf(macs[a].bssid.trim()) < 0 && macs[a].name != "") { // carregar aps
-        devices.push(macs[a].bssid.trim());
-        xnodes.push({id: devices.indexOf(macs[a].bssid.trim()) + 1, label: macs[a].name + "\n" + macs[a].bssid.trim(), group: "ap"});
-      }
-    }
-    modem("GET",
-            "/getBssisFromAll/" + window.profile.id,
-            function (data) { //uma lista com os bssd's a que cada device esteve associado
-              for (var i in data) {
-                if (devices.indexOf((data[i].mac).trim()) < 0) {
-                  devices.push((data[i].mac).trim());
-                  xnodes.push({id: devices.indexOf(data[i].mac.trim()) + 1, label: data[i].vendor + "\n" + data[i].mac.trim(), group: "device"});
-                }
-
-                for (var a in data[i].bssid) {
-                  xedges.push({from: devices.indexOf(data[i].bssid[a].trim()) + 1, to: devices.indexOf((data[i].mac).trim()) + 1});
-                }
-                self.fazergrafico(xedges, xnodes);
-              }
-            },
-            function (xhr, ajaxOptions, thrownError) {
-              var json = JSON.parse(xhr.responseText);
-              error_launch(json.message);
-            }, {}
-    );
-  },
-  fazergrafico: function (xedges, xnodes) {
-    var self = this;
-    // xnodes.push({id: 1, label: $('#ApSelect').find(":selected").text(), group: "ap"});
-
-    // create 2 array with edges and nodes
-    var edges = new vis.DataSet(xedges);
-    var nodes = new vis.DataSet(xnodes);
-    // create a network
-    var container = document.getElementById('mynetwork');
-    // provide the data in the vis format
-    var data = {
-      nodes: nodes,
-      edges: edges
-    };
-    var options = {
-      "edges": {
-        "smooth": {
-          "roundness": 0
-        }
-      },
-      groups: {
-        ap: {
-          shape: 'icon',
-          icon: {
-            face: 'FontAwesome',
-            code: '\uf1eb',
-            size: 50,
-            color: '#00ff00'
+        "/getAllAP/" + window.profile.id,
+        function (data) {
+          var values = [];
+          for (var ssid in data[0].group[0]) {
+            values[data[0].group[0][ssid]] = {"bssid": data[0].group[0][ssid], "name": data[0].group[1][ssid], "value": data[0].reduction[0][ssid]};
           }
+         makeAllNetwork(values,'mynetwork');
         },
-        device: {
-          shape: 'icon',
-          icon: {
-            face: 'FontAwesome',
-            code: '\uf108',
-            size: 50,
-            color: '#eeeeee'
-          }
-        }
-      }
-    };
-    if (this.net != undefined) {
-      this.net.destroy();
-      this.net = null;
-    }
-    // initialize your network!
-    self.net = new vis.Network(container, data, options);
+        function (xhr, ajaxOptions, thrownError) {
+          var json = JSON.parse(xhr.responseText);
+          error_launch(json.message);
+        }, {}
+    );
   },
   render: function () {
     var self = this;
