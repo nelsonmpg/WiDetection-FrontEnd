@@ -307,9 +307,9 @@ var makeAllNetwork = function (macs, local) {
         }
         for (var c in xnodes) {
           var a = _.where(xedges, {from: xnodes[c].id}).length * 1;
-          (a > 0)?xnodes[c].icon.color = getColor(max, a):false;
+          (a > 0) ? xnodes[c].icon.color = getColor(max, a) : false;
         }
-        $(".maxDevice").html(max+" devices");
+        $(".maxDevice").html(max + " devices");
         fazergrafico(xedges, xnodes, local);
       },
       function (xhr, ajaxOptions, thrownError) {
@@ -337,16 +337,50 @@ var fazergrafico = function (xedges, xnodes, local) {
       "smooth": {
         "roundness": 0
       }
+    },
+    physics: {
+      forceAtlas2Based: {
+        gravitationalConstant: -26,
+        centralGravity: 0.005,
+        springLength: 230,
+        springConstant: 0.18
+      },
+      maxVelocity: 146,
+      solver: 'forceAtlas2Based',
+      timestep: 0.35,
+      stabilization: {
+        enabled: true,
+        iterations: 2000,
+        updateInterval: 25
+      }
     }
   };
   if (this.net != undefined) {
     this.net.destroy();
     this.net = null;
   }
+  var net = new vis.Network(container, data, options);
   // initialize your network!
-  self.net = new vis.Network(container, data, options);
+  net.on("stabilizationProgress", function (params) {
+//                var maxWidth = 496;
+//                var minWidth = 20;
+//                var widthFactor = params.iterations/params.total;
+//                var width = Math.max(minWidth,maxWidth * widthFactor);
+//
+//                document.getElementById('bar2').style.width = width + 'px';
+//                document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+//    console.log(params);
+  });
+  net.once("stabilizationIterationsDone", function () {
+//                document.getElementById('text').innerHTML = '100%';
+//                document.getElementById('bar2').style.width = '496px';
+//                document.getElementById('loadingBar').style.opacity = 0;
+//                // really clean the dom element
+//                setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+    console.log("stop");
+  });
   $(".showScale").show();
-}
+};
 
 var displayCoordinates = function (pnt) {
   var lat = pnt.lat();
@@ -360,7 +394,6 @@ var displayCoordinates = function (pnt) {
   };
 };
 var getColor = function (max, value) {
-  console.log(max, value);
   var n = value * 100 / max;
   var R = (255 * n) / 100;
   var G = (255 * (100 - n)) / 100;

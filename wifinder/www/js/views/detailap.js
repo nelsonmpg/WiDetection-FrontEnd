@@ -71,7 +71,8 @@ window.DetailAPView = Backbone.View.extend({
       this.net = null;
     }
     if (mac == "all") {
-      self.networkAllAP(self.allap);
+//      self.networkAllAP(self.allap);
+  makeAllNetwork(self.allap,'mynetwork');
       $("#div-row-table-ap").hide();
     } else {
       $("#div-row-table-ap").show();
@@ -160,121 +161,6 @@ window.DetailAPView = Backbone.View.extend({
     }
     // initialize your network!
     this.net = new vis.Network(container, data, options);
-  },
-  networkAllAP: function (macs) {
-    var self = this;
-    var xnodes = [];
-    var xedges = [];
-    var devices = [];
-    for (var a in macs) {
-      if (devices.indexOf(macs[a].bssid.trim()) < 0) {
-        devices.push(macs[a].bssid.trim());
-        xnodes.push({id: devices.indexOf(macs[a].bssid.trim()) + 1, label: self.allap[macs[a].bssid].name + "\n" + macs[a].bssid.trim(), shape: 'icon',
-          icon: {
-            face: 'FontAwesome',
-            code: '\uf1eb',
-            size: 50,
-            color: '#00ff00'
-          }});
-      }
-
-      modem("GET",
-              "/getDispConnectedtoAp/" + window.profile.id + "/" + macs[a].bssid,
-              function (data) {
-                for (var i in data[0]) {
-                  if (devices.indexOf((data[0][i].macAddress).trim()) < 0) {
-                    devices.push((data[0][i].macAddress).trim());
-//                    xnodes.push({id: devices.indexOf((data[0][i].macAddress).trim()) + 1, label: data[0][i].nameVendor + "\n" + data[0][i].macAddress, group: "device"});
-                    xnodes.push({id: devices.indexOf((data[0][i].macAddress).trim()) + 1, label: data[0][i].nameVendor + "\n" + data[0][i].macAddress, shape: 'icon',
-                      icon: {
-                        face: 'FontAwesome',
-                        code: '\uf108',
-                        size: 50,
-                        color: '#eeeeee'
-                      }});
-
-                  }
-                  if (_.where(xedges, {from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1}) == 0) {
-                    xedges.push({from: devices.indexOf(data[1].trim()) + 1, to: devices.indexOf((data[0][i].macAddress).trim()) + 1});
-                  }
-                }
-                if (data[1] == macs[a].bssid) { //se for o ultimo ap
-
-                  modem("GET",
-                          "/getDispMacbyVendor/" + window.profile.id,
-                          function (data) {
-                            for (var c in data) {
-                              for (var d in data[c].reduction) {
-                                if (devices.indexOf((data[c].reduction[d]).trim()) < 0) {
-                                  devices.push((data[c].reduction[d]).trim());
-                                  xnodes.push({
-                                    id: devices.indexOf((data[c].reduction[d]).trim()) + 1,
-                                    label: data[c].group + "\n" + data[c].reduction[d], shape: 'icon',
-                                    icon: {
-                                      face: 'FontAwesome',
-                                      code: '\uf108',
-                                      size: 50,
-                                      color: '#eeeeee'
-                                    }});
-                                }
-                              }
-                            }
-
-                            self.fazergrafico(xedges, xnodes);
-                          },
-                          function (xhr, ajaxOptions, thrownError) {
-                            var json = JSON.parse(xhr.responseText);
-                            error_launch(json.message);
-                          }, {}
-                  );
-                }
-
-              },
-              function (xhr, ajaxOptions, thrownError) {
-                var json = JSON.parse(xhr.responseText);
-                error_launch(json.message);
-              }, {}
-      );
-    }
-
-  },
-  fazergrafico: function (xedges, xnodes) {
-    var self = this;
-    // xnodes.push({id: 1, label: $('#ApSelect').find(":selected").text(), group: "ap"});
-
-    // create 2 array with edges and nodes
-    var max = 0;
-    for (var i in xnodes) { //encontrar o ap com mais devices
-      max = (_.where(xedges, {from: xnodes[i].id}).length > max) ? _.where(xedges, {from: xnodes[i].id}).length : max;
-    }
-    for (var i in xedges) {
-      xnodes[xedges[i].from - 1].icon.color = getColor(max, _.where(xedges, {from: xedges[i].from}).length);
-    }
-    $(".maxDevice").html(max+" devices");
-    var edges = new vis.DataSet(xedges);
-    var nodes = new vis.DataSet(xnodes);
-    // create a network
-    var container = document.getElementById('mynetwork');
-    // provide the data in the vis format
-    var data = {
-      nodes: nodes,
-      edges: edges
-    };
-    var options = {
-      "edges": {
-        "smooth": {
-          "roundness": 1
-        }
-      }
-    };
-    if (this.net != undefined) {
-      this.net.destroy();
-      this.net = null;
-    }
-    // initialize your network!
-    self.net = new vis.Network(container, data, options);
-    
-    $(".showScale").show();
   },
   ApHourChart: function (mac) {
     self = this;

@@ -139,7 +139,6 @@ window.DashboardView = Backbone.View.extend({
             }
             newChart[marca] = visita;
           }
-          console.log(newChart, a);
           self.countChart = new ArrayToGraph(a, "chartDispVisit", "column");
           self.countChart.createArrayToGraphOneBar2();
         },
