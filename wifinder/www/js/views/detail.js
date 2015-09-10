@@ -1,6 +1,12 @@
 /* global moment */
 
 window.DetailView = Backbone.View.extend({
+  loadingState: '<div class="overlay text-center"><i class="fa fa-refresh fa-spin"></i></div>',
+  testeRemoveBlock: [],
+  lenghtRemoveBlock: 4,
+  testeRemoveBlocksensor: [],
+  lenghtRemoveBlockSelSensor: 2,
+  startBlock: true,
   sensor: undefined,
   allap: [],
   events: {
@@ -12,6 +18,10 @@ window.DetailView = Backbone.View.extend({
     "click .Dispjump": "openDetailDisp",
     "click .select-source": "selectSource",
     "apply.daterangepicker #reportrange": function (ev, picker) {
+      var self = this;
+      $("#modalWait").show();
+      $("#chartDispMoveis").html(self.loadingState);
+      $("#chartAccessPoint").html(self.loadingState);
       this.changedate(ev, picker);
     }
   },
@@ -39,6 +49,8 @@ window.DetailView = Backbone.View.extend({
   },
   init: function () {
     var self = this;
+    $("#modalWait").show();
+    self.startBlock = true;
     this.getAllAP();
     this.getSensors();
     this.dataselect(moment(), moment());
@@ -145,6 +157,8 @@ window.DetailView = Backbone.View.extend({
 
               // add active class a primeira opcao do seletor de data range
               $(".daterangepicker .ranges ul li:first").addClass("active");
+              self.testeRemoveBlock.push(true);
+              self.removeBlock();
             },
             function (xhr, ajaxOptions, thrownError) {
               var json = JSON.parse(xhr.responseText);
@@ -154,6 +168,9 @@ window.DetailView = Backbone.View.extend({
   },
   setsensor: function () {
     var self = this;
+    $("#modalWait").show();
+    $("#chartDispMoveis").html(self.loadingState);
+    $("#chartAccessPoint").html(self.loadingState);
     $('#chartCpu').val(0).trigger('change');
     $('#chartMem').val(0).trigger('change');
     $('#chartDisc').val(0).trigger('change');
@@ -215,6 +232,8 @@ window.DetailView = Backbone.View.extend({
                   left: $('#SensorSelect').find(":selected").data("posx") + "%",
                   top: $('#SensorSelect').find(":selected").data("posy") + "%"
                 });
+                self.testeRemoveBlock.push(true);
+                self.removeBlock();
               }
             },
             function (xhr, ajaxOptions, thrownError) {
@@ -272,6 +291,9 @@ window.DetailView = Backbone.View.extend({
                     "destroy": true
                   });
                 }
+                self.testeRemoveBlocksensor.push(true);
+                self.testeRemoveBlock.push(true);
+                self.removeBlock();
               },
               function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);
@@ -312,6 +334,9 @@ window.DetailView = Backbone.View.extend({
                     "destroy": true
                   });
                 }
+                self.testeRemoveBlocksensor.push(true);
+                self.testeRemoveBlock.push(true);
+                self.removeBlock();
               },
               function (xhr, ajaxOptions, thrownError) {
                 var json = JSON.parse(xhr.responseText);
@@ -348,6 +373,20 @@ window.DetailView = Backbone.View.extend({
     e.preventDefault();
     $("#posiSensor .tab-pane").removeClass("active");
     $("#posiSensor ." + $(e.currentTarget).children().attr("href")).addClass("active");
+  },
+  removeBlock: function () {
+    var self = this;
+    if (self.testeRemoveBlock.length >= self.lenghtRemoveBlock && self.startBlock) {
+      $("#modalWait").hide();
+      self.testeRemoveBlock = [];
+      self.testeRemoveBlocksensor = [];
+      self.startBlock = false;
+    }
+    if (self.testeRemoveBlocksensor.length >= self.lenghtRemoveBlockSelSensor && !self.startBlock) {
+      $("#modalWait").hide();
+      self.testeRemoveBlock = [];
+      self.testeRemoveBlocksensor = [];
+    }
   },
   render: function () {
     $(this.el).html(this.template());

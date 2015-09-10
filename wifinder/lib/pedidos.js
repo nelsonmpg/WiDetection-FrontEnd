@@ -776,7 +776,9 @@ module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
             .table(table)
             .changes({squash: 1})('new_val')
             .map(function (v) {
-              return {"sensor": v("nomeAntena"), "hosts": v("host").do(function (row) {
+              return {
+                "sensor": v("nomeAntena"),
+                "hosts": v("host").do(function (row) {
                   return row.filter(function (o) {
                     return o("data").ge(r.now().toEpochTime().sub(60));
                   }).withFields("macAddress", "nameVendor", "Power", "data");
@@ -787,6 +789,29 @@ module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
                 socket.emit("updateRealTimeChart", item, nomedisp, database);
               });
             });
+  });
+};
+
+module.exports.changeTableAntForGraph = function (database, socket, table, nomedisp) {
+  r.connect(self.dbData).then(function (conn) {
+    r.db(database)
+            .table(table)
+            .changes({squash: 1})
+            .map(function (v) {
+              var a = v("old_val")("host").count();
+              var b = v("new_val")("host").count();
+              return {
+                "sensor": v("new_val")("nomeAntena"),
+                "hosts_new": v("new_val")("host").count(),
+                "host_teste": a.ne(b)
+              };
+            }).filter(function (val) {
+      return val("host_teste");
+    }).run(conn).then(function (cursor) {
+      cursor.each(function (err, item) {
+        socket.emit("updateCharTwoBars", item, nomedisp, database);
+      });
+    });
   });
 };
 

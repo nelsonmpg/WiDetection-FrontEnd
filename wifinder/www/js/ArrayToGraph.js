@@ -108,7 +108,7 @@ ArrayToGraph.prototype.createArrayToGraphOneBar3 = function () {
   for (var i in this.array) {
     datapoint.push({
       label: i,
-      y: this.array[i] *1
+      y: this.array[i] * 1
     });
   }
   this.dataTograph.push({
@@ -157,22 +157,20 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
 
 ArrayToGraph.prototype.updateNumDisp = function (data) {
   for (var j in this.dataTograph[0].dataPoints) {
-    for (var i in data.new_val.disp) {
-      if (data.new_val.disp[i].name == this.dataTograph[0].dataPoints[j].label) {
-        this.dataTograph[0].dataPoints[j].y = this.dataTograph[0].dataPoints[j].y + 1;
-        this.chart.render();
-      }
+    if (data.sensor == this.dataTograph[0].dataPoints[j].label) {
+      this.dataTograph[0].dataPoints[j].y = data.hosts_new;
+      this.chart.render();
+  console.log(data);
     }
   }
 };
 
 ArrayToGraph.prototype.updateNumAp = function (data) {
-  for (var j in this.dataTograph[0].dataPoints) {
-    for (var i in data.new_val.disp) {
-      if (data.new_val.disp[i].name == this.dataTograph[1].dataPoints[j].label) {
-        this.dataTograph[1].dataPoints[j].y = this.dataTograph[1].dataPoints[j].y + 1;
-        this.chart.render();
-      }
+  for (var j in this.dataTograph[1].dataPoints) {
+    if (data.sensor == this.dataTograph[1].dataPoints[j].label) {
+      this.dataTograph[1].dataPoints[j].y = data.hosts_new;
+      this.chart.render();
+  console.log(data);
     }
   }
 };

@@ -56,6 +56,12 @@ var Router = Backbone.Router.extend({
         self.dashboard.updateChart(x);
       }
     });
+    self.appEventBus.on('updateCharTwoBars', function (data, local, site) {
+      if (window.profile.get("site") && window.profile.get("site") == site &&
+              Backbone.history.getFragment() == "Dashboard") {
+        self.dashboard.updateCharTwoBars(data, local);
+      }
+    });
     self.appEventBus.on('changeActiveAnt', function (data, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
               Backbone.history.getFragment() == "Detail") {
