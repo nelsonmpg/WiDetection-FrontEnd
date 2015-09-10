@@ -289,7 +289,7 @@ var makeAllNetwork = function (macs, local) {
             xnodes.push({id: devices.indexOf(data[i].mac.trim()) + 1, label: data[i].vendor + "\n" + data[i].mac.trim(), shape: 'icon',
               icon: {
                 face: 'FontAwesome',
-                code: '\uf108',
+                code: '\uf109',
                 size: 50,
                 color: '#eeeeee'
               }});

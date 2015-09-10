@@ -45,16 +45,16 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Component id="jScrollPane1" min="-2" pref="508" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="jScrollPane2" pref="435" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="526" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jScrollPane2" min="-2" pref="394" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jScrollPane1" max="32767" attributes="0"/>
                       <Group type="102" attributes="0">
@@ -78,7 +78,7 @@
               <Properties>
                 <Property name="columns" type="int" value="20"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Monospaced" size="18" style="1"/>
+                  <Font name="Monospaced" size="12" style="1"/>
                 </Property>
                 <Property name="rows" type="int" value="5"/>
               </Properties>
@@ -96,7 +96,7 @@
               <Properties>
                 <Property name="columns" type="int" value="20"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Monospaced" size="18" style="1"/>
+                  <Font name="Monospaced" size="14" style="1"/>
                 </Property>
                 <Property name="rows" type="int" value="5"/>
               </Properties>
@@ -146,7 +146,7 @@
               <Font name="Tahoma" size="24" style="1"/>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="Resultado"/>
+            <Property name="text" type="java.lang.String" value="WiFinder Alpha version"/>
           </Properties>
         </Component>
       </SubComponents>
