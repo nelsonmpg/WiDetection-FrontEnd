@@ -3,7 +3,7 @@
 window.DetailView = Backbone.View.extend({
   loadingState: '<div class="overlay text-center"><i class="fa fa-refresh fa-spin"></i></div>',
   testeRemoveBlock: [],
-  lenghtRemoveBlock: 4,
+  lenghtRemoveBlock: 3,
   testeRemoveBlocksensor: [],
   lenghtRemoveBlockSelSensor: 2,
   startBlock: true,
@@ -232,8 +232,6 @@ window.DetailView = Backbone.View.extend({
                   left: $('#SensorSelect').find(":selected").data("posx") + "%",
                   top: $('#SensorSelect').find(":selected").data("posy") + "%"
                 });
-                self.testeRemoveBlock.push(true);
-                self.removeBlock();
               }
             },
             function (xhr, ajaxOptions, thrownError) {

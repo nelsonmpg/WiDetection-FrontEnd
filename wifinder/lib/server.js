@@ -322,6 +322,11 @@ Date.prototype.addMinutes = function (h) {
   return this;
 };
 
+//excepcoes para os erros encontrados
+//process.on('uncaughtException', function (err) {
+//    console.log('Excepcao capturada: ' + err);
+//});
+
 /**
  *
  * @param {type} port
