@@ -281,6 +281,7 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
     animationEnabled: true,
     theme: self.theme,
     axisX: {
+      labelAutoFit: true ,
       labelMaxWidth: 150,
       labelWrap: false,
       interval: 1,
