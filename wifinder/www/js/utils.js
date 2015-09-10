@@ -72,13 +72,13 @@ var showmsg = function (local, tipo, msg, callback) {
       break;
   }
   $(local).html('<div class="col-md-8">' +
-      '<div class="box box-default">' +
-      '<div class="box-body">' +
-      '<button type="button" class="close" data-dismiss="alert" onClick="closeAlert(this);" aria-hidden="true"><i class="fa fa-close"></i></button>' +
-      '<div class="alert ' + formsg.class + ' alert-dismissable">' +
-      '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
-      '<h4>' + msg + '</h4>' +
-      '</div></div></div></div>');
+          '<div class="box box-default">' +
+          '<div class="box-body">' +
+          '<button type="button" class="close" data-dismiss="alert" onClick="closeAlert(this);" aria-hidden="true"><i class="fa fa-close"></i></button>' +
+          '<div class="alert ' + formsg.class + ' alert-dismissable">' +
+          '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
+          '<h4>' + msg + '</h4>' +
+          '</div></div></div></div>');
   $(local).show();
   setTimeout(function () {
     $(local).hide();
@@ -108,12 +108,12 @@ var showInfoMsg = function (show, local, msg) {
   });
   if (show) {
     $(local).html('<div class="col-md-8">' +
-        '<div class="box box-default">' +
-        '<div class="box-body">' +
-        '<div class="alert ' + formsg.class + ' alert-dismissable">' +
-        '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
-        '<h4>' + msg + '</h4>' +
-        '</div></div></div></div>');
+            '<div class="box box-default">' +
+            '<div class="box-body">' +
+            '<div class="alert ' + formsg.class + ' alert-dismissable">' +
+            '<h3><i class="icon fa ' + formsg.icon + '"></i> ' + formsg.titulo + '</h3>' +
+            '<h4>' + msg + '</h4>' +
+            '</div></div></div></div>');
     $(local).show();
   } else {
     $(local).hide();
@@ -270,52 +270,57 @@ var makeAllNetwork = function (macs, local) {
   for (var a in macs) {
     if (devices.indexOf(macs[a].bssid.trim()) < 0 && macs[a].name != "") { // carregar aps
       devices.push(macs[a].bssid.trim());
-      xnodes.push({id: devices.indexOf(macs[a].bssid.trim()) + 1, label: macs[a].name + "\n" + macs[a].bssid.trim(),
+      xnodes.push({
+        id: devices.indexOf(macs[a].bssid.trim()) + 1,
+        label: macs[a].name + "\n" + macs[a].bssid.trim(),
         shape: 'icon',
         icon: {
           face: 'FontAwesome',
-          code: '\uf1eb',
+          code: '\uf140',
           size: 50,
           color: '#00ff00'
         }});
     }
   }
   modem("GET",
-      "/getBssisFromAll/" + window.profile.id,
-      function (data) { //uma lista com os bssd's a que cada device esteve associado
-        for (var i in data) {
-          if (devices.indexOf((data[i].mac).trim()) < 0) {
-            devices.push((data[i].mac).trim());
-            xnodes.push({id: devices.indexOf(data[i].mac.trim()) + 1, label: data[i].vendor + "\n" + data[i].mac.trim(), shape: 'icon',
-              icon: {
-                face: 'FontAwesome',
-                code: '\uf108',
-                size: 50,
-                color: '#eeeeee'
-              }});
-          }
+          "/getBssisFromAll/" + window.profile.id,
+          function (data) { //uma lista com os bssd's a que cada device esteve associado
+            for (var i in data) {
+              if (devices.indexOf((data[i].mac).trim()) < 0) {
+                devices.push((data[i].mac).trim());
+                xnodes.push({
+                  id: devices.indexOf(data[i].mac.trim()) + 1,
+                  label: data[i].vendor + "\n" + data[i].mac.trim(),
+                  shape: 'icon',
+                  icon: {
+                    face: 'FontAwesome',
+                    code: '\uf10b',
+                    size: 50,
+                    color: '#eeeeee'
+                  }});
+              }
 
-          for (var a in data[i].bssid) {
-            xedges.push({from: devices.indexOf(data[i].bssid[a].trim()) + 1, to: devices.indexOf((data[i].mac).trim()) + 1});
-          }
-        }
-        var max = 0;
-        for (var b in xnodes) {
-          max = (_.where(xedges, {from: xnodes[b].id}).length > max) ? _.where(xedges, {from: xnodes[b].id}).length : max;
-          var count = _.where(xedges, {from: xnodes[b].id}).length;
-          (count > 0) ? xnodes[b].label = xnodes[b].label.split("\n").join("[" + count + "]\n") : false;
-        }
-        for (var c in xnodes) {
-          var a = _.where(xedges, {from: xnodes[c].id}).length * 1;
-          (a > 0) ? xnodes[c].icon.color = getColor(max, a) : false;
-        }
-        $(".maxDevice").html(max + " devices");
-        fazergrafico(xedges, xnodes, local);
-      },
-      function (xhr, ajaxOptions, thrownError) {
-        var json = JSON.parse(xhr.responseText);
-        error_launch(json.message);
-      }, {}
+              for (var a in data[i].bssid) {
+                xedges.push({from: devices.indexOf(data[i].bssid[a].trim()) + 1, to: devices.indexOf((data[i].mac).trim()) + 1});
+              }
+            }
+            var max = 0;
+            for (var b in xnodes) {
+              max = (_.where(xedges, {from: xnodes[b].id}).length > max) ? _.where(xedges, {from: xnodes[b].id}).length : max;
+              var count = _.where(xedges, {from: xnodes[b].id}).length;
+              (count > 0) ? xnodes[b].label = xnodes[b].label.split("\n").join("[" + count + "]\n") : false;
+            }
+            for (var c in xnodes) {
+              var a = _.where(xedges, {from: xnodes[c].id}).length * 1;
+              (a > 0) ? xnodes[c].icon.color = getColor(max, a) : false;
+            }
+            $(".maxDevice").html(max + " devices");
+            fazergrafico(xedges, xnodes, local);
+          },
+          function (xhr, ajaxOptions, thrownError) {
+            var json = JSON.parse(xhr.responseText);
+            error_launch(json.message);
+          }, {}
   );
 };
 var fazergrafico = function (xedges, xnodes, local) {
@@ -333,6 +338,9 @@ var fazergrafico = function (xedges, xnodes, local) {
     edges: edges
   };
   var options = {
+    autoResize: true,
+    height: '100%',
+    width: '100%',
     "edges": {
       "smooth": {
         "roundness": 0
