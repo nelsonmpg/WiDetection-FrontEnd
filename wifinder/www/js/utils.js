@@ -180,7 +180,7 @@ var carregarmapa = function (local, localaddmap) {
     map = new google.maps.Map(document.getElementById(localaddmap), {
       zoom: 18,
       center: new google.maps.LatLng(locations[0][1], locations[0][2]),
-      mapTypeId: google.maps.MapTypeId.ROADMAP, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
+      mapTypeId: google.maps.MapTypeId.HYBRID, // ROADMAP, HYBRID, SATELLITE, TERRAIN 
       mapTypeControl: true,
       streetViewControl: true,
       panControl: true,
@@ -335,7 +335,7 @@ var fazergrafico = function (xedges, xnodes, local) {
   var options = {
     "edges": {
       "smooth": {
-        "roundness": 0
+        "roundness": 1
       }
     },
     physics: {
