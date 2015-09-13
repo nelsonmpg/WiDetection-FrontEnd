@@ -74,10 +74,17 @@ window.SideBarView = Backbone.View.extend({
     }
 
   },
-  setActive: function (mav) {
-    $(".select-site-first a span:contains('" + mav + "')").click();
+  setActive: function (nav) {
+    $(".select-site-first a span:contains('" + nav + "')").click();
   },
-  selectadmin : function (){
+  setDetailSensor: function (nav) {
+//    $('ul.sidebar-menu li.active').removeClass("active");
+    $(".select-site-first a[data-nome='Detail']").parent().parent().parent().children("a:first").children("i.fa-angle-left").click();
+    setTimeout(function () {
+      $(".select-site-first a[data-nome='Detail']").click();
+    }, 1000);
+  },
+  selectadmin: function () {
     $('li a[data-nome="AdminSites"].select-item-menu').click();
     $(".showitem").css({
       "display": "none"
@@ -88,7 +95,7 @@ window.SideBarView = Backbone.View.extend({
     $('ul.sidebar-menu li.active').removeClass("active");
   },
   initialize: function (opt) {
-    this.socketsidebar = opt.socket;    
+    this.socketsidebar = opt.socket;
     $(".showitem").css({
       "display": "block"
     });

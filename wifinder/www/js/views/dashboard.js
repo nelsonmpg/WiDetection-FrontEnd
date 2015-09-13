@@ -10,7 +10,13 @@ window.DashboardView = Backbone.View.extend({
   countChart: undefined,
   lastSensorselect: "",
   events: {
-    "change #select-chart-sensor": "selectsensortochart"
+    "change #select-chart-sensor": "selectsensortochart",
+    "click #movetosensordetail": function (e) {
+      window.profile.set("sensor-sel", $(e.currentTarget).data("sensorname"));
+      app.navigate("Detail", {
+        trigger: true
+      });
+    }
   },
   initialize: function (opt) {
     this.socketDashboard = opt.socket;
@@ -124,7 +130,14 @@ window.DashboardView = Backbone.View.extend({
             function (data) {
               var locations = [];
               for (var i in data) {
-                locations.push([data[i].nomeAntena, data[i].latitude, data[i].longitude, data[i].data]);
+                locations.push([
+                  "<table class='table table-condensed'><tr><td> Sensor Name </td><td> " + data[i].data.nomeAntena + " </td></tr>" +
+                          "<tbody><tr><td> Access Points </td><td> " + data[i].numap + " </td></tr>" +
+                          "<tr><td> Wireless Devices </td><td> " + data[i].numdisp + " </td></tr></tbody></table>" +
+                          "<button id='movetosensordetail' data-sensorname='" + data[i].data.nomeAntena + "' class='btn btn-block btn-default btn-xs'>Sensor Detail</button>",
+                  data[i].data.latitude,
+                  data[i].data.longitude,
+                  data[i].data.data]);
               }
               carregarmapa(locations, "map");
               self.testeRemoveBlock.push(true);
@@ -256,7 +269,7 @@ window.DashboardView = Backbone.View.extend({
       $("#modalWait").hide();
       self.testeRemoveBlock = [];
     }
-  }, 
+  },
   render: function () {
     var self = this;
     $(this.el).html(this.template());

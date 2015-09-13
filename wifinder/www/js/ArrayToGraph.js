@@ -203,11 +203,13 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
       shared: true
     },
     axisY: {
+      interval: self.scalegraph,
       title: "Wireless Devices",
       titleFontSize: 20,
       titleFontColor: "black"
     },
     axisY2: {
+      interval: self.scalegraph,
       title: "Access Points",
       titleFontSize: 20,
       titleFontColor: "black"
@@ -256,16 +258,18 @@ ArrayToGraph.prototype.createAndShowGraphLine = function () {
       }
     },
     axisX: {
-      gridColor: "Silver",
-      tickColor: "silver",
+      labelFontSize: 12,
+      labelFontFamily: "verdana",
+      labelFontColor: "black",
       valueFormatString: "H:mm:ss"
     },
     toolTip: {
       shared: true
     },
     axisY: {
-      gridColor: "Silver",
-      tickColor: "silver"
+      labelFontSize: 12,
+      labelFontFamily: "verdana",
+      labelFontColor: "black"
     },
     data: self.dataTograph
   });
@@ -285,7 +289,7 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
       labelMaxWidth: 150,
       labelWrap: false,
       interval: 1,
-      labelAngle: this.anguloX,
+      labelAngle: self.anguloX,
       labelFontSize: 12,
       labelFontFamily: "verdana",
       labelFontColor: "black"
@@ -320,7 +324,7 @@ ArrayToGraph.prototype.createAndShowGraphSimpleLine = function () {
     axisY: {
       includeZero: false,
       gridThickness: 1,
-      interval: 1,
+      interval: self.scalegraph,
       labelFontSize: 12,
       labelFontFamily: "verdana",
       labelFontColor: "black"

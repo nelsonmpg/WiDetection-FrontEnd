@@ -160,7 +160,7 @@ var Router = Backbone.Router.extend({
       self.detail = new DetailView();
       self.contentnav.setView("Details  >  Sensor");
       $('#content').html(self.detail.render().el);
-      self.detail.init();
+      self.detail.init((typeof window.profile.get("sensor-sel") == "undefined") ? undefined : (window.profile.get("sensor-sel")), window.profile.set("sensor-sel"), self.sidebar.setDetailSensor("Sensor"));
       windowScrollTop();
     });
   },

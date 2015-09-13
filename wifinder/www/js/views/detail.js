@@ -1,4 +1,4 @@
-/* global moment */
+/* global moment, app */
 
 window.DetailView = Backbone.View.extend({
   loadingState: '<div class="overlay text-center"><i class="fa fa-refresh fa-spin"></i></div>',
@@ -47,8 +47,9 @@ window.DetailView = Backbone.View.extend({
       trigger: true
     });
   },
-  init: function () {
+  init: function (sensrorsel) {
     var self = this;
+    this.sensor = sensrorsel;
     $("#modalWait").show();
     self.startBlock = true;
     this.getAllAP();
@@ -144,15 +145,21 @@ window.DetailView = Backbone.View.extend({
             "/getSensors/" + window.profile.id,
             function (data) {
               for (var i in data) {
-                $("#SensorSelect").append("<option data-log='" + data[i].longitude +
-                        "' data-lat='" + data[i].latitude +
-                        "' data-city='" + data[i].local +
-                        "' data-date='" + data[i].data +
-                        "' data-posx='" + data[i].posX +
-                        "' data-posy='" + data[i].posY +
-                        "' >" + data[i].nomeAntena + "</option>");
+                $("#SensorSelect").append(
+                        "<option data-log='" + data[i].data.longitude +
+                        "' data-lat='" + data[i].data.latitude +
+                        "' data-city='" + data[i].data.local +
+                        "' data-date='" + data[i].data.data +
+                        "' data-posx='" + data[i].data.posX +
+                        "' data-posy='" + data[i].data.posY +
+                        "' >" + data[i].data.nomeAntena + "</option>");
               }
-              $("#SensorSelectt > option:first").attr("selected", "selected");
+
+              if (self.sensor) {
+                $("#SensorSelect > option:contains('" + self.sensor + "')").attr("selected", "selected");
+              } else {
+                $("#SensorSelectt > option:first").attr("selected", "selected");
+              }
               $("#SensorSelect").trigger('change');
 
               // add active class a primeira opcao do seletor de data range

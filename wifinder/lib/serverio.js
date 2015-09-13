@@ -45,7 +45,7 @@ ServerSktIo.prototype.init = function () {
     socket.on("getAllDisp", function (id) {
       pedidos.getAllDisp(id, socket);
     });
-    
+
     // Atualiza o site selecionado pelo user
     socket.on("changesite", function (iduser, data) {
       self.server.setDataBase(iduser, data);
@@ -63,7 +63,7 @@ ServerSktIo.prototype.init = function () {
         pedidos.changeTableAnt(data[i].db, socket, "AntAp", "ap");
         pedidos.changeTableAnt(data[i].db, socket, "AntDisp", "disp");
         pedidos.changeTableAntForGraph(data[i].db, socket, "AntAp", "ap");
-        pedidos.changeTableAntForGraph(data[i].db, socket, "AntDisp", "disp");        
+        pedidos.changeTableAntForGraph(data[i].db, socket, "AntDisp", "disp");
         pedidos.changeActiveAnt(data[i].db, socket);
       }
     });

@@ -83,11 +83,6 @@ ChartRealTime.prototype.createUpdateScaleGraph = function () {
       xValueType: "dateTime",
       lineThickness: 3,
       name: i,
-//      click: function (e) {
-//        self.oneGraph = true;
-//        self.showNewGraph = true;
-//        self.graphSelect = e.dataSeries.name;
-//      },
       dataPoints: this.listaHostsStartAndUpdateValues[i].listaValues
     };
     this.valuesToGraph.push(val);
@@ -117,7 +112,6 @@ ChartRealTime.prototype.updateIntervalGraph = function () {
       } else {
         self.updateGraph();
         if ($("#" + self.localChart).length > 0 && self.chart != null) {
-          self.chart.render();
         } else {
           self.stopIntervalGraph();
         }
@@ -133,30 +127,32 @@ ChartRealTime.prototype.updateIntervalGraph = function () {
 ChartRealTime.prototype.graph = function () {
   var self = this;
   if (this.valuesToGraph.length > 0) {
-    this.chart = new CanvasJS.Chart(this.localChart, {
-      exportEnabled: true,
-      animationEnabled: true,
-      theme: "theme3",
-      toolTip: {
-        shared: true
-      },
-      axisY: {
-        gridThickness: 0.2,
-        interval: 5,
-        labelFontSize: 12,
-        suffix: " dBm",
-        labelFontFamily: "verdana",
-        labelFontColor: "black"
-      },
-      axisX: {
-        valueFormatString: "H:mm:ss",
-        interval: 10,
-        labelFontSize: 12,
-        labelFontFamily: "verdana",
-        labelFontColor: "black"
-      },
-      data: this.valuesToGraph
-    });
+    if (!this.chart) {
+      this.chart = new CanvasJS.Chart(this.localChart, {
+        exportEnabled: true,
+        animationEnabled: true,
+        theme: "theme3",
+        toolTip: {
+          shared: true
+        },
+        axisY: {
+          gridThickness: 0.2,
+          interval: 5,
+          labelFontSize: 12,
+          suffix: " dBm",
+          labelFontFamily: "verdana",
+          labelFontColor: "black"
+        },
+        axisX: {
+          valueFormatString: "H:mm:ss",
+          interval: 10,
+          labelFontSize: 12,
+          labelFontFamily: "verdana",
+          labelFontColor: "black"
+        },
+        data: this.valuesToGraph
+      });
+    }
     this.chart.render();
   } else {
     self.stopIntervalGraph();

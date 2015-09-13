@@ -159,8 +159,19 @@ module.exports.getDataBases = function (req, res) {
  */
 module.exports.getSensors = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
-    return r.db(self.getDataBase(req.params.id)).table("ActiveAnt")
-            .coerceTo("ARRAY")
+    return r.db(self.getDataBase(req.params.id))
+            .table("ActiveAnt")
+            .map(function (w) {
+              return {
+                "data": w,
+                "numdisp": r.db(self.getDataBase(req.params.id))
+                        .table("AntDisp")
+                        .get(w("nomeAntena"))("host").count(),
+                "numap": r.db(self.getDataBase(req.params.id))
+                        .table("AntAp")
+                        .get(w("nomeAntena"))("host").count()
+              };
+            }).coerceTo("ARRAY")
             .run(conn)
             .finally(function () {
               conn.close();
