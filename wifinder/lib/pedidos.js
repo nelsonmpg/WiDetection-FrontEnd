@@ -752,7 +752,9 @@ module.exports.changeTablesDisps = function (database, socket, table, nemedisp) 
             .changes({squash: 1})
             .filter(function (row) {
               return row('old_val').eq(null);
-            }).run(conn)
+            }).map(function (a) {
+      return  r.db(database).table(table).count();
+    }).run(conn)
             .then(function (cursor) {
               cursor.each(function (err, item) {
                 socket.emit("newDisp", item, nemedisp, database);
