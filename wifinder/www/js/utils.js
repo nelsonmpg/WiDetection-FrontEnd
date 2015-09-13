@@ -299,7 +299,6 @@ var makeAllNetwork = function (macs, local) {
                     color: '#eeeeee'
                   }});
               }
-
               for (var a in data[i].bssid) {
                 xedges.push({from: devices.indexOf(data[i].bssid[a].trim()) + 1, to: devices.indexOf((data[i].mac).trim()) + 1});
               }
