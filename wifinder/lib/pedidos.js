@@ -908,7 +908,7 @@ module.exports.getAllDisp = function (iduser, socket) {
             //Envia para os clientes
             socket.emit("updateChart", x, self.getDataBase(iduser));
           }).error(function (err) {
-            console.log("ERROR: %s:%s", err.name, err.msg);
+            console.log("ERROR: interval 1  %s:%s", err.name, err.msg);
           });
         } else {
           clearInterval(this);
@@ -916,7 +916,7 @@ module.exports.getAllDisp = function (iduser, socket) {
       }, 1000 * 60); //De minuto a minuto
 
     }).error(function (err) {
-      console.log("ERROR: %s:%s", err.name, err.msg);
+      console.log("ERROR: interval 2 %s:%s", err.name, err.msg);
     });
   }
 };

@@ -462,3 +462,15 @@ div.outerBorder {
   background: rgb(0, 173, 246); /* Old browsers */
   box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
 }
+
+.login-logo img {
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter:         drop-shadow(5px 5px 5px #222); 
+}
+
+.support .ipt {
+  width: 100%;
+  min-width: 300px;
+  max-width: 400px;
+  -webkit-filter: drop-shadow(2px 2px 2px #0e0e0e);
+}
