@@ -1,12 +1,11 @@
 window.FooterView = Backbone.View.extend({
   events: {
-    "click #xpto": "funcaoClick"
-  },
-  funcaoClick: function () {
-
+    "click .clickhref": function (e){
+      e.preventDefault();
+      window.open($(e.currentTarget).attr("href"), '_blank');
+    }
   },
   initialize: function () {
-    this.render();
   },
   render: function () {
     var self = this;

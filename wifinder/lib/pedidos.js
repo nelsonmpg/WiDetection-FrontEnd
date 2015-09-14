@@ -908,7 +908,6 @@ module.exports.getAllDisp = function (iduser, socket) {
             //Envia para os clientes
             socket.emit("updateChart", x, self.getDataBase(iduser));
           }).error(function (err) {
-            callback(err.msg, null);
             console.log("ERROR: %s:%s", err.name, err.msg);
           });
         } else {

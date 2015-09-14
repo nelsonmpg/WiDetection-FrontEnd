@@ -213,6 +213,7 @@ var carregarmapa = function (local, localaddmap) {
         return function () {
           infowindow.setContent(locations[i][0]);
           infowindow.open(map, marker);
+          $("#showValues").click();
         };
       })(marker, i));
       iconCounter++;
@@ -296,7 +297,7 @@ var makeAllNetwork = function (macs, local) {
                     face: 'FontAwesome',
                     code: '\uf10b',
                     size: 50,
-                    color: '#eeeeee'
+                    color: '#7e7e7e'
                   }});
               }
               for (var a in data[i].bssid) {

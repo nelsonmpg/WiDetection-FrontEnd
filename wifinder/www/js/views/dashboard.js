@@ -16,6 +16,13 @@ window.DashboardView = Backbone.View.extend({
       app.navigate("Detail", {
         trigger: true
       });
+    },
+    "click #showValues" : function (){
+      var self = this;
+      var sensorname = $("#showValues").data("sensorname");
+      var dataVals = self.graph2Bar.getValSensor(sensorname);
+      $("#" + sensorname + "-ap").html(dataVals.numap);
+      $("#" + sensorname + "-disp").html(dataVals.numdisp);
     }
   },
   initialize: function (opt) {
@@ -132,8 +139,9 @@ window.DashboardView = Backbone.View.extend({
               for (var i in data) {
                 locations.push([
                   "<table class='table table-condensed'><tr><td> Sensor Name </td><td> " + data[i].data.nomeAntena + " </td></tr>" +
-                          "<tbody><tr><td> Access Points </td><td> " + data[i].numap + " </td></tr>" +
-                          "<tr><td> Wireless Devices </td><td> " + data[i].numdisp + " </td></tr></tbody></table>" +
+                          "<tbody><tr><td> Access Points </td><td id='" + data[i].data.nomeAntena + "-ap'> " + data[i].numap + " </td></tr>" +
+                          "<tr><td> Wireless Devices </td><td id='" + data[i].data.nomeAntena + "-disp'> " + data[i].numdisp + " </td></tr></tbody></table>" +
+                          "<button id='showValues' data-sensorname='" + data[i].data.nomeAntena + "' style='display: none;'>Sensor Detail</button>"+ 
                           "<button id='movetosensordetail' data-sensorname='" + data[i].data.nomeAntena + "' class='btn btn-block btn-default btn-xs'>Sensor Detail</button>",
                   data[i].data.latitude,
                   data[i].data.longitude,

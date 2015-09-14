@@ -138,7 +138,7 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
     this.dataTograph = [{
         type: this.type,
         name: "Wireless Devices",
-        legendText: "Dispositivos Moveis",
+        legendText: "Wireless Devices",
         showInLegend: true,
         dataPoints: pointsDisp
       }, {
@@ -155,12 +155,25 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
   }
 };
 
+ArrayToGraph.prototype.getValSensor = function (snsr) {
+  var val = {};
+  for (var j in this.dataTograph[0].dataPoints) {
+    if (snsr == this.dataTograph[0].dataPoints[j].label) {
+      val = {
+        "numap": this.dataTograph[1].dataPoints[j].y,
+        "numdisp": this.dataTograph[0].dataPoints[j].y
+      };
+      break;
+    }
+  }
+  return val;
+};
+
 ArrayToGraph.prototype.updateNumDisp = function (data) {
   for (var j in this.dataTograph[0].dataPoints) {
     if (data.sensor == this.dataTograph[0].dataPoints[j].label) {
       this.dataTograph[0].dataPoints[j].y = data.hosts_new;
       this.chart.render();
-  console.log(data);
     }
   }
 };
@@ -170,7 +183,6 @@ ArrayToGraph.prototype.updateNumAp = function (data) {
     if (data.sensor == this.dataTograph[1].dataPoints[j].label) {
       this.dataTograph[1].dataPoints[j].y = data.hosts_new;
       this.chart.render();
-  console.log(data);
     }
   }
 };
@@ -218,7 +230,7 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
       labelAngle: this.anguloX,
       labelFontSize: 14,
       titleFontSize: 20,
-//      interval: 1, 
+      interval: 1, 
       labelFontFamily: "verdana",
       labelFontColor: "black",
       titleFontColor: "black"
@@ -286,10 +298,10 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
     animationEnabled: true,
     theme: self.theme,
     axisX: {
-      labelAutoFit: true ,
+      labelAutoFit: true,
       labelMaxWidth: 150,
       labelWrap: false,
-//      interval: 1,
+      interval: 1,
       labelAngle: self.anguloX,
       labelFontSize: 12,
       labelFontFamily: "verdana",

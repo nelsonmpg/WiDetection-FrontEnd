@@ -184,7 +184,7 @@ window.DetailView = Backbone.View.extend({
 
     this.sensor = $('#SensorSelect').find(":selected").text();
     var map = carregarmapa([[
-        $('#SensorSelect').find(":selected").data("city"),
+        $('#SensorSelect').find(":selected").data("city").replace(/\+/g, " "),
         $('#SensorSelect').find(":selected").data("lat"),
         $('#SensorSelect').find(":selected").data("log"),
         $('#SensorSelect').find(":selected").data("date")]],
