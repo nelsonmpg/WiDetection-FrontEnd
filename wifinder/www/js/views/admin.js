@@ -91,10 +91,10 @@ window.AdminView = Backbone.View.extend({
     });
   },
   removeSite: function (e) {
-    var $row = $(e.currentTarget).closest("tr");
-    var $text = $row.find(".site-name").text();
-    $("#modalRemove .modal-body").html("<p>Remove this site?<br>" + $text + "</p>");
-    $("#modalRemove").attr("data-sitename", $text);
+    var row = $(e.currentTarget).closest("tr");
+    var text = row.find(".site-name").text();
+    $("#modalRemove .modal-body").html("<p>Remove this site?<br>" + text + "</p>");
+    $("#modalRemove").data("sitename", text);
     $("#modalRemove").show();
     $(".closeModal").attr("disabled", false);
     $("#removeok").attr("disabled", false);
@@ -140,8 +140,8 @@ window.AdminView = Backbone.View.extend({
             console.log(data);
             self.init();
             $(".closeModal").attr("disabled", false);
-            $("#modalRemove").data("sitename", "");
-            $("#modalRemove").data("sensorname", "");
+            $("#modalRemove").data("sitename", null);
+            $("#modalRemove").data("sensorname", null);
             $("#modalRemove").hide();
           },
           function (xhr, ajaxOptions, thrownError) {
@@ -158,8 +158,8 @@ window.AdminView = Backbone.View.extend({
             console.log(data);
             self.init();
             $(".closeModal").attr("disabled", false);
-            $("#modalRemove").data("sitename", "");
-            $("#modalRemove").attr("sensorname", "");
+            $("#modalRemove").data("sitename", null);
+            $("#modalRemove").attr("sensorname", null);
             $("#modalRemove").hide();
           },
           function (xhr, ajaxOptions, thrownError) {
