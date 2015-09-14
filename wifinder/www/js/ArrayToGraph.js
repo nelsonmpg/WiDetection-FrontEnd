@@ -126,12 +126,12 @@ ArrayToGraph.prototype.createArrayToGraphTwoBar = function () {
     var self = this;
     for (var i in this.array) {
       pointsDisp.push({
-        label: this.array[i].DISP.nome,
-        y: 1 * this.array[i].DISP.count
+        label: this.array[i].data.nomeAntena,
+        y: 1 * this.array[i].numdisp
       });
       pointsAp.push({
-        label: this.array[i].AP.nome,
-        y: 1 * this.array[i].AP.count
+        label: this.array[i].data.nomeAntena,
+        y: 1 * this.array[i].numap
       });
     }
 

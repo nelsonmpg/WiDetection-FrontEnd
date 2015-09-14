@@ -67,13 +67,12 @@ window.DashboardView = Backbone.View.extend({
   createChart2Bar: function () {
     var self = this;
     modem("GET",
-            "/getAllAntenasAndDisps/" + window.profile.id,
+            "/getSensors/" + window.profile.id,
             function (data) {
               var sensorList = "";
               for (var i in data) {
-                sensorList += '<option class="select-sensor-lst">' + data[i].AP.nome + '</option>';
+                sensorList += '<option class="select-sensor-lst">' + data[i].data.nomeAntena + '</option>';
               }
-
               $("#select-chart-sensor").html(sensorList);
               $("#select-chart-sensor > option:first").attr("selected", "selected");
               $("#select-chart-sensor").trigger('change');

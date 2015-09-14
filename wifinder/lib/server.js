@@ -88,11 +88,6 @@ Server.prototype.start = function () {
   this.app.get("/getNumDispositivos/:id", pedidos.getNumDispositivos);
 
   /**
-   * Devolve o sensor com o numero dos varios dispositivos encontrados
-   */
-  this.app.get("/getAllAntenasAndDisps/:sock", pedidos.getAllSensorAndisp);
-
-  /**
    * Retorna os tempos das visitas dos DispMoveis
    */
   this.app.get("/getAllTimes/:sock", pedidos.getAllTimes);

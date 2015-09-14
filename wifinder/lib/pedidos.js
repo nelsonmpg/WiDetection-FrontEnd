@@ -21,44 +21,13 @@ var liveActives = {};
  */
 module.exports.getNumDispositivos = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
-    return r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().do(function (val) {
-      return {"sensor": val,
-        "moveis": r.db(self.getDataBase(req.params.id)).table("DispMoveis").count(),
-        "ap": r.db(self.getDataBase(req.params.id)).table("DispAp").count()};
-    }).run(conn)
-            .finally(function () {
-              conn.close();
-            });
-  }).then(function (result) {
-    res.send(result);
-  }).error(function (err) {
-    console.log("ERROR: %s:%s", err.name, err.msg);
-  });
-};
-
-/**
- * Devolve o sensor com o numero dos varios dispositivos encontrados
- * @param {type} req
- * @param {type} res
- * @returns {undefined}
- */
-module.exports.getAllSensorAndisp = function (req, res) {
-  r.connect(self.dbData).then(function (conn) {
-    return r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
-      return [{
-          "nome": row("nomeAntena"),
-          "count": row("host").count()
-        }];
-    }).map(function (row2) {
+    return r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().default(0).do(function (val) {
       return {
-        "AP": row2.nth(0),
-        "DISP": {
-          "nome": row2("nome").nth(0),
-          "count": r.db(self.getDataBase(req.params.sock)).table('AntDisp').filter({
-            "nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)
-        }
+        "sensor": val,
+        "moveis": r.db(self.getDataBase(req.params.id)).table("DispMoveis").count().default(0),
+        "ap": r.db(self.getDataBase(req.params.id)).table("DispAp").count().default(0)
       };
-    }).coerceTo('array').run(conn)
+    }).run(conn)
             .finally(function () {
               conn.close();
             });
@@ -166,12 +135,12 @@ module.exports.getSensors = function (req, res) {
                 "data": w,
                 "numdisp": r.db(self.getDataBase(req.params.id))
                         .table("AntDisp")
-                        .get(w("nomeAntena"))("host").count(),
+                        .get(w("nomeAntena"))("host").count().default(0),
                 "numap": r.db(self.getDataBase(req.params.id))
                         .table("AntAp")
-                        .get(w("nomeAntena"))("host").count()
+                        .get(w("nomeAntena"))("host").count().default(0)
               };
-            }).coerceTo("ARRAY")
+            }).orderBy(r.row("data")("nomeAntena")).coerceTo("ARRAY")
             .run(conn)
             .finally(function () {
               conn.close();
@@ -238,11 +207,16 @@ module.exports.getActiveDisps = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
             .table(table)
-            .get(req.params.sensor)("host")
+            .get(req.params.sensor)
             .do(function (row) {
-              return row.filter(function (a) {
-                return a("data").ge(r.now().toEpochTime().sub(60));
-              }).withFields("macAddress", "nameVendor", "Power", "data");
+              return r.branch(
+                      row.ne(null),
+                      row("host")
+                      .filter(function (a) {
+                        return a("data").ge(r.now().toEpochTime().sub(60));
+                      }).withFields("macAddress", "nameVendor", "Power", "data"),
+                      []
+                      );
             }).coerceTo("ARRAY")
             .run(conn)
             .finally(function () {
@@ -981,4 +955,3 @@ var numberIsHex = function (char) {
   }
   return result;
 };
-
