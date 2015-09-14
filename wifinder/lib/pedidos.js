@@ -757,7 +757,7 @@ module.exports.getAllDataBases = function (callback) {
  * @returns {undefined}
  * 
  */
-module.exports.changeTablesDisps = function (database, socket, table, nemedisp) {
+module.exports.changeTablesDisps = function (database, socket, table, nomedisp) {
   r.connect(self.dbData).then(function (conn) {
     r.db(database).table(table)
             .changes({squash: 1})
@@ -768,7 +768,7 @@ module.exports.changeTablesDisps = function (database, socket, table, nemedisp) 
     }).run(conn)
             .then(function (cursor) {
               cursor.each(function (err, item) {
-                socket.emit("newDisp", item, nemedisp, database);
+                socket.emit("newDisp", item, nomedisp, database);
               });
             });
   });
@@ -822,9 +822,28 @@ module.exports.changeTableAntForGraph = function (database, socket, table, nomed
       return val("host_teste");
     }).run(conn).then(function (cursor) {
       cursor.each(function (err, item) {
-        socket.emit("updateCharTwoBars", item, nomedisp, database);
+        if (typeof item != "undefined") {
+          socket.emit("updateCharTwoBars", item, nomedisp, database);
+        }
       });
     });
+  });
+};
+
+module.exports.changeNewSensorForGraph = function (database, socket, table, nomedisp) {
+  r.connect(self.dbData).then(function (conn) {
+    r.db(database)
+            .table(table)
+            .changes({squash: 1})
+            .filter(function (row) {
+              return row('old_val').eq(null);
+            })("new_val")("nomeAntena")
+            .run(conn)
+            .then(function (cursor) {
+              cursor.each(function (err, item) {
+                socket.emit("updateCharTwoBars", item, nomedisp, database);
+              });
+            });
   });
 };
 

@@ -58,13 +58,23 @@ ServerSktIo.prototype.init = function () {
       if (data) {
         for (var i = 0; i < data.length; i++) {
           console.log(data[i].db);
+          // send tag - newDisp
           pedidos.changeTablesDisps(data[i].db, socket, 'DispMoveis', "moveis");
           pedidos.changeTablesDisps(data[i].db, socket, 'DispAp', "ap");
           pedidos.changeTablesDisps(data[i].db, socket, "ActiveAnt", "sensor");
+          
+          // send tag - updateRealTimeChart
           pedidos.changeTableAnt(data[i].db, socket, "AntAp", "ap");
           pedidos.changeTableAnt(data[i].db, socket, "AntDisp", "disp");
+          
+          // send tag - updateCharTwoBars
           pedidos.changeTableAntForGraph(data[i].db, socket, "AntAp", "ap");
           pedidos.changeTableAntForGraph(data[i].db, socket, "AntDisp", "disp");
+          
+          // send tag - updateCharTwoBars
+          pedidos.changeNewSensorForGraph(data[i].db, socket, "ActiveAnt", "sensor");
+          
+          // send tag - changeActiveAnt
           pedidos.changeActiveAnt(data[i].db, socket);
         }
       } else {

@@ -25,6 +25,7 @@ var Router = Backbone.Router.extend({
     self.appEventBus = _.extend({}, Backbone.Events);
     self.socketclt = new socketClient({vent: self.appEventBus});
 
+    // update dos graficos em realtime
     self.appEventBus.on("updateRealTimeChart", function (data, local, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
               Backbone.history.getFragment() == "Dashboard") {
@@ -32,36 +33,39 @@ var Router = Backbone.Router.extend({
       }
     });
 
+    // Update no dashboard do total de dispositivos encontrados
     self.appEventBus.on("newDisp", function (data, local, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
               Backbone.history.getFragment() == "Dashboard") {
         self.dashboard.newdisps(data, local);
       }
     });
-    self.appEventBus.on('updateChart', function (site, data) {
-      if (window.profile.get("site") && window.profile.get("site") == site &&
-              Backbone.history.getFragment() == "Dashboard") {
-        self.dashboard.updateChart(data);
-      }
-    });
+    
+      // Lista de divices encointrados por minuto na utlima hora
     self.appEventBus.on('getAllDisp', function (data, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
               Backbone.history.getFragment() == "Dashboard") {
         self.dashboard.createChartDispActive(data);
       }
     });
+    
+    // atualizacao do grafico de dispositivos encontrafos na ultima hora
     self.appEventBus.on('updateChart', function (x, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
               Backbone.history.getFragment() == "Dashboard") {
         self.dashboard.updateChart(x);
       }
     });
+    
+    // atualizacao do grafico de duas barras
     self.appEventBus.on('updateCharTwoBars', function (data, local, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
               Backbone.history.getFragment() == "Dashboard") {
         self.dashboard.updateCharTwoBars(data, local);
       }
     });
+    
+    // update do estado de utilizacao do sensor
     self.appEventBus.on('changeActiveAnt', function (data, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
               Backbone.history.getFragment() == "Detail") {
@@ -160,7 +164,7 @@ var Router = Backbone.Router.extend({
       self.detail = new DetailView();
       self.contentnav.setView("Details  >  Sensor");
       $('#content').html(self.detail.render().el);
-      self.detail.init((typeof window.profile.get("sensor-sel") == "undefined" || window.profile.get("sensor-sel") == "undefined") ? null : (window.profile.get("sensor-sel"), window.profile.set("sensor-sel", undefined), self.sidebar.setDetailSensor("Sensor")));
+      self.detail.init((typeof window.profile.get("sensor-sel") == "undefined" || window.profile.get("sensor-sel") == "undefined") ? null : (window.profile.get("sensor-sel")), window.profile.set("sensor-sel", undefined), self.sidebar.setDetailSensor("Sensor"));
       windowScrollTop();
     });
   },

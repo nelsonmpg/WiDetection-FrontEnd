@@ -17,7 +17,7 @@ window.DashboardView = Backbone.View.extend({
         trigger: true
       });
     },
-    "click #showValues" : function (){
+    "click #showValues": function () {
       var self = this;
       var sensorname = $("#showValues").data("sensorname");
       var dataVals = self.graph2Bar.getValSensor(sensorname);
@@ -141,7 +141,7 @@ window.DashboardView = Backbone.View.extend({
                   "<table class='table table-condensed'><tr><td> Sensor Name </td><td> " + data[i].data.nomeAntena + " </td></tr>" +
                           "<tbody><tr><td> Access Points </td><td id='" + data[i].data.nomeAntena + "-ap'> " + data[i].numap + " </td></tr>" +
                           "<tr><td> Wireless Devices </td><td id='" + data[i].data.nomeAntena + "-disp'> " + data[i].numdisp + " </td></tr></tbody></table>" +
-                          "<button id='showValues' data-sensorname='" + data[i].data.nomeAntena + "' style='display: none;'>Sensor Detail</button>"+ 
+                          "<button id='showValues' data-sensorname='" + data[i].data.nomeAntena + "' style='display: none;'>Sensor Detail</button>" +
                           "<button id='movetosensordetail' data-sensorname='" + data[i].data.nomeAntena + "' class='btn btn-block btn-default btn-xs'>Sensor Detail</button>",
                   data[i].data.latitude,
                   data[i].data.longitude,
@@ -222,6 +222,10 @@ window.DashboardView = Backbone.View.extend({
         if (self.graph2Bar) {
           self.graph2Bar.updateNumAp(data);
         }
+      case "sensor":
+        if (self.graph2Bar) {
+          self.graph2Bar.updateSensor(data);
+        }
         break;
     }
   },
@@ -229,22 +233,13 @@ window.DashboardView = Backbone.View.extend({
     var self = this;
     switch (local) {
       case "moveis":
-        if (self.graph2Bar) {
-          self.graph2Bar.updateNumDisp(data);
-        }
-        $("body").find("#disp-num-div").html((($("body").find("#disp-num-div").text() * 1) + 1));
+        $("body").find("#disp-num-div").html(data);
         break;
       case "ap":
-        if (self.graph2Bar) {
-          self.graph2Bar.updateNumAp(data);
-        }
-        $("body").find("#ap-num-div").html((($("body").find("#ap-num-div").text() * 1) + 1));
+        $("body").find("#ap-num-div").html(data);
         break;
       case "sensor":
-        $("body").find("#sensores-num-div").html((($("body").find("#sensores-num-div").text() * 1) + 1));
-        if (self.graph2Bar) {
-          self.graph2Bar.updateSensor(data);
-        }
+        $("body").find("#sensores-num-div").html(data);
         break;
     }
   },
