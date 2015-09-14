@@ -78,10 +78,9 @@ window.SideBarView = Backbone.View.extend({
     $(".select-site-first a span:contains('" + nav + "')").click();
   },
   setDetailSensor: function (nav) {
-//    $('ul.sidebar-menu li.active').removeClass("active");
-    $(".select-site-first a[data-nome='Detail']").parent().parent().parent().children("a:first").children("i.fa-angle-left").click();
+    $(".select-site-first a[data-nome='Detail']").parent().parent().parent().children("a:first").click();
     setTimeout(function () {
-      $(".select-site-first a[data-nome='Detail']").click();
+      $(".select-site-first a span:contains('" + nav + "')").click();
     }, 1000);
   },
   selectadmin: function () {

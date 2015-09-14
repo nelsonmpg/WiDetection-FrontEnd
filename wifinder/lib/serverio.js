@@ -55,16 +55,20 @@ ServerSktIo.prototype.init = function () {
     // coloca a escotas as varias tabelas para receber as vaias 
     // alteracoens dos dados em realtime
     pedidos.getAllDataBases(function (err, data) {
-      for (var i = 0; i < data.length; i++) {
-        console.log(data[i].db);
-        pedidos.changeTablesDisps(data[i].db, socket, 'DispMoveis', "moveis");
-        pedidos.changeTablesDisps(data[i].db, socket, 'DispAp', "ap");
-        pedidos.changeTablesDisps(data[i].db, socket, "ActiveAnt", "sensor");
-        pedidos.changeTableAnt(data[i].db, socket, "AntAp", "ap");
-        pedidos.changeTableAnt(data[i].db, socket, "AntDisp", "disp");
-        pedidos.changeTableAntForGraph(data[i].db, socket, "AntAp", "ap");
-        pedidos.changeTableAntForGraph(data[i].db, socket, "AntDisp", "disp");
-        pedidos.changeActiveAnt(data[i].db, socket);
+      if (data) {
+        for (var i = 0; i < data.length; i++) {
+          console.log(data[i].db);
+          pedidos.changeTablesDisps(data[i].db, socket, 'DispMoveis', "moveis");
+          pedidos.changeTablesDisps(data[i].db, socket, 'DispAp', "ap");
+          pedidos.changeTablesDisps(data[i].db, socket, "ActiveAnt", "sensor");
+          pedidos.changeTableAnt(data[i].db, socket, "AntAp", "ap");
+          pedidos.changeTableAnt(data[i].db, socket, "AntDisp", "disp");
+          pedidos.changeTableAntForGraph(data[i].db, socket, "AntAp", "ap");
+          pedidos.changeTableAntForGraph(data[i].db, socket, "AntDisp", "disp");
+          pedidos.changeActiveAnt(data[i].db, socket);
+        }
+      } else {
+        console.log("No data Values...");
       }
     });
 
@@ -107,5 +111,10 @@ ServerSktIo.prototype.setLiveActive = function (data) {
   this.liveActives = data;
   return true;
 };
+
+//excepcoes para os erros encontrados
+process.on('uncaughtException', function (err) {
+  console.log('Excepcao capturada: ' + err);
+});
 
 module.exports = ServerSktIo;

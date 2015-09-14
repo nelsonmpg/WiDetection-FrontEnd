@@ -13,7 +13,7 @@ var ArrayToGraph = function (array, local, type) {
   this.dataTograph = [];
   this.click = null;
   this.anguloX = 0;
-  this.theme = "theme3";
+  this.theme = "theme2";
   this.scalegraph = 1;
 };
 
@@ -203,13 +203,13 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
       shared: true
     },
     axisY: {
-      interval: self.scalegraph,
+//      interval: self.scalegraph,
       title: "Wireless Devices",
       titleFontSize: 20,
       titleFontColor: "black"
     },
     axisY2: {
-      interval: self.scalegraph,
+//      interval: self.scalegraph,
       title: "Access Points",
       titleFontSize: 20,
       titleFontColor: "black"
@@ -218,7 +218,8 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
       labelAngle: this.anguloX,
       labelFontSize: 14,
       titleFontSize: 20,
-      interval: 1, labelFontFamily: "verdana",
+//      interval: 1, 
+      labelFontFamily: "verdana",
       labelFontColor: "black",
       titleFontColor: "black"
     },
@@ -288,7 +289,7 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
       labelAutoFit: true ,
       labelMaxWidth: 150,
       labelWrap: false,
-      interval: 1,
+//      interval: 1,
       labelAngle: self.anguloX,
       labelFontSize: 12,
       labelFontFamily: "verdana",
@@ -296,7 +297,7 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
     },
     axisY: {
       gridThickness: 1,
-      interval: self.scalegraph,
+//      interval: self.scalegraph,
       labelFontSize: 12,
       labelFontFamily: "verdana",
       labelFontColor: "black"
@@ -324,7 +325,7 @@ ArrayToGraph.prototype.createAndShowGraphSimpleLine = function () {
     axisY: {
       includeZero: false,
       gridThickness: 1,
-      interval: self.scalegraph,
+//      interval: self.scalegraph,
       labelFontSize: 12,
       labelFontFamily: "verdana",
       labelFontColor: "black"

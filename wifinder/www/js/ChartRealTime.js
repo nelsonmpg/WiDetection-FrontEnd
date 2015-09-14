@@ -137,7 +137,7 @@ ChartRealTime.prototype.graph = function () {
         },
         axisY: {
           gridThickness: 0.2,
-          interval: 5,
+//          interval: 5,
           labelFontSize: 12,
           suffix: " dBm",
           labelFontFamily: "verdana",
@@ -145,7 +145,7 @@ ChartRealTime.prototype.graph = function () {
         },
         axisX: {
           valueFormatString: "H:mm:ss",
-          interval: 10,
+//          interval: 10,
           labelFontSize: 12,
           labelFontFamily: "verdana",
           labelFontColor: "black"
