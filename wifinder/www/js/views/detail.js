@@ -154,7 +154,7 @@ window.DetailView = Backbone.View.extend({
                         "' data-posy='" + data[i].data.posY +
                         "' >" + data[i].data.nomeAntena + "</option>");
               }
-
+              
               if (self.sensor) {
                 $("#SensorSelect > option:contains('" + self.sensor + "')").attr("selected", "selected");
               } else {

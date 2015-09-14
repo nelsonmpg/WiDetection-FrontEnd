@@ -189,12 +189,12 @@ ArrayToGraph.prototype.updateNumAp = function (data) {
 
 ArrayToGraph.prototype.updateSensor = function (data) {
   this.dataTograph[0].dataPoints.push({
-    label: data.new_val.nomeAntena,
+    label: data,
     y: 0
   });
 
   this.dataTograph[1].dataPoints.push({
-    label: data.new_val.nomeAntena,
+    label: data,
     y: 0
   });
 
