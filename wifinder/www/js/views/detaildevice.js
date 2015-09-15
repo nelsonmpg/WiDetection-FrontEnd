@@ -1,8 +1,8 @@
 window.DetailDeviceView = Backbone.View.extend({
+  loadingState: '<div class="overlay text-center"><i class="fa fa-refresh fa-spin"></i></div>',
   device: undefined,
   deviceDetails: undefined,
   events: {
-    "click a.selectSensor": "selectSensor",
     "click .deviceSearch": "selectDevice",
     "click #selectDropdownFabricante > li > a": function (e) {
       e.preventDefault();
@@ -13,6 +13,7 @@ window.DetailDeviceView = Backbone.View.extend({
     //this.render();
   },
   init: function (obj) {
+    $("#chartContainer").html(this.loadingState);
     var self = this;
     modem("GET",
             "/getDispMacbyVendor/" + window.profile.id,
@@ -43,6 +44,7 @@ window.DetailDeviceView = Backbone.View.extend({
     $.AdminLTE.boxWidget.activate();
   },
   selectDevice: function (e) {
+    $("#chartContainer").html(this.loadingState);
     var self = this;
     e.preventDefault();
     e.stopPropagation();

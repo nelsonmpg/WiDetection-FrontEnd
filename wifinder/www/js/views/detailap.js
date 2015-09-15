@@ -1,4 +1,5 @@
 window.DetailAPView = Backbone.View.extend({
+  loadingState: '<div class="overlay text-center"><i class="fa fa-refresh fa-spin"></i></div>',
   ap: undefined,
   allap: [],
   net: undefined,
@@ -8,6 +9,7 @@ window.DetailAPView = Backbone.View.extend({
   initialize: function () {
   },
   init: function (mac) {
+    $("#chartContainer").html(this.loadingState);
     var masAdd = window.profile.get("nav-mac");
     window.profile.set("nav-mac", undefined);
     var self = this;
@@ -42,6 +44,7 @@ window.DetailAPView = Backbone.View.extend({
     $.AdminLTE.boxWidget.activate();
   },
   setAp: function () {
+    $("#chartContainer").html(this.loadingState);
     this.ap = $('#ApSelect').find(":selected").data("mac");
     this.getDisps(this.ap);
     if (this.ap != "all") {
