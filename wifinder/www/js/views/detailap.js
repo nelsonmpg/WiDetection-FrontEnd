@@ -3,7 +3,6 @@ window.DetailAPView = Backbone.View.extend({
   allap: [],
   net: undefined,
   events: {
-    "click a.selectSensor": "selectSensor",
     "change #ApSelect": "setAp"
   },
   initialize: function () {
@@ -13,12 +12,13 @@ window.DetailAPView = Backbone.View.extend({
     modem("GET",
             "/getAllAP/" + window.profile.id,
             function (data) {
+              console.log(data);
               var values = [];
-              for (var ssid in data[0].group[0]) {
-                values[data[0].group[0][ssid]] = {
-                  "bssid": data[0].group[0][ssid],
-                  "name": data[0].group[1][ssid],
-                  "value": data[0].reduction[0][ssid]
+               for (var i in data) {
+                values[data[i].group[1]] = {
+                  "bssid": data[i].group[1],
+                  "name": data[i].group[0],
+                  "value": data[i].reduction[0]
                 };
               }
               self.allap = values;
@@ -139,7 +139,7 @@ window.DetailAPView = Backbone.View.extend({
           shape: 'icon',
           icon: {
             face: 'FontAwesome',
-            code: '\uf1eb',
+            code: '\uf140',
             size: 50,
             color: '#00ff00'
           }
@@ -148,9 +148,9 @@ window.DetailAPView = Backbone.View.extend({
           shape: 'icon',
           icon: {
             face: 'FontAwesome',
-            code: '\uf108',
+            code: '\uf10b',
             size: 50,
-            color: '#eeeeee'
+            color: '#7e7e7e'
           }
         }
       }

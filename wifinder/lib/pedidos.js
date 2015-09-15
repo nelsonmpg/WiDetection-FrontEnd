@@ -21,44 +21,13 @@ var liveActives = {};
  */
 module.exports.getNumDispositivos = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
-    return r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().do(function (val) {
-      return {"sensor": val,
-        "moveis": r.db(self.getDataBase(req.params.id)).table("DispMoveis").count(),
-        "ap": r.db(self.getDataBase(req.params.id)).table("DispAp").count()};
-    }).run(conn)
-            .finally(function () {
-              conn.close();
-            });
-  }).then(function (result) {
-    res.send(result);
-  }).error(function (err) {
-    console.log("ERROR: %s:%s", err.name, err.msg);
-  });
-};
-
-/**
- * Devolve o sensor com o numero dos varios dispositivos encontrados
- * @param {type} req
- * @param {type} res
- * @returns {undefined}
- */
-module.exports.getAllSensorAndisp = function (req, res) {
-  r.connect(self.dbData).then(function (conn) {
-    return r.db(self.getDataBase(req.params.sock)).table('AntAp').map(function (row) {
-      return [{
-          "nome": row("nomeAntena"),
-          "count": row("host").count()
-        }];
-    }).map(function (row2) {
+    return r.db(self.getDataBase(req.params.id)).table("ActiveAnt").count().default(0).do(function (val) {
       return {
-        "AP": row2.nth(0),
-        "DISP": {
-          "nome": row2("nome").nth(0),
-          "count": r.db(self.getDataBase(req.params.sock)).table('AntDisp').filter({
-            "nomeAntena": row2("nome").nth(0)})("host").nth(0).count().default(0)
-        }
+        "sensor": val,
+        "moveis": r.db(self.getDataBase(req.params.id)).table("DispMoveis").count().default(0),
+        "ap": r.db(self.getDataBase(req.params.id)).table("DispAp").count().default(0)
       };
-    }).coerceTo('array').run(conn)
+    }).run(conn)
             .finally(function () {
               conn.close();
             });
@@ -78,19 +47,22 @@ module.exports.getAllSensorAndisp = function (req, res) {
 module.exports.getAllTimes = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (a) {
-      return {"row": a, "state": a("disp").contains(function (b) {
+      return {
+        "row": a,
+        "state": a("disp").contains(function (b) {
           return b("values").contains(function (c) {
             return c("Last_time").ge(r.now().toEpochTime().sub(3600));
           });
         })};
-    }).filter({"state": true}).without("state")("row")
+    }).filter({"state": true})
+            .without("state")("row")
+            .orderBy("nameVendor")
             .coerceTo("array")
             .run(conn)
             .finally(function () {
               conn.close();
             });
   }).then(function (result2) {
-
     var tempo = new Worker('./lib/TempoMedio.js');
     var result = [];
     //Na resposta do webworker
@@ -166,12 +138,12 @@ module.exports.getSensors = function (req, res) {
                 "data": w,
                 "numdisp": r.db(self.getDataBase(req.params.id))
                         .table("AntDisp")
-                        .get(w("nomeAntena"))("host").count(),
+                        .get(w("nomeAntena"))("host").count().default(0),
                 "numap": r.db(self.getDataBase(req.params.id))
                         .table("AntAp")
-                        .get(w("nomeAntena"))("host").count()
+                        .get(w("nomeAntena"))("host").count().default(0)
               };
-            }).coerceTo("ARRAY")
+            }).orderBy(r.row("data")("nomeAntena")).coerceTo("ARRAY")
             .run(conn)
             .finally(function () {
               conn.close();
@@ -238,11 +210,16 @@ module.exports.getActiveDisps = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
             .table(table)
-            .get(req.params.sensor)("host")
+            .get(req.params.sensor)
             .do(function (row) {
-              return row.filter(function (a) {
-                return a("data").ge(r.now().toEpochTime().sub(60));
-              }).withFields("macAddress", "nameVendor", "Power", "data");
+              return r.branch(
+                      row.ne(null),
+                      row("host")
+                      .filter(function (a) {
+                        return a("data").ge(r.now().toEpochTime().sub(60));
+                      }).withFields("macAddress", "nameVendor", "Power", "data"),
+                      []
+                      );
             }).coerceTo("ARRAY")
             .run(conn)
             .finally(function () {
@@ -374,8 +351,11 @@ module.exports.getPlantSite = function (req, res) {
 module.exports.getAllAP = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("AntAp")("host")
-            .group("macAddress", "ESSID")
+            .table("AntAp")
+            .concatMap(function (row) {
+              return row("host")
+            }).orderBy("ESSID")
+            .group("ESSID", "macAddress")
             .run(conn)
             .finally(function () {
               conn.close();
@@ -918,14 +898,16 @@ module.exports.getAllDisp = function (iduser, socket) {
               conn.close();
             });
           }).then(function (result) {
-            //Atualiza o array do servidor       
-            var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
-            novaData.addMinutes(1);
-            liveActives[self.getDataBase(iduser)].array.shift();
-            var x = {x: novaData.toISOString(), y: result * 1};
-            liveActives[self.getDataBase(iduser)].array.push(x);
-            //Envia para os clientes
-            socket.emit("updateChart", x, self.getDataBase(iduser));
+            if (liveActives[self.getDataBase(iduser)].array) {
+              //Atualiza o array do servidor       
+              var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
+              novaData.addMinutes(1);
+              liveActives[self.getDataBase(iduser)].array.shift();
+              var x = {x: novaData.toISOString(), y: result * 1};
+              liveActives[self.getDataBase(iduser)].array.push(x);
+              //Envia para os clientes
+              socket.emit("updateChart", x, self.getDataBase(iduser));
+            }
           }).error(function (err) {
             console.log("ERROR: interval 1  %s:%s", err.name, err.msg);
           });
@@ -981,4 +963,3 @@ var numberIsHex = function (char) {
   }
   return result;
 };
-
