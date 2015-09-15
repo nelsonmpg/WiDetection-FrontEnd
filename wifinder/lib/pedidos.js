@@ -47,19 +47,22 @@ module.exports.getNumDispositivos = function (req, res) {
 module.exports.getAllTimes = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.sock)).table("DispMoveis").map(function (a) {
-      return {"row": a, "state": a("disp").contains(function (b) {
+      return {
+        "row": a,
+        "state": a("disp").contains(function (b) {
           return b("values").contains(function (c) {
             return c("Last_time").ge(r.now().toEpochTime().sub(3600));
           });
         })};
-    }).filter({"state": true}).without("state")("row")
+    }).filter({"state": true})
+            .without("state")("row")
+            .orderBy("nameVendor")
             .coerceTo("array")
             .run(conn)
             .finally(function () {
               conn.close();
             });
   }).then(function (result2) {
-
     var tempo = new Worker('./lib/TempoMedio.js');
     var result = [];
     //Na resposta do webworker
