@@ -351,8 +351,11 @@ module.exports.getPlantSite = function (req, res) {
 module.exports.getAllAP = function (req, res) {
   r.connect(self.dbData).then(function (conn) {
     return r.db(self.getDataBase(req.params.id))
-            .table("AntAp")("host")
-            .group("macAddress", "ESSID")
+            .table("AntAp")
+            .concatMap(function (row) {
+              return row("host")
+            }).orderBy("ESSID")
+            .group("ESSID", "macAddress")
             .run(conn)
             .finally(function () {
               conn.close();

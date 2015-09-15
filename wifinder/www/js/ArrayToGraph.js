@@ -274,7 +274,8 @@ ArrayToGraph.prototype.createAndShowGraphLine = function () {
       labelFontSize: 12,
       labelFontFamily: "verdana",
       labelFontColor: "black",
-      valueFormatString: "H:mm:ss"
+      labelAngle: -10,
+      valueFormatString: "YYYY/MM/DD H:mm:ss"
     },
     toolTip: {
       shared: true
