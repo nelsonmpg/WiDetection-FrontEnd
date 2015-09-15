@@ -188,17 +188,23 @@ ArrayToGraph.prototype.updateNumAp = function (data) {
 };
 
 ArrayToGraph.prototype.updateSensor = function (data) {
-  this.dataTograph[0].dataPoints.push({
-    label: data,
-    y: 0
-  });
-
-  this.dataTograph[1].dataPoints.push({
-    label: data,
-    y: 0
-  });
-
-  this.chart.render();
+  var conatins = false;
+  for (var i in this.dataTograph[0].dataPoints) {
+    if (this.dataTograph[0].dataPoints[i].label == data) {
+      conatins = true;
+    }
+  }
+  if (!conatins) {
+    this.dataTograph[0].dataPoints.push({
+      label: data,
+      y: 0
+    });
+    this.dataTograph[1].dataPoints.push({
+      label: data,
+      y: 0
+    });
+    this.chart.render();
+  }
 };
 
 ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
@@ -230,7 +236,7 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
       labelAngle: this.anguloX,
       labelFontSize: 14,
       titleFontSize: 20,
-      interval: 1, 
+      interval: 1,
       labelFontFamily: "verdana",
       labelFontColor: "black",
       titleFontColor: "black"

@@ -221,6 +221,7 @@ window.DashboardView = Backbone.View.extend({
         if (self.graph2Bar) {
           self.graph2Bar.updateNumAp(data);
         }
+        break;
       case "sensor":
         if (self.graph2Bar) {
           self.graph2Bar.updateSensor(data);

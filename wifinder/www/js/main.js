@@ -40,15 +40,15 @@ var Router = Backbone.Router.extend({
         self.dashboard.newdisps(data, local);
       }
     });
-    
-      // Lista de divices encointrados por minuto na utlima hora
+
+    // Lista de divices encointrados por minuto na utlima hora
     self.appEventBus.on('getAllDisp', function (data, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
               Backbone.history.getFragment() == "Dashboard") {
         self.dashboard.createChartDispActive(data);
       }
     });
-    
+
     // atualizacao do grafico de dispositivos encontrafos na ultima hora
     self.appEventBus.on('updateChart', function (x, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
@@ -56,7 +56,7 @@ var Router = Backbone.Router.extend({
         self.dashboard.updateChart(x);
       }
     });
-    
+
     // atualizacao do grafico de duas barras
     self.appEventBus.on('updateCharTwoBars', function (data, local, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
@@ -64,7 +64,7 @@ var Router = Backbone.Router.extend({
         self.dashboard.updateCharTwoBars(data, local);
       }
     });
-    
+
     // update do estado de utilizacao do sensor
     self.appEventBus.on('changeActiveAnt', function (data, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&
@@ -164,7 +164,7 @@ var Router = Backbone.Router.extend({
       self.detail = new DetailView();
       self.contentnav.setView("Details  >  Sensor");
       $('#content').html(self.detail.render().el);
-      self.detail.init((typeof window.profile.get("sensor-sel") == "undefined" || window.profile.get("sensor-sel") == "undefined") ? null : (window.profile.get("sensor-sel")), window.profile.set("sensor-sel", undefined), self.sidebar.setDetailSensor("Sensor"));
+      self.detail.init((typeof window.profile.get("sensor-sel") == "undefined") ? null : (window.profile.get("sensor-sel"), self.sidebar.setDetailSensor("Sensor")));
       windowScrollTop();
     });
   },
@@ -174,7 +174,7 @@ var Router = Backbone.Router.extend({
       self.detailap = new DetailAPView();
       self.contentnav.setView("Details  >  Access Point");
       $('#content').html(self.detailap.render().el);
-      self.detailap.init((typeof window.profile.get("nav-mac") == "undefined") ? null : (window.profile.get("nav-mac")), window.profile.set("nav-mac", undefined), self.sidebar.setActive("Access"));
+      self.detailap.init((typeof window.profile.get("nav-mac") == "undefined") ? null : (window.profile.get("nav-mac"), self.sidebar.setActive("Access")));
       windowScrollTop();
     });
   },
@@ -190,8 +190,10 @@ var Router = Backbone.Router.extend({
           vendor: window.profile.get("nav-vendor"),
           mac: window.profile.get("nav-mac")
         };
+        window.profile.set("nav-vendor", undefined);
+        window.profile.set("nav-mac", undefined);
       }
-      self.detaildevice.init((obj), window.profile.set("nav-vendor", undefined), window.profile.set("nav-mac", undefined), self.sidebar.setActive("Devices"));
+      self.detaildevice.init(obj, self.sidebar.setActive("Devices"));
       windowScrollTop();
     });
   },

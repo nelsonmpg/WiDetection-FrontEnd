@@ -49,7 +49,8 @@ window.DetailView = Backbone.View.extend({
   },
   init: function (sensrorsel) {
     var self = this;
-    this.sensor = sensrorsel;
+    this.sensor = window.profile.get("sensor-sel");
+    window.profile.set("sensor-sel", undefined)
     $("#modalWait").show();
     self.startBlock = true;
     this.getAllAP();

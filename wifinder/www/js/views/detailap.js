@@ -8,6 +8,8 @@ window.DetailAPView = Backbone.View.extend({
   initialize: function () {
   },
   init: function (mac) {
+    var masAdd = window.profile.get("nav-mac");
+    window.profile.set("nav-mac", undefined);
     var self = this;
     modem("GET",
             "/getAllAP/" + window.profile.id,
@@ -26,8 +28,8 @@ window.DetailAPView = Backbone.View.extend({
                 $("#ApSelect").append("<option data-mac='" + i + "' >" + ((values[i].name == "") ? "Hidden network" : values[i].name) + " - (" + i + ")</option>");
               }
               $("#ApSelect").append("<option data-mac='all'> All Access Points </option>");
-              if (mac != null) {
-                $("#ApSelect > option:contains('" + mac + "')").attr('selected', true).change();
+              if (masAdd != null) {
+                $("#ApSelect > option:contains('" + masAdd + "')").attr('selected', true).change();
               } else {
                 $("#ApSelect option:first-child").change();
               }
