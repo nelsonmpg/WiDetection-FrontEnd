@@ -353,7 +353,7 @@ module.exports.getAllAP = function (req, res) {
     return r.db(self.getDataBase(req.params.id))
             .table("AntAp")
             .concatMap(function (row) {
-              return row("host")
+              return row("host");
             }).orderBy("ESSID")
             .group("ESSID", "macAddress")
             .run(conn)

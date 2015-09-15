@@ -124,11 +124,11 @@ window.DetailView = Backbone.View.extend({
             "/getAllAP/" + window.profile.id,
             function (data) {
               var values = [];
-              for (var ssid in data[0].group[0]) {
-                values[data[0].group[0][ssid]] = {
-                  "bssid": data[0].group[0][ssid],
-                  "name": data[0].group[1][ssid],
-                  "value": data[0].reduction[0][ssid]
+              for (var i in data) {
+                values[data[i].group[1]] = {
+                  "bssid": data[i].group[1],
+                  "name": data[i].group[0],
+                  "value": data[i].reduction[0]
                 };
               }
               self.allap = values;
