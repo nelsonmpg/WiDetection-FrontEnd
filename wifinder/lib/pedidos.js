@@ -892,14 +892,16 @@ module.exports.getAllDisp = function (iduser, socket) {
               conn.close();
             });
           }).then(function (result) {
-            //Atualiza o array do servidor       
-            var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
-            novaData.addMinutes(1);
-            liveActives[self.getDataBase(iduser)].array.shift();
-            var x = {x: novaData.toISOString(), y: result * 1};
-            liveActives[self.getDataBase(iduser)].array.push(x);
-            //Envia para os clientes
-            socket.emit("updateChart", x, self.getDataBase(iduser));
+            if (liveActives[self.getDataBase(iduser)].array) {
+              //Atualiza o array do servidor       
+              var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
+              novaData.addMinutes(1);
+              liveActives[self.getDataBase(iduser)].array.shift();
+              var x = {x: novaData.toISOString(), y: result * 1};
+              liveActives[self.getDataBase(iduser)].array.push(x);
+              //Envia para os clientes
+              socket.emit("updateChart", x, self.getDataBase(iduser));
+            }
           }).error(function (err) {
             console.log("ERROR: interval 1  %s:%s", err.name, err.msg);
           });
