@@ -107,8 +107,8 @@ window.DashboardView = Backbone.View.extend({
                 $("#chartdisp").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
 //                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
 //                self.chartrealtimeMoveis.updateIntervalGraph();
-//                self.testeRemoveBlock.push(true);
-//                self.removeBlock();
+                self.testeRemoveBlock.push(true);
+                self.removeBlock();
 //              },
 //              function (xhr, ajaxOptions, thrownError) {
 //                var json = JSON.parse(xhr.responseText);
@@ -121,8 +121,8 @@ window.DashboardView = Backbone.View.extend({
                 $("#chartap").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
 //                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
 //                self.chartrealtimeAp.updateIntervalGraph();
-//                self.testeRemoveBlock.push(true);
-//                self.removeBlock();
+                self.testeRemoveBlock.push(true);
+                self.removeBlock();
 //              },
 //              function (xhr, ajaxOptions, thrownError) {
 //                var json = JSON.parse(xhr.responseText);
