@@ -127,8 +127,8 @@ window.DetailView = Backbone.View.extend({
               for (var i in data) {
                 values[data[i].group[1]] = {
                   "bssid": data[i].group[1],
-                  "name": data[i].group[0],
-                  "value": data[i].reduction[0]
+                  "name": data[i].group[0]//,
+                  //"value": data[i].reduction[0]
                 };
               }
               self.allap = values;

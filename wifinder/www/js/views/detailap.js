@@ -16,7 +16,6 @@ window.DetailAPView = Backbone.View.extend({
     modem("GET",
             "/getAllAP/" + window.profile.id,
             function (data) {
-              console.log(data);
               var values = [];
                for (var i in data) {
                 values[data[i].group[1]] = {
