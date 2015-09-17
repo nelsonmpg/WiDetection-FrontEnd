@@ -898,7 +898,7 @@ module.exports.getAllDisp = function (iduser, socket) {
               conn.close();
             });
           }).then(function (result) {
-            if (liveActives[self.getDataBase(iduser)].array) {
+            if (liveActives[self.getDataBase(iduser)]) {
               //Atualiza o array do servidor       
               var novaData = new Date(liveActives[self.getDataBase(iduser)].array[liveActives[self.getDataBase(iduser)].array.length - 1].x);
               novaData.addMinutes(1);

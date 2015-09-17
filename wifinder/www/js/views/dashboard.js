@@ -104,8 +104,9 @@ window.DashboardView = Backbone.View.extend({
       modem("GET",
               "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
               function (data) {
-                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
-                self.chartrealtimeMoveis.updateIntervalGraph();
+                $("#chartdisp").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
+//                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
+//                self.chartrealtimeMoveis.updateIntervalGraph();
                 self.testeRemoveBlock.push(true);
                 self.removeBlock();
               },
@@ -117,8 +118,9 @@ window.DashboardView = Backbone.View.extend({
       modem("GET",
               "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
               function (data) {
-                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
-                self.chartrealtimeAp.updateIntervalGraph();
+                $("#chartap").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
+//                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
+//                self.chartrealtimeAp.updateIntervalGraph();
                 self.testeRemoveBlock.push(true);
                 self.removeBlock();
               },
@@ -199,12 +201,12 @@ window.DashboardView = Backbone.View.extend({
     switch (disp) {
       case "ap":
         if (self.chartrealtimeAp) {
-          self.chartrealtimeAp.updatePowerChart(data);
+//          self.chartrealtimeAp.updatePowerChart(data);
         }
         break;
       case "disp":
         if (self.chartrealtimeMoveis) {
-          self.chartrealtimeMoveis.updatePowerChart(data);
+//          self.chartrealtimeMoveis.updatePowerChart(data);
         }
         break;
     }

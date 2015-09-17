@@ -26,10 +26,12 @@ ChartRealTime.prototype.createAndUpdateListaHostAndValues = function (lista) {
     if (!this.checkDdiffDates(lista[i].data)) {
       var val = this.listaHostsStartAndUpdateValues[lista[i].macAddress];
       var graphDisp = (typeof val == "undefined") ? this.inicializaArray() : val.listaValues;
-      graphDisp[self.dataLength - 1] = {
-        x: new Date(),
-        y: 1 * lista[i].Power
-      };
+      if (lista[i].Power * 1 < 10 && lista[i].Power * 1 > -140) {
+        graphDisp[self.dataLength - 1] = {
+          x: new Date(),
+          y: 1 * lista[i].Power
+        };
+      }
       this.listaHostsStartAndUpdateValues[lista[i].macAddress] = {
         Power: lista[i].Power,
         data: lista[i].data,
@@ -39,21 +41,23 @@ ChartRealTime.prototype.createAndUpdateListaHostAndValues = function (lista) {
       };
     }
   }
-  var sizeArr = this.countHosts(this.listaHostsStartAndUpdateValues);
-  if (this.lastSizeListArray != sizeArr) {
-    this.lastSizeListArray = sizeArr;
-    this.showNewGraph = true;
-  }
+//  var sizeArr = this.countHosts(this.listaHostsStartAndUpdateValues);
+//  if (this.lastSizeListArray != sizeArr) {
+//    this.lastSizeListArray = sizeArr;
+//    this.showNewGraph = true;
+//  }
 };
 
 ChartRealTime.prototype.updateGraph = function () {
   for (var i in this.listaHostsStartAndUpdateValues) {
     var val = this.listaHostsStartAndUpdateValues[i];
     var graphDisp = val.listaValues;
-    graphDisp.push({
-      x: new Date(),
-      y: 1 * val.Power
-    });
+    if (val.Power * 1 < 10 && val.Power * 1 > -140) {
+      graphDisp.push({
+        x: new Date(),
+        y: 1 * val.Power
+      });
+    }
     if (graphDisp.length > this.dataLength) {
       graphDisp.shift();
     }
@@ -87,15 +91,15 @@ ChartRealTime.prototype.createUpdateScaleGraph = function () {
     };
     this.valuesToGraph.push(val);
   }
-  if (this.showNewGraph && this.chart != null) {
-    this.stopIntervalGraph();
-    this.chart = null;
-    this.graph();
-    this.showNewGraph = false;
-    this.updateIntervalGraph();
-  } else {
-    this.graph();
-  }
+//  if (this.showNewGraph && this.chart != null) {
+//    this.stopIntervalGraph();
+//    this.chart = null;
+//    this.graph();
+//    this.showNewGraph = false;
+//    this.updateIntervalGraph();
+//  } else {
+  this.graph();
+//  }
 };
 
 ChartRealTime.prototype.stopIntervalGraph = function () {
