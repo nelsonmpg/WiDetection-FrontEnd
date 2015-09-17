@@ -101,34 +101,34 @@ window.DashboardView = Backbone.View.extend({
     }
     if (self.lastSensorselect != sensor) {
       self.lastSensorselect = sensor;
-      modem("GET",
-              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
-              function (data) {
+//      modem("GET",
+//              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
+//              function (data) {
                 $("#chartdisp").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
 //                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
 //                self.chartrealtimeMoveis.updateIntervalGraph();
-                self.testeRemoveBlock.push(true);
-                self.removeBlock();
-              },
-              function (xhr, ajaxOptions, thrownError) {
-                var json = JSON.parse(xhr.responseText);
-                error_launch(json.message);
-              }, {}
-      );
-      modem("GET",
-              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
-              function (data) {
+//                self.testeRemoveBlock.push(true);
+//                self.removeBlock();
+//              },
+//              function (xhr, ajaxOptions, thrownError) {
+//                var json = JSON.parse(xhr.responseText);
+//                error_launch(json.message);
+//              }, {}
+//      );
+//      modem("GET",
+//              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
+//              function (data) {
                 $("#chartap").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
 //                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
 //                self.chartrealtimeAp.updateIntervalGraph();
-                self.testeRemoveBlock.push(true);
-                self.removeBlock();
-              },
-              function (xhr, ajaxOptions, thrownError) {
-                var json = JSON.parse(xhr.responseText);
-                error_launch(json.message);
-              }, {}
-      );
+//                self.testeRemoveBlock.push(true);
+//                self.removeBlock();
+//              },
+//              function (xhr, ajaxOptions, thrownError) {
+//                var json = JSON.parse(xhr.responseText);
+//                error_launch(json.message);
+//              }, {}
+//      );
     }
   },
   MapSensors: function (e) {
