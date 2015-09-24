@@ -70,8 +70,8 @@ var socketClient = function (options) {
     });
     
     // socket a escuta de atualizacao do estado do sensor
-    socket.on("updateCharTwoBars", function (data, local, site) {
-      self.vent.trigger("updateCharTwoBars", data, local, site);
-    });    
+//    socket.on("updateCharTwoBars", function (data, local, site) {
+//      self.vent.trigger("updateCharTwoBars", data, local, site);
+//    });    
   };
 };

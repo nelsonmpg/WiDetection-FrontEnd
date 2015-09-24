@@ -1,3 +1,5 @@
+/* global app */
+
 window.DetailDeviceView = Backbone.View.extend({
   loadingState: '<div class="overlay text-center"><i class="fa fa-refresh fa-spin"></i></div>',
   device: undefined,
@@ -7,6 +9,13 @@ window.DetailDeviceView = Backbone.View.extend({
     "click #selectDropdownFabricante > li > a": function (e) {
       e.preventDefault();
       e.stopPropagation();
+    },
+    "click .selectprob": function (e) {
+      e.preventDefault();
+      window.profile.set("probe", $(e.currentTarget).text());
+      app.navigate("Probes", {
+        trigger: true
+      });
     }
   },
   initialize: function () {
@@ -57,7 +66,7 @@ window.DetailDeviceView = Backbone.View.extend({
               chart.createArrayToGraphLine();
               var dataSet = [], probes = "";
               for (var a in data.Probed_ESSIDs) {
-                probes = probes + "</br>" + data.Probed_ESSIDs[a]
+                probes = probes + "<a class='selectprob' href='#'>" + data.Probed_ESSIDs[a] + "</a></br>"
               }
               dataSet.push([
                 data.macAddress,

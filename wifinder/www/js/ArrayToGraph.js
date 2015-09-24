@@ -171,18 +171,22 @@ ArrayToGraph.prototype.getValSensor = function (snsr) {
 
 ArrayToGraph.prototype.updateNumDisp = function (data) {
   for (var j in this.dataTograph[0].dataPoints) {
-    if (data.sensor == this.dataTograph[0].dataPoints[j].label) {
-      this.dataTograph[0].dataPoints[j].y = data.hosts_new;
-      this.chart.render();
+    for (var j in data) {
+      if (data[i].group.sensor == this.dataTograph[0].dataPoints[j].label) {
+        this.dataTograph[0].dataPoints[j].y = data[i].reduction;
+        this.chart.render();
+      }
     }
   }
 };
 
 ArrayToGraph.prototype.updateNumAp = function (data) {
   for (var j in this.dataTograph[1].dataPoints) {
-    if (data.sensor == this.dataTograph[1].dataPoints[j].label) {
-      this.dataTograph[1].dataPoints[j].y = data.hosts_new;
-      this.chart.render();
+    for (var j in data) {
+      if (data[i].group.sensor == this.dataTograph[1].dataPoints[j].label) {
+        this.dataTograph[1].dataPoints[j].y = data[i].reduction;
+        this.chart.render();
+      }
     }
   }
 };

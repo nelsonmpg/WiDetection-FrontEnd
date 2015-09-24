@@ -14,6 +14,7 @@ var Router = Backbone.Router.extend({
   content: undefined,
   footer: undefined,
   dashboard: undefined,
+  probes: undefined,
   admin: undefined,
   appEventBus: undefined,
   novoutilizador: undefined,
@@ -58,12 +59,12 @@ var Router = Backbone.Router.extend({
     });
 
     // atualizacao do grafico de duas barras
-    self.appEventBus.on('updateCharTwoBars', function (data, local, site) {
-      if (window.profile.get("site") && window.profile.get("site") == site &&
-              Backbone.history.getFragment() == "Dashboard") {
-        self.dashboard.updateCharTwoBars(data, local);
-      }
-    });
+//    self.appEventBus.on('updateCharTwoBars', function (data, local, site) {
+//      if (window.profile.get("site") && window.profile.get("site") == site &&
+//              Backbone.history.getFragment() == "Dashboard") {
+//        self.dashboard.updateCharTwoBars(data, local);
+//      }
+//    });
 
     // update do estado de utilizacao do sensor
     self.appEventBus.on('changeActiveAnt', function (data, site) {
@@ -96,6 +97,7 @@ var Router = Backbone.Router.extend({
     "DetailAP": "detaialap",
     "DetailDevice": "detaildevice",
     "AdminSites": "adminsites",
+    "Probes": "probesBoard",
     '*notFound': 'login'
   },
   login: function () {
@@ -234,8 +236,24 @@ var Router = Backbone.Router.extend({
       self.novoutilizador = new NewUserView({});
       $('#content').html(self.novoutilizador.render().el);
       self.novoutilizador.init();
-      self.contentnav.setView("Novo Utilizador");
+      self.contentnav.setView("New User");
       self.sidebar.removeActive();
+      windowScrollTop();
+    });
+  },
+  probesBoard: function () {
+    var self = this;
+    self.verificaLogin(function () {
+      self.contentnav.setView("Probes");
+      self.probes = new ProbesView({});
+      $('#content').html(self.probes.render().el);
+      var prob = undefined;
+      if (typeof window.profile.get("probe") != "undefined") {
+        prob = window.profile.get("probe");
+        window.profile.set("probe", undefined);
+        self.sidebar.setActive("Probes")
+      }
+      self.probes.init(prob);
       windowScrollTop();
     });
   },
@@ -280,7 +298,8 @@ templateLoader.load([
   "DetailView",
   "DetailAPView",
   "DetailDeviceView",
-  "AdminView"],
+  "AdminView",
+  "ProbesView"],
         function () {
           app = new Router();
           Backbone.history.start();

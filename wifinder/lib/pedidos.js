@@ -137,11 +137,15 @@ module.exports.getSensors = function (req, res) {
               return {
                 "data": w,
                 "numdisp": r.db(self.getDataBase(req.params.id))
-                        .table("AntDisp")
-                        .get(w("nomeAntena"))("host").count().default(0),
+                        .table("DispMoveis")
+                        .filter(function (row) {
+                          return row("disp")("name").contains(w("nomeAntena"));
+                        }).count(),
                 "numap": r.db(self.getDataBase(req.params.id))
-                        .table("AntAp")
-                        .get(w("nomeAntena"))("host").count().default(0)
+                        .table("DispAp")
+                        .filter(function (row) {
+                          return row("disp")("name").contains(w("nomeAntena"))
+                        }).count()
               };
             }).orderBy(r.row("data")("nomeAntena")).coerceTo("ARRAY")
             .run(conn)
@@ -700,6 +704,68 @@ module.exports.removeSensor = function (req, res) {
 
 // ------------------------------------ Fim Admin Site ------------------------------------
 
+//************************************* Pedidos da view dos probes *************************************
+
+/**
+ * Devolve a lista de todos os probes existentes no site selecionado
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getAllprobes = function (req, res) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id))
+            .table("DispMoveis")
+            .concatMap(function (row) {
+              return row("Probed_ESSIDs");
+            }).distinct()
+            .run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.send(JSON.stringify(result));
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
+};
+
+/**
+ * Devolvee a lista de devices que posuem o probe passado por parametro
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+module.exports.getDeviceByProbe = function (req, res) {
+  r.connect(self.dbData).then(function (conn) {
+    return r.db(self.getDataBase(req.params.id)).table("DispMoveis")
+            .filter(function (row) {
+              return row("Probed_ESSIDs").contains(req.params.probe);
+            }).map(function (row) {
+      return {
+        "probes": row("Probed_ESSIDs"),
+        "First_time": row("disp")("First_time").nth(0),
+        "macAddess": row("macAddress"),
+        "vendor": row("nameVendor"),
+        "Last_time": row("disp")
+                .nth(0)("values")
+                .orderBy(r.desc("Last_time"))
+                .limit(1)
+                .nth(0)
+      };
+    }).coerceTo("ARRAY")
+            .run(conn)
+            .finally(function () {
+              conn.close();
+            });
+  }).then(function (result) {
+    res.send(JSON.stringify(result));
+  }).error(function (err) {
+    console.log("ERROR: %s:%s", err.name, err.msg);
+  });
+};
+
+// ------------------------------------ Fim da view dos probes ------------------------------------
 
 
 //************************************* Pedidos do Socket *************************************
@@ -744,7 +810,22 @@ module.exports.changeTablesDisps = function (database, socket, table, nomedisp) 
             .filter(function (row) {
               return row('old_val').eq(null);
             }).map(function (a) {
-      return  r.db(database).table(table).count();
+      return  r.db(database)
+              .table(table)("disp")
+              .concatMap(function (sensor) {
+                return sensor("name");
+              }).map(function (val) {
+        return {
+          "name": val
+        };
+      }).group(function (v) {
+        return {
+          "total": r.db(database)
+                  .table(table)
+                  .count(),
+          "sensor": v("name")
+        };
+      }).count();
     }).run(conn)
             .then(function (cursor) {
               cursor.each(function (err, item) {
@@ -784,31 +865,31 @@ module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
             });
   });
 };
-
-module.exports.changeTableAntForGraph = function (database, socket, table, nomedisp) {
-  r.connect(self.dbData).then(function (conn) {
-    r.db(database)
-            .table(table)
-            .changes({squash: 1})
-            .map(function (v) {
-              var a = v("old_val")("host").count();
-              var b = v("new_val")("host").count();
-              return {
-                "sensor": v("new_val")("nomeAntena"),
-                "hosts_new": v("new_val")("host").count(),
-                "host_teste": a.ne(b)
-              };
-            }).filter(function (val) {
-      return val("host_teste");
-    }).run(conn).then(function (cursor) {
-      cursor.each(function (err, item) {
-        if (typeof item != "undefined") {
-          socket.emit("updateCharTwoBars", item, nomedisp, database);
-        }
-      });
-    });
-  });
-};
+//
+//module.exports.changeTableAntForGraph = function (database, socket, table, nomedisp) {
+//  r.connect(self.dbData).then(function (conn) {
+//    r.db(database)
+//            .table(table)
+//            .changes({squash: 1})
+//            .map(function (v) {
+//              var a = v("old_val")("host").count();
+//              var b = v("new_val")("host").count();
+//              return {
+//                "sensor": v("new_val")("nomeAntena"),
+//                "hosts_new": v("new_val")("host").count(),
+//                "host_teste": a.ne(b)
+//              };
+//            }).filter(function (val) {
+//      return val("host_teste");
+//    }).run(conn).then(function (cursor) {
+//      cursor.each(function (err, item) {
+//        if (typeof item != "undefined") {
+//          socket.emit("updateCharTwoBars", item, nomedisp, database);
+//        }
+//      });
+//    });
+//  });
+//};
 
 module.exports.changeNewSensorForGraph = function (database, socket, table, nomedisp) {
   r.connect(self.dbData).then(function (conn) {

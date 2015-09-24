@@ -101,34 +101,34 @@ window.DashboardView = Backbone.View.extend({
     }
     if (self.lastSensorselect != sensor) {
       self.lastSensorselect = sensor;
-//      modem("GET",
-//              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
-//              function (data) {
-                $("#chartdisp").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
-//                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
-//                self.chartrealtimeMoveis.updateIntervalGraph();
+      modem("GET",
+              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/disp",
+              function (data) {
+//                $("#chartdisp").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
+                self.chartrealtimeMoveis = new ChartRealTime(data, sensor, "chartdisp");
+                self.chartrealtimeMoveis.updateIntervalGraph();
                 self.testeRemoveBlock.push(true);
                 self.removeBlock();
-//              },
-//              function (xhr, ajaxOptions, thrownError) {
-//                var json = JSON.parse(xhr.responseText);
-//                error_launch(json.message);
-//              }, {}
-//      );
-//      modem("GET",
-//              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
-//              function (data) {
-                $("#chartap").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
-//                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
-//                self.chartrealtimeAp.updateIntervalGraph();
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
+      );
+      modem("GET",
+              "/getpowerlistdisps/" + window.profile.id + "/" + sensor + "/ap",
+              function (data) {
+//                $("#chartap").html('<div class="overlay text-center"><h1 style="margin-top: 20%"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
+                self.chartrealtimeAp = new ChartRealTime(data, sensor, "chartap");
+                self.chartrealtimeAp.updateIntervalGraph();
                 self.testeRemoveBlock.push(true);
                 self.removeBlock();
-//              },
-//              function (xhr, ajaxOptions, thrownError) {
-//                var json = JSON.parse(xhr.responseText);
-//                error_launch(json.message);
-//              }, {}
-//      );
+              },
+              function (xhr, ajaxOptions, thrownError) {
+                var json = JSON.parse(xhr.responseText);
+                error_launch(json.message);
+              }, {}
+      );
     }
   },
   MapSensors: function (e) {
@@ -201,12 +201,12 @@ window.DashboardView = Backbone.View.extend({
     switch (disp) {
       case "ap":
         if (self.chartrealtimeAp) {
-//          self.chartrealtimeAp.updatePowerChart(data);
+          self.chartrealtimeAp.updatePowerChart(data);
         }
         break;
       case "disp":
         if (self.chartrealtimeMoveis) {
-//          self.chartrealtimeMoveis.updatePowerChart(data);
+          self.chartrealtimeMoveis.updatePowerChart(data);
         }
         break;
     }
@@ -235,10 +235,16 @@ window.DashboardView = Backbone.View.extend({
     var self = this;
     switch (local) {
       case "moveis":
-        $("body").find("#disp-num-div").html(data);
+        $("body").find("#disp-num-div").html(data[0].group.total);
+        if (self.graph2Bar) {
+          self.graph2Bar.updateNumDisp(data);
+        }
         break;
       case "ap":
-        $("body").find("#ap-num-div").html(data);
+        $("body").find("#ap-num-div").html(data[0].group.total);
+        if (self.graph2Bar) {
+          self.graph2Bar.updateNumDisp(data);
+        }
         break;
       case "sensor":
         $("body").find("#sensores-num-div").html(data);

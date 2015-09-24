@@ -212,7 +212,19 @@ Server.prototype.start = function () {
 
 //----------------------------------------------------------------------------------
 
+// //************************************* Pedidos Probes *************************************
 
+/**
+ * Devolve a lista de todos os probes existentes no site selecionado
+ */
+  this.app.get("/getAllprobes/:id", pedidos.getAllprobes);
+  
+  /**
+   * Devolvee a lista de devices que posuem o probe passado por parametro
+   */
+  this.app.get("/getDeviceByProbe/:id/:probe", pedidos.getDeviceByProbe);
+
+//----------------------------------------------------------------------------------
   console.log('Server HTTP Wait %d'.green, this.port);
 };
 
