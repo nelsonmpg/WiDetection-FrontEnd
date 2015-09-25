@@ -171,9 +171,9 @@ ArrayToGraph.prototype.getValSensor = function (snsr) {
 
 ArrayToGraph.prototype.updateNumDisp = function (data) {
   for (var j in this.dataTograph[0].dataPoints) {
-    for (var j in data) {
-      if (data[i].group.sensor == this.dataTograph[0].dataPoints[j].label) {
-        this.dataTograph[0].dataPoints[j].y = data[i].reduction;
+    for (var i in data.vals) {
+      if (data.vals[i].sensor == this.dataTograph[0].dataPoints[j].label) {
+        this.dataTograph[0].dataPoints[j].y = data.vals[i].num;
         this.chart.render();
       }
     }
@@ -182,9 +182,9 @@ ArrayToGraph.prototype.updateNumDisp = function (data) {
 
 ArrayToGraph.prototype.updateNumAp = function (data) {
   for (var j in this.dataTograph[1].dataPoints) {
-    for (var j in data) {
-      if (data[i].group.sensor == this.dataTograph[1].dataPoints[j].label) {
-        this.dataTograph[1].dataPoints[j].y = data[i].reduction;
+    for (var i in data.vals) {
+      if (data.vals[i].sensor == this.dataTograph[1].dataPoints[j].label) {
+        this.dataTograph[1].dataPoints[j].y = data.vals[i].num;
         this.chart.render();
       }
     }

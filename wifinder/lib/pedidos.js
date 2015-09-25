@@ -811,21 +811,27 @@ module.exports.changeTablesDisps = function (database, socket, table, nomedisp) 
               return row('old_val').eq(null);
             }).map(function (a) {
       return  r.db(database)
-              .table(table)("disp")
-              .concatMap(function (sensor) {
-                return sensor("name");
-              }).map(function (val) {
+              .table(table)
+              .count().do(function (q) {
         return {
-          "name": val
+          "total": q,
+          "vals": r.db(database)
+                  .table("ActiveAnt")("nomeAntena")
+                  .map(function (c) {
+                    return c.do(function (b) {
+                      return {
+                        "sensor": b,
+                        "num": r.db(database)
+                                .table(table)
+                                .filter(function (a) {
+                                  return a("disp")("name")
+                                  .contains(b);
+                                }).count()
+                      };
+                    });
+                  }).coerceTo("ARRAY")
         };
-      }).group(function (v) {
-        return {
-          "total": r.db(database)
-                  .table(table)
-                  .count(),
-          "sensor": v("name")
-        };
-      }).count();
+      });
     }).run(conn)
             .then(function (cursor) {
               cursor.each(function (err, item) {

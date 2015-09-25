@@ -61,7 +61,7 @@ ServerSktIo.prototype.init = function () {
           // send tag - newDisp
           pedidos.changeTablesDisps(data[i].db, socket, 'DispMoveis', "moveis");
           pedidos.changeTablesDisps(data[i].db, socket, 'DispAp', "ap");
-          pedidos.changeTablesDisps(data[i].db, socket, "ActiveAnt", "sensor");
+//          pedidos.changeTablesDisps(data[i].db, socket, "ActiveAnt", "sensor");
           
           // send tag - updateRealTimeChart
           pedidos.changeTableAnt(data[i].db, socket, "AntAp", "ap");

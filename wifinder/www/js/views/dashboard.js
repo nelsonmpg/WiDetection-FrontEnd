@@ -233,15 +233,16 @@ window.DashboardView = Backbone.View.extend({
   },
   newdisps: function (data, local) {
     var self = this;
+    console.log(data);
     switch (local) {
       case "moveis":
-        $("body").find("#disp-num-div").html(data[0].group.total);
+        $("body").find("#disp-num-div").html(data.total);
         if (self.graph2Bar) {
           self.graph2Bar.updateNumDisp(data);
         }
         break;
       case "ap":
-        $("body").find("#ap-num-div").html(data[0].group.total);
+        $("body").find("#ap-num-div").html(data.total);
         if (self.graph2Bar) {
           self.graph2Bar.updateNumDisp(data);
         }
