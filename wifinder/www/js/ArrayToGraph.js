@@ -217,7 +217,6 @@ ArrayToGraph.prototype.createAndShowGraphTwoBars = function () {
     this.anguloX = -30;
   }
   this.chart = new CanvasJS.Chart(this.local, {
-    zoomEnabled: true,
     exportEnabled: true,
     theme: self.theme,
     animationEnabled: true,
