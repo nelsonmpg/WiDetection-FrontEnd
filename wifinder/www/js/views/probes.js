@@ -29,8 +29,9 @@ window.ProbesView = Backbone.View.extend({
 
     var options = {
       interval: 20,
+      reverse: true,
       textFont: 'Impact,Arial Black,sans-serif',
-      textColour: '#00f',
+      textColour: null,
       textHeight: 15,
       outlineColour: '#f96',
       outlineThickness: 5,
@@ -45,18 +46,18 @@ window.ProbesView = Backbone.View.extend({
       shadow: '#ccf',
       shadowBlur: 3,
       weight: true,
-//      weightFrom: 'data-weight',
+      weightFrom: 'data-weight',
+      weightMode: "colour",
       fadeIn: 800,
       shape: "vcylinder"
     };
-
     modem("GET",
             "/getAllprobes/" + window.profile.id,
             function (data) {
               var listprobes = "";
               if (data.length > 0) {
                 for (var i in data) {
-                  listprobes += '<a href="#" class="linkprobe">' + data[i] + '</a>'
+                  listprobes += '<a href="#" data-weight="' + Math.random() + '" class="linkprobe">' + data[i] + '</a>'
                 }
                 $("#probes-list").html(listprobes);
               } else {

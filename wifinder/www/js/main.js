@@ -58,14 +58,6 @@ var Router = Backbone.Router.extend({
       }
     });
 
-    // atualizacao do grafico de duas barras
-//    self.appEventBus.on('updateCharTwoBars', function (data, local, site) {
-//      if (window.profile.get("site") && window.profile.get("site") == site &&
-//              Backbone.history.getFragment() == "Dashboard") {
-//        self.dashboard.updateCharTwoBars(data, local);
-//      }
-//    });
-
     // update do estado de utilizacao do sensor
     self.appEventBus.on('changeActiveAnt', function (data, site) {
       if (window.profile.get("site") && window.profile.get("site") == site &&

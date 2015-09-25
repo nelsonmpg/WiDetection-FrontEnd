@@ -865,32 +865,15 @@ module.exports.changeTableAnt = function (database, socket, table, nomedisp) {
             });
   });
 };
-//
-//module.exports.changeTableAntForGraph = function (database, socket, table, nomedisp) {
-//  r.connect(self.dbData).then(function (conn) {
-//    r.db(database)
-//            .table(table)
-//            .changes({squash: 1})
-//            .map(function (v) {
-//              var a = v("old_val")("host").count();
-//              var b = v("new_val")("host").count();
-//              return {
-//                "sensor": v("new_val")("nomeAntena"),
-//                "hosts_new": v("new_val")("host").count(),
-//                "host_teste": a.ne(b)
-//              };
-//            }).filter(function (val) {
-//      return val("host_teste");
-//    }).run(conn).then(function (cursor) {
-//      cursor.each(function (err, item) {
-//        if (typeof item != "undefined") {
-//          socket.emit("updateCharTwoBars", item, nomedisp, database);
-//        }
-//      });
-//    });
-//  });
-//};
 
+/**
+ * 
+ * @param {type} database
+ * @param {type} socket
+ * @param {type} table
+ * @param {type} nomedisp
+ * @returns {undefined}
+ */
 module.exports.changeNewSensorForGraph = function (database, socket, table, nomedisp) {
   r.connect(self.dbData).then(function (conn) {
     r.db(database)

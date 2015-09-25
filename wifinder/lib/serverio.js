@@ -68,10 +68,6 @@ ServerSktIo.prototype.init = function () {
           pedidos.changeTableAnt(data[i].db, socket, "AntDisp", "disp");
           
           // send tag - updateCharTwoBars
-//          pedidos.changeTableAntForGraph(data[i].db, socket, "AntAp", "ap");
-//          pedidos.changeTableAntForGraph(data[i].db, socket, "AntDisp", "disp");
-          
-          // send tag - updateCharTwoBars
           pedidos.changeNewSensorForGraph(data[i].db, socket, "ActiveAnt", "sensor");
           
           // send tag - changeActiveAnt
