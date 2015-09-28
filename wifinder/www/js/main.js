@@ -20,6 +20,7 @@ var Router = Backbone.Router.extend({
   novoutilizador: undefined,
   loginform: undefined,
   editprofile: undefined,
+  about : undefined,
   socketclt: null,
   initialize: function () {
     var self = this;
@@ -90,6 +91,7 @@ var Router = Backbone.Router.extend({
     "DetailDevice": "detaildevice",
     "AdminSites": "adminsites",
     "Probes": "probesBoard",
+    "About": "aCercaDe",
     '*notFound': 'login'
   },
   login: function () {
@@ -122,6 +124,15 @@ var Router = Backbone.Router.extend({
     $('#content').html(self.loginform.render().el);
     windowScrollTop();
     self.loginform.checkloginstored();
+  },
+  aCercaDe: function () {
+    var self = this;
+    self.verificaLogin(function () {
+      self.about = new AboutView();
+      self.contentnav.setView("About");
+      $('#content').html(self.about.render().el);
+      windowScrollTop();
+    });
   },
   inicio: function () {
     var self = this;
@@ -291,7 +302,8 @@ templateLoader.load([
   "DetailAPView",
   "DetailDeviceView",
   "AdminView",
-  "ProbesView"],
+  "ProbesView",
+  "AboutView"],
         function () {
           app = new Router();
           Backbone.history.start();
