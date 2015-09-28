@@ -128,7 +128,7 @@ window.DetailView = Backbone.View.extend({
                 values[data[i].group[1]] = {
                   "bssid": data[i].group[1],
                   "name": data[i].group[0]//,
-                  //"value": data[i].reduction[0]
+                          //"value": data[i].reduction[0]
                 };
               }
               self.allap = values;
@@ -155,7 +155,7 @@ window.DetailView = Backbone.View.extend({
                         "' data-posy='" + data[i].data.posY +
                         "' >" + data[i].data.nomeAntena + "</option>");
               }
-              
+
               if (self.sensor) {
                 $("#SensorSelect > option:contains('" + self.sensor + "')").attr("selected", "selected");
               } else {
@@ -225,6 +225,7 @@ window.DetailView = Backbone.View.extend({
             function (data) {
               var img = atob(data);
               if (img != "none") {
+                $('#plantlocalsensor').find(".overlay").remove();
                 $('#plantlocalsensor').css({
                   'border': "2px solid black",
                   "-webkit-box-shadow": "none",
@@ -240,6 +241,18 @@ window.DetailView = Backbone.View.extend({
                   left: $('#SensorSelect').find(":selected").data("posx") + "%",
                   top: $('#SensorSelect').find(":selected").data("posy") + "%"
                 });
+              } else {
+                $("#imgsensor").css({
+                  display: "none"
+                });
+                $('#plantlocalsensor').css({
+                  'border': "none",
+                  "-webkit-box-shadow": "none",
+                  "-moz-box-shadow": "none",
+                  "box-shadow": "none",
+                  "background-image": "none"
+                });
+                $('#plantlocalsensor').append('<div class="overlay text-center"><h1 style="padding-top: 25%;"><i class="fa fa-frown-o fa-spin"></i> Not Available</h1></div>');
               }
             },
             function (xhr, ajaxOptions, thrownError) {
