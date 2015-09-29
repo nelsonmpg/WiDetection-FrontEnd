@@ -33,7 +33,12 @@ window.DetailView = Backbone.View.extend({
   openDetailAp: function (e) {
     e.preventDefault();
     e.stopPropagation();
-    window.profile.set("nav-mac", $(e.currentTarget).data("mac"));
+    if ($(e.currentTarget).context.attributes[5].nodeValue != "Unknown") {
+      window.profile.set("nav-mac", $(e.currentTarget).data("mac"));
+    } else {
+      window.profile.set("nav-mac", Object.keys(this.allap)[0]);      
+    }
+
     app.navigate("DetailAP", {
       trigger: true
     });
