@@ -124,7 +124,7 @@ window.DetailView = Backbone.View.extend({
     $.AdminLTE.boxWidget.activate();
   },
   getAllAP: function () {
-    self = this;
+    var self = this;
     modem("GET",
             "/getAllAP/" + window.profile.id,
             function (data) {
