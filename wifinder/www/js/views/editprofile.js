@@ -38,6 +38,9 @@ window.EditProfileView = Backbone.View.extend({
         var self = this;
         $("#checkLogin").show();
         $("#checkLogin > div > div > div > div > img , #img-previewProfile").attr("src", $(".imageuser").attr("src"));
+        
+        $("#checkLogin-form > input:nth-child(1)").val(window.profile.get("email"));
+        //window.profile.get("email")
 
         // carregar os valores antigos no form
         $("#newemail").val(window.profile.get("email"));

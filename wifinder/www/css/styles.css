@@ -56,8 +56,8 @@
 }
 
 .bg-status-user {
-  background-color: #d2d6de;
   width: 100%;
+  color: white;
 }
 
 ///////////////////
@@ -88,8 +88,6 @@
 
 /* example styles for validation form demo */
 #register-form {
-  background: url("../img/form-fieldset.gif") repeat-x scroll left bottom #F8FDEF;
-  border: 1px solid #DFDCDC;
   border-radius: 15px 15px 15px 15px;
   display: inline-block;
   margin-bottom: 30px;
@@ -496,4 +494,8 @@ hr.soften {
   background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.8), rgba(0,0,0,0));
   border: 0;
   width: 80%;
+}
+#register-form {
+  margin:auto;
+  
 }
