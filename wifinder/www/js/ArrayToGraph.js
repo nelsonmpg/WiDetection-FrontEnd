@@ -306,6 +306,7 @@ ArrayToGraph.prototype.createAndShowGraphOneBar = function () {
   }
   this.chart = new CanvasJS.Chart(this.local, {
     animationEnabled: true,
+    exportEnabled: true,
     theme: self.theme,
     axisX: {
       labelAutoFit: true,
@@ -337,6 +338,7 @@ ArrayToGraph.prototype.createAndShowGraphSimpleLine = function () {
   var self = this;
   self.chart = new CanvasJS.Chart(self.local, {
     theme: self.theme,
+    exportEnabled: true,
     animationEnabled: true,
     axisX: {
       valueFormatString: "HH:mm",
