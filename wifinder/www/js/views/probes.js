@@ -151,7 +151,7 @@ window.ProbesView = Backbone.View.extend({
                     "<a href='#' data-vendor='" + data[i].macAddess + "' class='Dispjump'>" + data[i].macAddess + "</a>",
                     data[i].vendor,
                     moment(data[i].First_time * 1000).format('YYYY/MM/DD HH:mm'),
-                    moment(data[i].Last_time.Last_time * 1000).format('YYYY/MM/DD HH:mm'),
+                    "<span data-toggle='tooltip' title='" + moment(data[i].Last_time.Last_time * 1000).format('YYYY/MM/DD HH:mm') + "'> " + moment(data[i].Last_time.Last_time * 1000).fromNow() + "</span>", 
                     prb,
                     "<a href='#' class='APjump' data-toggle='tooltip' title=" + (typeof self.allap[macName] == "undefined" ? "Unknown" : self.allap[macName].name)  + " data-mac='" + data[i].Last_time.BSSID + "'>" + macName + "</a>"
                   ]);
