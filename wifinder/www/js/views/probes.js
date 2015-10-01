@@ -128,7 +128,7 @@ window.ProbesView = Backbone.View.extend({
   listDevicesToProbe: function (e) {
     var self = this;
     e.preventDefault();
-    var prob = $(e.currentTarget).text();
+    var prob = $(e.currentTarget).text().replace("\\","\\\\");
     TagCanvas.TagToFront('myCanvas', {text: prob, active: true});
     if (self.lastprob !== prob) {
       self.lastprob = prob;
