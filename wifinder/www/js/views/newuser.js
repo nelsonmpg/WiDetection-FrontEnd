@@ -1,5 +1,9 @@
 /* global Backbone */
-
+/**
+ * 
+ * @type @exp;Backbone@pro;View@call;extend 
+ * view de criacao de novo utilizador
+ */
 var NewUserView = Backbone.View.extend({
     events: {
         "click #submit-btn": "newuser",
@@ -11,7 +15,7 @@ var NewUserView = Backbone.View.extend({
     init: function () {
         (function ($, W, D) {
             var JQUERY4U = {};
-
+            //validacao do formolario de criacao de novo utilizador
             JQUERY4U.UTIL =
                     {
                         setupFormValidation: function ()
@@ -40,17 +44,17 @@ var NewUserView = Backbone.View.extend({
                                     }
                                 },
                                 messages: {
-                                    name: "Por favor insira o nome do utilizador",
+                                    name: "Please enter user's name",
                                     password: {
-                                        required: "Por favor insira uma password",
-                                        minlength: "A password deve conter, pelo menos, 5 caracteres"
+                                        required: "Please enter user's password",
+                                        minlength: "Password must contain at least 5 characters"
                                     },
                                     password2: {
-                                        required: "Por favor insira a mesma password",
-                                        minlength: "A password deve conter, pelo menos, 5 caracteres",
-                                        equalTo: "Por favor insira a mesma password"
+                                        required: "Please enter user's password",
+                                        minlength: "Password must contain at least 5 characters",
+                                        equalTo: "Please enter the same password"
                                     },
-                                    email: "Por favor insira um email válido"
+                                    email: "Please enter a valid email address"
                                 },
                                 submitHandler: function (form) {
                                     form.submit();

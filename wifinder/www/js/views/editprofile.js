@@ -83,14 +83,14 @@ window.EditProfileView = Backbone.View.extend({
                                     name: "Insert a username, please",
                                     password: {
                                         required: "Insert a password, please",
-                                        minlength: "A password deve conter, pelo menos, 5 caracteres"
+                                        minlength: "Password must contain at least 5 characters"
                                     },
                                     password2: {
                                         required: "Insert the same password, please",
-                                        minlength: "A password deve conter, pelo menos, 5 caracteres",
-                                        equalTo: "Por favor insira a mesma password"
+                                        minlength: "Password must contain at least 5 characters",
+                                        equalTo: "Please enter the same password"
                                     },
-                                    email: "Por favor insira um email válido"
+                                    email: "Please enter a valid email address"
                                 },
                                 submitHandler: function () {
                                     //self.submitProfile();
@@ -166,7 +166,7 @@ window.EditProfileView = Backbone.View.extend({
                                 });
                         });
                     } else {
-                        showmsg(".my-modal", "error", "Something wrong!...<br>This email already existes in database.", function () {
+                        showmsg(".my-modal", "warning", "Something wrong!...<br>You made ​​no changes.", function () {
                         });
                     }
                 },
