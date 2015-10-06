@@ -369,7 +369,7 @@ var fazergrafico = function (xedges, xnodes, local) {
   }
   var net = new vis.Network(container, data, options);
   // initialize your network!
-  net.on("stabilizationProgress", function (params) {
+//  net.on("stabilizationProgress", function (params) {
 //                var maxWidth = 496;
 //                var minWidth = 20;
 //                var widthFactor = params.iterations/params.total;
@@ -378,13 +378,18 @@ var fazergrafico = function (xedges, xnodes, local) {
 //                document.getElementById('bar2').style.width = width + 'px';
 //                document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
 //    console.log(params);
-  });
+//  });
   net.once("stabilizationIterationsDone", function () {
 //                document.getElementById('text').innerHTML = '100%';
 //                document.getElementById('bar2').style.width = '496px';
 //                document.getElementById('loadingBar').style.opacity = 0;
 //                // really clean the dom element
 //                setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+
+//    console.log(net);
+//    net.edgesHandler.options.smooth.type = "continuous";
+//    net.edgesHandler.options.smooth.roundness = 0;
+    net.physics.physicsEnabled = false;
     console.log("stop");
   });
   $(".showScale").show();
