@@ -222,8 +222,8 @@ window.DetailView = Backbone.View.extend({
 
     $(".applyBtn").attr("disabled", false).click();
 
-    $(".sensor-selected").text(this.sensor);
-    $(".time-selected").html($(".daterangepicker .ranges ul li:first").text() + " <i class='fa fa-arrow-circle-right'></i> " + $("#reportrange span").text());
+    $(".sensor-selected").html("<i class='fa fa-arrow-circle-right'></i> " + this.sensor);
+    $(".time-selected").html("<i class='fa fa-arrow-circle-right'></i> " + $("#reportrange span").text());
 
     modem("GET",
             "/getPlantSite/" + window.profile.id + "/" + self.sensor,
@@ -271,8 +271,8 @@ window.DetailView = Backbone.View.extend({
     $(".daterangepicker .ranges ul li:contains('" + picker.chosenLabel + "')").addClass("active");
     this.loadcharts(picker.startDate.format(), picker.endDate.format());
 
-    $(".sensor-selected").text(this.sensor);
-    $(".time-selected").html(picker.chosenLabel + " <i class='fa fa-arrow-circle-right'></i> " + $("#reportrange span").text());
+    $(".sensor-selected").html("<i class='fa fa-arrow-circle-right'></i> " + this.sensor);
+    $(".time-selected").html("<i class='fa fa-arrow-circle-right'></i> " + $("#reportrange span").text());
   },
   loadcharts: function (min, max) {
     var self = this;
