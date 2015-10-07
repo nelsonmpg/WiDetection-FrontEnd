@@ -251,17 +251,18 @@ module.exports.getAllOrderbyVendor = function (req, res) {
   var max = req.params.max;//new Date(req.params.max).toJSON();
   var table = ((req.params.table).toString().toUpperCase() == "AP") ? "DispAp" : "DispMoveis";
   r.connect(self.dbData).then(function (conn) {
-    return r.db(self.getDataBase(req.params.id)).table(table).filter(function (row) {
+    return r.db(self.getDataBase(req.params.id)).table(table)
+        .map(function(x){
+      return x.without("disp").merge({disp:x("disp").filter({"name":req.params.sensor})})
+        })
+        .filter(function (row) {
       return row("disp")("values").contains(function (a) {
         return a("Last_time").contains(function (b) {
           return b.ge(r.ISO8601(min).toEpochTime()).and(b.le(r.ISO8601(max).toEpochTime()));
         });
       });
-    }).group("nameVendor").filter(function (a) {
-      return a("disp").contains(function (b) {
-        return b("name").eq(req.params.sensor);
-      });
-    }).coerceTo("ARRAY")
+    }).group("nameVendor")
+    .coerceTo("ARRAY")
             .run(conn)
             .finally(function () {
               conn.close();
