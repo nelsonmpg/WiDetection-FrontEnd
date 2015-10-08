@@ -17,7 +17,7 @@ window.DetailAPView = Backbone.View.extend({
             "/getAllAP/" + window.profile.id,
             function (data) {
               var values = [];
-               for (var i in data) {
+              for (var i in data) {
                 values[data[i].group[1]] = {
                   "bssid": data[i].group[1],
                   "name": data[i].group[0],
@@ -76,7 +76,7 @@ window.DetailAPView = Backbone.View.extend({
     }
     if (mac == "all") {
 //      self.networkAllAP(self.allap);
-  makeAllNetwork(self.allap,'mynetwork');
+      makeAllNetwork(self.allap, 'mynetwork');
       $("#div-row-table-ap").hide();
     } else {
       $("#div-row-table-ap").show();
@@ -115,6 +115,7 @@ window.DetailAPView = Backbone.View.extend({
     }
   },
   network: function (data) {
+    var self = this;
     var xnodes = [];
     var xedges = [];
     xnodes.push({id: 1, label: $('#ApSelect').find(":selected").text(), group: "ap"});
@@ -157,6 +158,22 @@ window.DetailAPView = Backbone.View.extend({
             color: '#7e7e7e'
           }
         }
+      },
+      physics: {
+        forceAtlas2Based: {
+          gravitationalConstant: -26,
+          centralGravity: 0.005,
+          springLength: 230,
+          springConstant: 0.18
+        },
+        maxVelocity: 146,
+        solver: 'forceAtlas2Based',
+        timestep: 0.35,
+        stabilization: {
+          enabled: true,
+          iterations: 2000,
+          updateInterval: 25
+        }
       }
     };
     if (this.net != undefined) {
@@ -165,6 +182,9 @@ window.DetailAPView = Backbone.View.extend({
     }
     // initialize your network!
     this.net = new vis.Network(container, data, options);
+    this.net.once("stabilizationIterationsDone", function () {
+      self.net.physics.physicsEnabled = false;
+    });
   },
   ApHourChart: function (mac) {
     self = this;
